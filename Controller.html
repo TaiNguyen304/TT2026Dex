@@ -163,6 +163,8 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            padding-left: 40px;
+            padding-bottom: 6px;
             background-size: 100% 110%;
             background-position: center 60%;
             background-repeat: no-repeat;
@@ -325,12 +327,12 @@
             cursor: pointer;
         }
         .v2-question-cell.selected { background: var(--aqua); color: var(--black); }
-        .v2-question-cell.used { background: var(--black); color: var(--white); }
+        .v2-question-cell.used { background: var(--black) !important; color: var(--white) !important; }
 
         .v2-question {
             position: relative;
             color: white;
-            padding: 10px 30px;
+            padding: 50px 30px 10px 30px;
             margin: 30px auto 12px auto;
             width: 75%;
             height: 250px;
@@ -397,7 +399,7 @@
 
         .v4-question {
             color: white;
-            padding: 10px 40px;
+            padding: 50px 40px 10px 40px;
             margin: 12px auto;
             width: 75%;
             height: 220px;
@@ -487,13 +489,13 @@
         <button class="round-btn" data-view="players">Danh sách người chơi</button>
         <button class="round-btn" data-view="v1">Nhập cuộc (V1)</button>
         <button class="round-btn" data-view="v2">Vượt lên (V2 Main)</button>
-        <button class="round-btn" data-view="v2_answers" style="background:purple;">V2 Hiện Đáp Án (Viewer)</button>
-        <button class="round-btn" data-view="v2_board" style="background:#d97706;">V2 Ô Chữ (Viewer)</button>
+        <button class="round-btn" data-view="v2_answers">V2 Hiện Đáp Án (Viewer)</button>
+        <button class="round-btn" data-view="v2_board">V2 Ô Chữ (Viewer)</button>
         <button class="round-btn" data-view="v3">Đối đầu (V3 Main)</button>
-        <button class="round-btn" data-view="v3_answers" style="background:purple;">V3 Đáp Án Thí Sinh (Viewer)</button>
+        <button class="round-btn" data-view="v3_answers">V3 Đáp Án Thí Sinh (Viewer)</button>
         <button class="round-btn" data-view="v4">Vinh quang (V4)</button>
         <button class="round-btn" data-view="vqphu">Câu hỏi phụ</button>
-        <button class="round-btn" data-view="vqphu_answers" style="background:purple;">VQPhu Đáp Án (Viewer)</button>
+        <button class="round-btn" data-view="vqphu_answers">VQPhu Đáp Án (Viewer)</button>
     </div>
 
     <!-- Graphic Show/Hide Toggle Bar per round/view -->
@@ -1463,10 +1465,10 @@
             area.innerHTML = '';
             for (let i = 0; i < 4; i++) {
                 const wrapper = document.createElement('div');
-                wrapper.style.cssText = 'display:flex; flex-direction:column; margin-bottom:12px; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);';
+                wrapper.style.cssText = 'display:flex; flex-direction:column; align-items:flex-start; margin-bottom:12px; width:100%; max-width:780px;';
                 wrapper.innerHTML = `
-                    <div style="background:blue; color:white; padding:10px; font-weight:bold; text-align:center;">${playerNames[i]}</div>
-                    <div style="background:aqua; color:black; padding:12px; font-weight:bold; text-align:center; font-size:1.2rem;">${v2Answers[i] || '(Chưa nhập)'}</div>
+                    <div style="background:blue; color:white; width:180px; padding:8px 10px; font-weight:bold; text-align:center; border-radius:8px 8px 0 0; box-sizing:border-box;">${playerNames[i]}</div>
+                    <div style="background:aqua; color:black; width:100%; padding:12px; font-weight:bold; text-align:center; font-size:1.2rem; border-radius:0 8px 8px 8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); box-sizing:border-box;">${v2Answers[i] || ''}</div>
                 `;
                 area.appendChild(wrapper);
             }
@@ -1495,6 +1497,12 @@
             document.getElementById('v2qText').textContent = "";
             v2Timer = 15;
             document.getElementById('v2TimeBox').textContent = v2Timer;
+            if (v2SelectedQuestionIndex !== null && v2SelectedQuestionIndex !== undefined) {
+                if (v2Questions[v2SelectedQuestionIndex]) {
+                    v2Questions[v2SelectedQuestionIndex].used = true;
+                }
+            }
+            renderV2QuestionsAndBoard();
             syncFullStateToServer();
         }
 
@@ -1663,13 +1671,13 @@
             area.innerHTML = '';
             for (let i = 0; i < 4; i++) {
                 const item = document.createElement('div');
-                item.style.cssText = 'background:blue; color:white; margin-bottom:12px; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;';
+                item.style.cssText = 'display:flex; flex-direction:column; align-items:flex-start; margin-bottom:12px; width:100%; max-width:780px;';
                 item.innerHTML = `
-                    <div>
-                        <div style="font-size:1.1rem; font-weight:bold; color:aqua;">${playerNames[i]}</div>
-                        <div style="font-size:1.3rem; margin-top:4px;">${v3Answers[i].ans || '(Không trả lời)'}</div>
+                    <div style="background:blue; color:white; width:180px; padding:8px 10px; font-weight:bold; text-align:center; border-radius:8px 8px 0 0; box-sizing:border-box;">${playerNames[i]}</div>
+                    <div style="display:flex; width:100%; background:aqua; color:black; border-radius:0 8px 8px 8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1); box-sizing:border-box;">
+                        <div style="flex:1; padding:12px; font-size:1.2rem; font-weight:bold; text-align:center;">${v3Answers[i].ans || ''}</div>
+                        <div style="background:#ff00cc; color:white; width:100px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; font-weight:bold;">${v3Answers[i].time ? v3Answers[i].time + 's' : '--'}</div>
                     </div>
-                    <div style="background:#ff00cc; padding:6px 14px; border-radius:6px; font-size:1.2rem;">${v3Answers[i].time ? v3Answers[i].time + 's' : '--'}</div>
                 `;
                 area.appendChild(item);
             }
@@ -1873,7 +1881,7 @@
                 div.innerHTML = `
                     <div>
                         <div style="color:aqua; font-size:1.1rem; font-weight:bold;">${item.name}</div>
-                        <div style="font-size:1.2rem; margin-top:4px;">${item.ans || '(Chưa có đáp án)'}</div>
+                        <div style="font-size:1.2rem; margin-top:4px;">${item.ans || ''}</div>
                     </div>
                     <div style="background:#ff00cc; padding:6px 12px; border-radius:6px;">${item.time ? item.time + 's' : '--'}</div>
                 `;

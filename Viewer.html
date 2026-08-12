@@ -108,6 +108,8 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            padding-left: 40px;
+            padding-bottom: 6px;
             background-size: 100% 110%;
             background-position: center 60%;
             background-repeat: no-repeat;
@@ -195,7 +197,7 @@
         .v2-question {
             position: relative;
             color: white;
-            padding: 20px 40px;
+            padding: 55px 40px 15px 40px;
             margin: 40px auto 20px auto;
             width: 80%;
             height: 280px;
@@ -236,12 +238,12 @@
             gap: 20px;
             align-items: center;
             justify-content: center;
-            max-width: 950px;
+            max-width: 1050px;
             margin: 20px auto;
         }
 
         .v2-answers-side-img {
-            width: 120px;
+            width: 180px;
             height: 420px;
             background-image: url('Vượt lên.png');
             background-size: 100% 100%;
@@ -259,20 +261,24 @@
         .v2-answer-item {
             display: flex;
             flex-direction: column;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            align-items: flex-start;
+            width: 780px;
         }
 
         .v2-answer-name {
+            width: 180px;
             background: var(--blue);
             color: var(--white);
-            padding: 10px;
+            padding: 8px 10px;
             font-size: 1.2rem;
             text-align: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            box-sizing: border-box;
         }
 
         .v2-answer-text {
+            width: 780px;
             background: var(--aqua);
             color: var(--black);
             padding: 12px;
@@ -282,6 +288,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-top-right-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-sizing: border-box;
         }
 
         /* VIEW: V2 BOARD SEPARATE */
@@ -373,12 +384,12 @@
             gap: 20px;
             align-items: center;
             justify-content: center;
-            max-width: 950px;
+            max-width: 1050px;
             margin: 20px auto;
         }
 
         .v3-answers-side-img {
-            width: 120px;
+            width: 180px;
             height: 420px;
             background-image: url('Đối đầu.png');
             background-size: 100% 100%;
@@ -394,51 +405,63 @@
         }
 
         .v3-answer-item {
-            display: grid;
-            grid-template-columns: 1fr 120px;
-            grid-template-rows: 48px 52px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 780px;
         }
 
         .v3-answer-name {
-            grid-column: 1;
-            grid-row: 1;
+            width: 180px;
             background: var(--blue);
             color: var(--white);
+            padding: 8px 10px;
             font-size: 1.2rem;
+            text-align: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .v3-answer-bottom {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 780px;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-top-right-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-sizing: border-box;
         }
 
         .v3-answer-text {
-            grid-column: 1;
-            grid-row: 2;
+            flex: 1;
             background: var(--aqua);
             color: var(--black);
+            padding: 12px;
             font-size: 1.3rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            text-align: center;
+            min-height: 50px;
         }
 
         .v3-answer-time {
-            grid-column: 2;
-            grid-row: 2;
+            width: 120px;
             background: var(--pink);
             color: var(--white);
             font-size: 1.3rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         /* VIEW: V4 (VINH QUANG) */
         .v4-question {
             color: white;
-            padding: 20px 40px;
+            padding: 55px 40px 15px 40px;
             margin: 20px auto;
             width: 80%;
             height: 260px;
@@ -975,7 +998,7 @@
                 item.className = 'v2-answer-item';
                 item.innerHTML = `
                     <div class="v2-answer-name">${names[i]}</div>
-                    <div class="v2-answer-text">${ansArr[i] || '(Chưa có đáp án)'}</div>
+                    <div class="v2-answer-text">${ansArr[i] || ''}</div>
                 `;
                 container.appendChild(item);
             }
@@ -1049,8 +1072,10 @@
                 div.className = 'v3-answer-item';
                 div.innerHTML = `
                     <div class="v3-answer-name">${names[i]}</div>
-                    <div class="v3-answer-text">${item.ans || '(Chưa trả lời)'}</div>
-                    <div class="v3-answer-time">${item.time ? item.time + 's' : '--'}</div>
+                    <div class="v3-answer-bottom">
+                        <div class="v3-answer-text">${item.ans || ''}</div>
+                        <div class="v3-answer-time">${item.time ? item.time + 's' : '--'}</div>
+                    </div>
                 `;
                 container.appendChild(div);
             }
@@ -1086,7 +1111,7 @@
                             <div class="vqphu-name-col">${item.name}</div>
                             <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
                         </div>
-                        <div class="vqphu-ans-row">${item.ans || '(Chưa có đáp án)'}</div>
+                        <div class="vqphu-ans-row">${item.ans || ''}</div>
                     `;
                     ansContainer.appendChild(div);
                 });
