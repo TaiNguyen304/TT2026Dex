@@ -181,6 +181,10 @@
             border-radius: 8px;
             padding: 10px;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         .player-box.active { background: var(--pink); color: var(--white); }
         .score-value { font-size: 1.4rem; }
@@ -219,6 +223,14 @@
             text-align: center;
             overflow-wrap: break-word;
             white-space: pre-wrap;
+        }
+
+        #qText, #qHint, #v2qText, #v4qText {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
         }
 
         .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
@@ -263,7 +275,17 @@
 
         .v2-top { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 6px; }
         .v2-score-slot { width: 200px; }
-        .v2-player-box { background: var(--blue); color: var(--white); border-radius: 8px; padding: 10px; text-align: center; }
+        .v2-player-box {
+            background: var(--blue);
+            color: var(--white);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
         .v2-state-buttons { display: flex; gap: 8px; justify-content: center; margin-top: 8px; }
 
         .v2-board-grid {
@@ -565,7 +587,7 @@
             <div class="time-box" id="timeBox">45</div>
 
             <div class="question-box" id="questionBox">
-                <div id="qText">Nội dung câu hỏi sẽ hiển thị ở đây</div>
+                <div id="qText"></div>
                 <div id="qHint" style="margin-top:10px; color:#c2410c;"></div>
             </div>
 
@@ -634,7 +656,7 @@
 
             <div class="v2-question" id="v2QuestionBox">
                 <div class="v2-time-box" id="v2TimeBox">15</div>
-                <div id="v2qText">Chọn câu hỏi bên dưới</div>
+                <div id="v2qText"></div>
                 <div id="v2qHint" style="margin-top:8px;"></div>
             </div>
 
@@ -681,10 +703,10 @@
         <div id="view-v3" class="view-panel hidden">
             <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
                 <div id="v3Timer" class="v3-timer">30</div>
-                <div id="v3QuestionBox" class="v3-box question" onclick="v3ShowQuestion()">Bấm để hiện câu hỏi</div>
-                <div id="v3Hint1" class="v3-box" onclick="v3RevealHint(1)">Dữ kiện 1</div>
-                <div id="v3Hint2" class="v3-box" onclick="v3RevealHint(2)">Dữ kiện 2</div>
-                <div id="v3Hint3" class="v3-box" onclick="v3RevealHint(3)">Dữ kiện 3</div>
+                <div id="v3QuestionBox" class="v3-box question" onclick="v3ShowQuestion()"></div>
+                <div id="v3Hint1" class="v3-box" onclick="v3RevealHint(1)"></div>
+                <div id="v3Hint2" class="v3-box" onclick="v3RevealHint(2)"></div>
+                <div id="v3Hint3" class="v3-box" onclick="v3RevealHint(3)"></div>
                 <div class="controls">
                     <button style="background:green; color:white;" onclick="openV3Input()">Nhập đáp án</button>
                     <button style="background:purple; color:white;" onclick="openV3Show()">Hiện đáp án (Chuyển View Viewer)</button>
@@ -759,7 +781,7 @@
 
             <div class="v4-question" id="v4QuestionBox">
                 <div class="v2-time-box" id="v4TimeBox" style="margin:0;">15</div>
-                <div id="v4qText">Nội dung câu hỏi vòng Vinh quang</div>
+                <div id="v4qText"></div>
             </div>
 
             <div class="controls">
@@ -776,9 +798,7 @@
 
         <!-- VIEW 10: VQPHU (CÂU HỎI PHỤ) -->
         <div id="view-vqphu" class="view-panel hidden">
-            <div id="vqphuQuestion" style="background:var(--pink);color:white;text-align:center;font-size:1.2rem;min-height:60px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:10px;">
-                Nội dung câu hỏi phụ
-            </div>
+            <div id="vqphuQuestion" style="background:var(--pink);color:white;text-align:center;font-size:1.2rem;min-height:60px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:10px;"></div>
 
             <div id="vqphuDataArea" style="display:flex;justify-content:space-between;margin-top:10px;gap:10px;">
                 <div id="vqphuLeft" style="width:48%;display:flex;flex-direction:column;gap:8px;"></div>
@@ -986,6 +1006,7 @@
         let v2RedCells = [];
         let v2SelectedQuestionIndex = null;
         let v2Answers = ["", "", "", ""];
+        let v2PlayerColors = ['blue', 'blue', 'blue', 'blue'];
         let v2Timer = 15;
         let v2TimerInterval = null;
 
@@ -1007,6 +1028,7 @@
         let v4Time = 15;
         let v4Interval = null;
         let v4Paused = false;
+        let v4PlayerColors = ['blue', 'blue', 'blue', 'blue'];
         let v4BracketState = [0, 0, 0, 0];
         let v4PrevColors = ['blue', 'blue', 'blue', 'blue'];
 
@@ -1120,6 +1142,7 @@
                     redCells: v2RedCells,
                     selectedQuestionIndex: v2SelectedQuestionIndex,
                     answers: v2Answers,
+                    playerColors: v2PlayerColors,
                     qText: document.getElementById('v2qText')?.textContent || "",
                     time: v2Timer
                 },
@@ -1138,6 +1161,7 @@
                     index: v4Index,
                     qText: document.getElementById('v4qText')?.textContent || "",
                     time: v4Time,
+                    playerColors: v4PlayerColors,
                     bracketState: v4BracketState
                 },
                 vqphuState: {
@@ -1377,11 +1401,24 @@
             }
         }
 
+        function applyPlayerBoxColor(el, state) {
+            if (!el) return;
+            if (state === 'blue') { el.style.background = 'var(--blue)'; el.style.color = 'var(--white)'; }
+            else if (state === 'pink') { el.style.background = '#ff00cc'; el.style.color = 'var(--white)'; }
+            else if (state === 'aqua') { el.style.background = 'var(--aqua)'; el.style.color = 'var(--black)'; }
+            else if (state === 'yellow') { el.style.background = 'var(--yellow)'; el.style.color = 'var(--black)'; }
+            else if (state === 'black') { el.style.background = 'var(--black)'; el.style.color = 'var(--white)'; }
+        }
+
         function v1Reset() {
             clearInterval(timerInterval);
             timer = 45;
+            currentPlayer = null;
+            for (let j = 0; j < 4; j++) {
+                document.getElementById(`box${j}`)?.classList.remove('active');
+            }
             document.getElementById('timeBox').textContent = timer;
-            document.getElementById('qText').textContent = "Đã reset Vòng 1";
+            document.getElementById('qText').textContent = "";
             document.getElementById('qHint').textContent = "";
             stopSound('45Giay.mp3');
             sendSound('Complete Nhập cuộc.mp3');
@@ -1390,12 +1427,12 @@
 
         // V2 Controls
         function setPlayerState(pIndex, state) {
+            v2PlayerColors[pIndex] = state;
             const el = document.getElementById(`v2box${pIndex}`);
-            if (!el) return;
-            if (state === 'blue') { el.style.background = 'var(--blue)'; el.style.color = 'white'; }
-            else if (state === 'pink') { el.style.background = '#ff00cc'; el.style.color = 'white'; sendSound('Bell V2.mp3'); }
-            else if (state === 'aqua') { el.style.background = 'aqua'; el.style.color = 'black'; }
-            else if (state === 'black') { el.style.background = 'black'; el.style.color = 'white'; sendSound('Bell V2.mp3'); }
+            applyPlayerBoxColor(el, state);
+            if (state === 'pink' || state === 'black') {
+                sendSound('Bell V2.mp3');
+            }
             syncFullStateToServer();
         }
 
@@ -1455,23 +1492,57 @@
         function v2CloseQuestion() {
             clearInterval(v2TimerInterval);
             stopSound('15s Vượt Lên.mp3');
-            document.getElementById('v2qText').textContent = "Đã đóng câu hỏi";
+            document.getElementById('v2qText').textContent = "";
             v2Timer = 15;
             document.getElementById('v2TimeBox').textContent = v2Timer;
             syncFullStateToServer();
         }
 
+        function renderV2QuestionCell(container, index, questions, selectedIdx, clickHandler) {
+            if (!container) return;
+            const q = questions[index] || { used: false };
+            const el = document.createElement("div");
+            el.className = "v2-question-cell" + (q.used ? " used" : "") + (selectedIdx === index ? " selected" : "");
+            el.textContent = index + 1;
+            if (clickHandler) {
+                el.onclick = () => clickHandler(index);
+            }
+            container.appendChild(el);
+        }
+
         function renderV2QuestionsAndBoard() {
             const top = document.getElementById("v2QTop");
-            if (!top) return;
+            const left = document.getElementById("v2QLeft");
+            const right = document.getElementById("v2QRight");
+            const bottom = document.getElementById("v2QBottom");
+            if (!top || !left || !right || !bottom) return;
+
             top.innerHTML = "";
+            left.innerHTML = "";
+            right.innerHTML = "";
+            bottom.innerHTML = "";
+
+            const clickFn = (i) => {
+                v2SelectedQuestionIndex = i;
+                sendSound('ChonOCauhoi.mp3');
+                renderV2QuestionsAndBoard();
+                selectV2Question(i);
+            };
+
+            // Top: Questions 1, 2, 3 (indices 0, 1, 2)
             for (let i = 0; i < 3; i++) {
-                const q = v2Questions[i] || { used: false };
-                const el = document.createElement("div");
-                el.className = "v2-question-cell" + (q.used ? " used" : "") + (v2SelectedQuestionIndex === i ? " selected" : "");
-                el.textContent = i + 1;
-                el.onclick = () => { v2SelectedQuestionIndex = i; sendSound('ChonOCauhoi.mp3'); renderV2QuestionsAndBoard(); selectV2Question(i); };
-                top.appendChild(el);
+                renderV2QuestionCell(top, i, v2Questions, v2SelectedQuestionIndex, clickFn);
+            }
+
+            // Left: Question 8 (index 7)
+            renderV2QuestionCell(left, 7, v2Questions, v2SelectedQuestionIndex, clickFn);
+
+            // Right: Question 4 (index 3)
+            renderV2QuestionCell(right, 3, v2Questions, v2SelectedQuestionIndex, clickFn);
+
+            // Bottom: Questions 7, 6, 5 (indices 6, 5, 4)
+            for (let i = 6; i >= 4; i--) {
+                renderV2QuestionCell(bottom, i, v2Questions, v2SelectedQuestionIndex, clickFn);
             }
 
             const grid = document.getElementById("v2BoardGrid");
@@ -1529,7 +1600,7 @@
             const q = v3Data[v3Current];
             if (!q) return;
             const el = document.getElementById(`v3Hint${i}`);
-            el.textContent = q[`g${i}`] || `Dữ kiện ${i}`;
+            el.textContent = q[`g${i}`] || "";
             el.classList.add('revealed');
             syncFullStateToServer();
         }
@@ -1612,17 +1683,16 @@
 
         // V4 Controls
         function v4SetPlayerState(pIndex, state) {
+            v4PlayerColors[pIndex] = state;
             const el = document.getElementById(`v4box${pIndex}`);
-            if (!el) return;
-            if (state === 'blue') { el.style.background = 'var(--blue)'; el.style.color = 'white'; }
-            else if (state === 'yellow') { el.style.background = 'yellow'; el.style.color = 'black'; sendSound('Star.mp3'); }
+            applyPlayerBoxColor(el, state);
+            if (state === 'yellow') sendSound('Star.mp3');
             else if (state === 'pink') {
-                el.style.background = '#ff00cc'; el.style.color = 'white'; sendSound('Chuông V4.mp3');
+                sendSound('Chuông V4.mp3');
                 if (v4PrevColors[pIndex] === 'yellow') {
                     v4BracketState[pIndex] = (v4BracketState[pIndex] + 1) % 3;
                 }
             }
-            else if (state === 'black') { el.style.background = 'black'; el.style.color = 'white'; }
             v4PrevColors[pIndex] = state;
             syncFullStateToServer();
         }
