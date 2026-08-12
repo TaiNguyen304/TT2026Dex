@@ -479,7 +479,7 @@
         <span>Giao diện Graphic trên Viewer:</span>
         <button id="graphicToggleBtn" class="btn-graphic" onclick="toggleGraphicCurrentView()">Graphic: HIỆN</button>
         <span id="currentViewStatus" class="status-badge">View hiện tại: Mở đầu</span>
-        <a href="/Viewer.html" target="_blank" style="color:yellow; text-decoration:underline; font-size:0.9rem;">Mở Cửa Sổ Viewer (Sân Sân) ↗</a>
+        <a href="https://tt2026dex.onrender.com/Viewer.html" id="viewerLink" target="_blank" style="color:yellow; text-decoration:underline; font-size:0.9rem;">Mở Cửa Sổ Viewer (OnRender) ↗</a>
     </div>
 
     <div class="modal-backdrop" id="optionModal">
@@ -944,7 +944,19 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <script>
-        const socket = io();
+        const socketHost = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.includes('file://'))
+          ? window.location.origin
+          : 'https://tt2026dex.onrender.com';
+        const socket = io(socketHost, { transports: ['websocket', 'polling'] });
+
+        // Update viewer link to match current host if not local
+        if (window.location.hostname && !window.location.hostname.includes('tt2026dex.onrender.com')) {
+          const vLink = document.getElementById('viewerLink');
+          if (vLink) {
+            vLink.href = `${window.location.origin}/Viewer.html`;
+            vLink.textContent = `Mở Cửa Sổ Viewer ↗`;
+          }
+        }
 
         // Application State
         let currentView = 'opening';

@@ -111,11 +111,15 @@ let gameState = {
 // Middleware & Static Files
 app.use(express.static(__dirname));
 
-app.get('/controller', (req, res) => {
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'Controller.html'));
 });
 
-app.get('/viewer', (req, res) => {
+app.get(['/Controller.html', '/Controller', '/controller'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'Controller.html'));
+});
+
+app.get(['/Viewer.html', '/Viewer', '/viewer'], (req, res) => {
   res.sendFile(path.join(__dirname, 'Viewer.html'));
 });
 
