@@ -89,12 +89,19 @@
             font-size: 2.4rem;
         }
 
+        #view-players {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         .players-list {
             display: flex;
             flex-direction: column;
             gap: 24px;
             align-items: center;
             padding: 20px 0;
+            overflow-x: hidden;
+            width: 100%;
         }
 
         .player-card {
@@ -113,6 +120,25 @@
             background-size: 100% 110%;
             background-position: center 60%;
             background-repeat: no-repeat;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease;
+        }
+
+        /* Slide animations for Player Cards: P1 & P3 from Left, P2 & P4 from Right */
+        .players-list .player-card.card-p0,
+        .players-list .player-card.card-p2 {
+            transform: translateX(-150vw);
+            opacity: 0;
+        }
+
+        .players-list .player-card.card-p1,
+        .players-list .player-card.card-p3 {
+            transform: translateX(150vw);
+            opacity: 0;
+        }
+
+        .players-list .player-card.visible {
+            transform: translateX(0) !important;
+            opacity: 1 !important;
         }
 
         .players-list .player-card:nth-child(1) { background-image: url('Player1.png'); }
@@ -169,6 +195,15 @@
             text-align: center;
             overflow-wrap: break-word;
             white-space: pre-wrap;
+            transform-origin: center;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+        }
+
+        .graphics-off #questionBox,
+        #questionBox.v1-graphic-hidden {
+            transform: scaleX(0);
+            opacity: 0;
+            pointer-events: none;
         }
 
         #qText, #qHint, #v2qText, #v4qText {
@@ -231,6 +266,29 @@
             z-index: 100;
         }
 
+        /* Keyframe animations for V2 & V3 Answers views */
+        @keyframes floatUpFromBottom {
+            0% {
+                transform: translateY(150px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                transform: translateX(100vw);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         /* VIEW: V2 ANSWERS SEPARATE */
         .v2-answers-container {
             display: flex;
@@ -249,6 +307,7 @@
             height: auto;
             object-fit: contain;
             flex-shrink: 0;
+            animation: floatUpFromBottom 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .v2-answers-list {
@@ -263,6 +322,7 @@
             flex-direction: column;
             align-items: flex-start;
             width: 780px;
+            animation: slideInFromRight 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .v2-answer-name {
@@ -374,9 +434,18 @@
             border-radius: 12px;
             padding: 14px;
             border: 3px solid black;
+            transform-origin: center;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
         }
         .v3-box.question { background: var(--red); }
         .v3-box.revealed { background: var(--blue); }
+
+        .graphics-off .v3-box,
+        .v3-box.v3-graphic-hidden {
+            transform: scaleX(0);
+            opacity: 0;
+            pointer-events: none;
+        }
 
         /* VIEW: V3 ANSWERS SEPARATE */
         .v3-answers-container {
@@ -396,6 +465,7 @@
             height: auto;
             object-fit: contain;
             flex-shrink: 0;
+            animation: floatUpFromBottom 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .v3-answers-list {
@@ -410,6 +480,7 @@
             flex-direction: column;
             align-items: flex-start;
             width: 780px;
+            animation: slideInFromRight 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .v3-answer-name {
@@ -462,10 +533,14 @@
         }
 
         /* VIEW: V4 (VINH QUANG) */
+        #v4Top {
+            margin-bottom: 35px;
+        }
+
         .v4-question {
             color: white;
             padding: 55px 40px 15px 40px;
-            margin: 20px auto;
+            margin: 25px auto 20px auto;
             width: 80%;
             height: 260px;
             font-size: 20px;
@@ -911,9 +986,10 @@
             const playersList = document.getElementById('playersListArea');
             if (playersList) {
                 playersList.innerHTML = '';
+                const pVis = state.playerVisibility || [false, false, false, false];
                 for (let i = 0; i < 4; i++) {
                     const card = document.createElement('div');
-                    card.className = 'player-card';
+                    card.className = `player-card card-p${i}` + (pVis[i] ? ' visible' : '');
                     card.textContent = names[i];
                     playersList.appendChild(card);
                 }
@@ -921,7 +997,17 @@
 
             // V1 State
             if (state.v1State) {
-                if (document.getElementById('timeBox')) document.getElementById('timeBox').textContent = state.v1State.time;
+                const timeBox = document.getElementById('timeBox');
+                if (timeBox) {
+                    timeBox.textContent = state.v1State.time;
+                    if (state.v1State.isEnded) {
+                        timeBox.style.background = '#000000';
+                        timeBox.style.color = '#ffffff';
+                    } else {
+                        timeBox.style.background = 'var(--blue)';
+                        timeBox.style.color = 'var(--white)';
+                    }
+                }
                 if (document.getElementById('qText')) document.getElementById('qText').textContent = state.v1State.qText || "";
                 if (document.getElementById('qHint')) document.getElementById('qHint').textContent = state.v1State.qHint || "";
 
@@ -939,7 +1025,14 @@
 
             // V2 State
             if (state.v2State) {
-                if (document.getElementById('v2TimeBox')) document.getElementById('v2TimeBox').textContent = state.v2State.time;
+                const v2TimeBox = document.getElementById('v2TimeBox');
+                if (v2TimeBox) {
+                    const t = state.v2State.time !== undefined ? state.v2State.time : 15;
+                    v2TimeBox.textContent = t;
+                    const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
+                    v2TimeBox.style.background = `linear-gradient(to bottom, #ff00cc ${pct}%, var(--blue) ${pct}%)`;
+                    v2TimeBox.style.color = 'var(--white)';
+                }
                 if (document.getElementById('v2qText')) document.getElementById('v2qText').textContent = state.v2State.qText || "";
 
                 if (state.v2State.playerColors) {
@@ -958,7 +1051,24 @@
 
             // V3 State
             if (state.v3State) {
-                if (document.getElementById('v3Timer')) document.getElementById('v3Timer').textContent = state.v3State.time;
+                const v3Timer = document.getElementById('v3Timer');
+                if (v3Timer) {
+                    const t = state.v3State.time !== undefined ? state.v3State.time : 30;
+                    v3Timer.textContent = t;
+                    if (t > 20) {
+                        v3Timer.style.background = 'var(--blue)';
+                        v3Timer.style.color = 'white';
+                        v3Timer.style.fontWeight = 'bold';
+                    } else if (t > 10) {
+                        v3Timer.style.background = 'var(--yellow)';
+                        v3Timer.style.color = 'black';
+                        v3Timer.style.fontWeight = 'bold';
+                    } else {
+                        v3Timer.style.background = 'var(--red)';
+                        v3Timer.style.color = 'white';
+                        v3Timer.style.fontWeight = 'bold';
+                    }
+                }
                 if (document.getElementById('v3QuestionBox')) document.getElementById('v3QuestionBox').textContent = state.v3State.qText || "";
                 if (state.v3State.hints) {
                     for (let h = 1; h <= 3; h++) {
@@ -973,7 +1083,14 @@
 
             // V4 State
             if (state.v4State) {
-                if (document.getElementById('v4TimeBox')) document.getElementById('v4TimeBox').textContent = state.v4State.time;
+                const v4TimeBox = document.getElementById('v4TimeBox');
+                if (v4TimeBox) {
+                    const t = state.v4State.time !== undefined ? state.v4State.time : 15;
+                    v4TimeBox.textContent = t;
+                    const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
+                    v4TimeBox.style.background = `linear-gradient(to bottom, #ff00cc ${pct}%, var(--blue) ${pct}%)`;
+                    v4TimeBox.style.color = 'var(--white)';
+                }
                 if (document.getElementById('v4qText')) document.getElementById('v4qText').textContent = state.v4State.qText || "";
 
                 if (state.v4State.playerColors) {

@@ -276,6 +276,7 @@
         .btn-close { background: var(--red); color: var(--white); }
 
         .v2-top { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 6px; }
+        #v4Top { margin-bottom: 28px; }
         .v2-score-slot { width: 200px; }
         .v2-player-box {
             background: var(--blue);
@@ -539,6 +540,13 @@
         <div id="view-players" class="view-panel hidden">
             <h2 id="matchNameDisplay" class="match-name-header">THỬ THÁCH 2026 - LƯỢT X(BẢNG Y)</h2>
             <div class="players-list" id="playersListArea"></div>
+            <div class="controls" style="margin-top:20px; justify-content:center; gap:12px; flex-wrap:wrap;">
+                <button id="btnToggleP0" style="background:var(--blue); color:white;" onclick="togglePlayerVisibility(0)">Hiện Player 1</button>
+                <button id="btnToggleP1" style="background:var(--blue); color:white;" onclick="togglePlayerVisibility(1)">Hiện Player 2</button>
+                <button id="btnToggleP2" style="background:var(--blue); color:white;" onclick="togglePlayerVisibility(2)">Hiện Player 3</button>
+                <button id="btnToggleP3" style="background:var(--blue); color:white;" onclick="togglePlayerVisibility(3)">Hiện Player 4</button>
+                <button style="background:var(--red); color:white;" onclick="hideAllPlayers()">Ẩn tất cả</button>
+            </div>
         </div>
 
         <!-- VIEW 3: V1 (NHẬP CUỘC) -->
@@ -600,6 +608,8 @@
                 <button id="wrongBtn" class="btn-wrong" onclick="v1Wrong()">Sai</button>
                 <button id="pauseBtn" class="btn-pause" onclick="v1Pause()">Tạm dừng</button>
                 <button id="resetBtn" class="btn-reset" onclick="v1Reset()">Reset</button>
+                <button style="background:purple; color:white;" onclick="setV1Graphic(true)">Hiện graphic câu hỏi</button>
+                <button style="background:black; color:white;" onclick="setV1Graphic(false)">Ẩn graphic câu hỏi</button>
             </div>
         </div>
 
@@ -710,6 +720,8 @@
                 <div id="v3Hint2" class="v3-box" onclick="v3RevealHint(2)"></div>
                 <div id="v3Hint3" class="v3-box" onclick="v3RevealHint(3)"></div>
                 <div class="controls">
+                    <button style="background:purple; color:white;" onclick="setV3Graphic(true)">Hiện Graphic</button>
+                    <button style="background:black; color:white;" onclick="setV3Graphic(false)">Ẩn Graphic</button>
                     <button style="background:green; color:white;" onclick="openV3Input()">Nhập đáp án</button>
                     <button style="background:purple; color:white;" onclick="openV3Show()">Hiện đáp án (Chuyển View Viewer)</button>
                     <button style="background:#39ff14; color:black;" onclick="v3Start()">Bắt đầu (30s)</button>
@@ -1063,6 +1075,47 @@
             };
         });
 
+        let playerVisibility = [false, false, false, false];
+
+        function togglePlayerVisibility(idx) {
+            playerVisibility[idx] = !playerVisibility[idx];
+            updatePlayerVisibilityButtons();
+            syncFullStateToServer();
+        }
+
+        function hideAllPlayers() {
+            playerVisibility = [false, false, false, false];
+            updatePlayerVisibilityButtons();
+            syncFullStateToServer();
+        }
+
+        function updatePlayerVisibilityButtons() {
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`btnToggleP${i}`);
+                if (btn) {
+                    if (playerVisibility[i]) {
+                        btn.textContent = `Ẩn Player ${i + 1}`;
+                        btn.style.background = 'var(--pink)';
+                    } else {
+                        btn.textContent = `Hiện Player ${i + 1}`;
+                        btn.style.background = 'var(--blue)';
+                    }
+                }
+            }
+        }
+
+        function setV1Graphic(visible) {
+            viewGraphics.v1 = visible;
+            socket.emit('toggleGraphic', { view: 'v1', visible: visible });
+            syncFullStateToServer();
+        }
+
+        function setV3Graphic(visible) {
+            viewGraphics.v3 = visible;
+            socket.emit('toggleGraphic', { view: 'v3', visible: visible });
+            syncFullStateToServer();
+        }
+
         function switchView(view) {
             if (currentView !== view && (view === 'v2_answers' || view === 'v3_answers')) {
                 sendSound('AnswersShowing.mp3');
@@ -1079,8 +1132,14 @@
 
             document.getElementById('currentViewStatus').textContent = `View hiện tại: ${getPrettyViewName(view)}`;
 
+            // Reset player visibility on switching to players view
+            if (view === 'players') {
+                playerVisibility = [false, false, false, false];
+                updatePlayerVisibilityButtons();
+                renderPlayerList();
+            }
+
             // Render specific subviews
-            if (view === 'players') renderPlayerList();
             if (view === 'v2_answers') renderV2AnswersPreview();
             if (view === 'v2_board') renderV2QuestionsAndBoard();
             if (view === 'v3_answers') renderV3AnswersPreview();
@@ -1133,12 +1192,14 @@
                 matchName,
                 playerNames,
                 playerScores,
+                playerVisibility,
                 v1State: {
                     currentPlayer,
                     questionIndex,
                     qText: document.getElementById('qText')?.textContent || "",
                     qHint: document.getElementById('qHint')?.textContent || "",
-                    time: timer
+                    time: timer,
+                    isEnded: isV1Ended
                 },
                 v2State: {
                     questions: v2Questions,
@@ -1306,13 +1367,50 @@
         }
 
         // V1 Controls
+        let isV1Ended = false;
+
+        function checkAndTriggerV1End() {
+            if (currentPlayer === null) return false;
+            const qCountReached = questionIndex[currentPlayer] >= 8;
+            const timeOut = timer <= 0;
+            const scoreNeg = playerScores[currentPlayer] < 0;
+
+            if (qCountReached || timeOut || scoreNeg) {
+                isV1Ended = true;
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                stopSound('45Giay.mp3');
+                updateV1ClockDisplay();
+                return true;
+            }
+            return false;
+        }
+
+        function updateV1ClockDisplay() {
+            const timeBox = document.getElementById('timeBox');
+            if (!timeBox) return;
+            timeBox.textContent = timer;
+            if (isV1Ended || timer <= 0 || (currentPlayer !== null && (questionIndex[currentPlayer] >= 8 || playerScores[currentPlayer] < 0))) {
+                timeBox.style.background = '#000000';
+                timeBox.style.color = '#ffffff';
+                isV1Ended = true;
+            } else {
+                timeBox.style.background = 'var(--blue)';
+                timeBox.style.color = 'var(--white)';
+            }
+        }
+
         function setTurn(i) {
             currentPlayer = i;
+            isV1Ended = false;
             for (let j = 0; j < 4; j++) {
                 document.getElementById(`box${j}`).classList.remove('active');
             }
             document.getElementById(`box${i}`).classList.add('active');
             hintUsedForCurrent = false;
+            updateV1ClockDisplay();
             syncFullStateToServer();
         }
 
@@ -1324,8 +1422,9 @@
 
         function v1Start() {
             if (currentPlayer === null) return showPopup("Chưa chọn người chơi có lượt!");
+            isV1Ended = false;
             timer = 45;
-            document.getElementById('timeBox').textContent = timer;
+            updateV1ClockDisplay();
             questionIndex[currentPlayer] = 0;
             showV1Question();
             startV1Timer();
@@ -1336,10 +1435,9 @@
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timer--;
-                document.getElementById('timeBox').textContent = timer;
+                updateV1ClockDisplay();
                 if (timer <= 0) {
-                    clearInterval(timerInterval);
-                    stopSound('45Giay.mp3');
+                    checkAndTriggerV1End();
                 }
                 syncFullStateToServer();
             }, 1000);
@@ -1355,6 +1453,7 @@
 
         function v1Hint() {
             if (currentPlayer === null) return;
+            if (isV1Ended) return showPopup("Lượt chơi đã kết thúc!");
             hintUsedForCurrent = true;
             const q = round1Data[currentPlayer][questionIndex[currentPlayer]];
             const hintText = q && q.hint ? q.hint : "";
@@ -1365,21 +1464,33 @@
 
         function v1Correct() {
             if (currentPlayer === null) return;
+            if (isV1Ended) return showPopup("Lượt chơi đã kết thúc!");
             const gain = hintUsedForCurrent ? 5 : 10;
             playerScores[currentPlayer] += gain;
             updateDisplayedScores();
             sendSound('Dung V1.mp3');
             hintUsedForCurrent = false;
-            nextV1Question();
+
+            if (checkAndTriggerV1End()) {
+                syncFullStateToServer();
+            } else {
+                nextV1Question();
+            }
         }
 
         function v1Wrong() {
             if (currentPlayer === null) return;
-            playerScores[currentPlayer] = Math.max(0, playerScores[currentPlayer] - 10);
+            if (isV1Ended) return showPopup("Lượt chơi đã kết thúc!");
+            playerScores[currentPlayer] = playerScores[currentPlayer] - 10;
             updateDisplayedScores();
             sendSound('Sai V1.mp3');
             hintUsedForCurrent = false;
-            nextV1Question();
+
+            if (checkAndTriggerV1End()) {
+                syncFullStateToServer();
+            } else {
+                nextV1Question();
+            }
         }
 
         function nextV1Question() {
@@ -1387,8 +1498,7 @@
             hintUsedForCurrent = false;
             document.getElementById('qHint').textContent = "";
             if (questionIndex[currentPlayer] >= 8) {
-                clearInterval(timerInterval);
-                stopSound('45Giay.mp3');
+                checkAndTriggerV1End();
             } else {
                 showV1Question();
             }
