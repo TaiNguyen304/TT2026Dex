@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Thử Thách 2026 - Viewer (Màn Hình Hiển Thị)</title>
+    <style>
+        :root {
+            --blue: blue;
+            --aqua: aqua;
+            --yellow: yellow;
+            --green: green;
+            --red: red;
+            --pink: #ff00cc;
+            --purple: purple;
+            --lime: #39ff14;
+            --orange: orange;
+            --black: #000000;
+            --white: #ffffff;
+        }
+
+        @font-face {
+            font-family: 'Noto Sans Black';
+            src: url('NotoSans-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Noto Sans Black', sans-serif !important;
+            font-weight: bold !important;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: rgb(0, 179, 102);
+            color: #111;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        #main {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Graphic Off State */
+        .graphics-off {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: opacity 0.3s ease;
+        }
+
+        .hidden { display: none !important; }
+
+        /* VIEW: OPENING */
+        .opening-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 70vh;
+            text-align: center;
+        }
+
+        .opening-title { font-size: 2.8rem; margin-bottom: 20px; }
+        .opening-subtitle { font-size: 2.5rem; color: #000; }
+
+        /* VIEW: PLAYERS LIST */
+        .match-name-header {
+            text-align: center;
+            font-weight: bold;
+            color: black;
+            margin-bottom: 20px;
+            font-size: 2.4rem;
+        }
+
+        .players-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .player-card {
+            color: var(--white);
+            font-weight: bold;
+            width: 75%;
+            height: 100px;
+            font-size: 26px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-size: 100% 110%;
+            background-position: center 60%;
+            background-repeat: no-repeat;
+        }
+
+        .players-list .player-card:nth-child(1) { background-image: url('Player1.png'); }
+        .players-list .player-card:nth-child(2) { background-image: url('Player2.png'); }
+        .players-list .player-card:nth-child(3) { background-image: url('Player3.png'); }
+        .players-list .player-card:nth-child(4) { background-image: url('Player4.png'); }
+
+        /* VIEW: V1 (NHẬP CUỘC) */
+        .v1-top { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .score-slot { width: 180px; }
+        .player-box {
+            background: var(--blue);
+            color: var(--white);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .player-box.active { background: var(--pink); color: var(--white); }
+        .score-name { font-size: 1.1rem; margin-bottom: 4px; }
+        .score-value { font-size: 1.8rem; }
+
+        .time-box {
+            width: 100px;
+            height: 60px;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 2.2rem;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-box {
+            background: #39ff14;
+            color: black;
+            border: 3px solid black;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px auto;
+            width: 80%;
+            min-height: 240px;
+            font-size: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        /* VIEW: V2 (VƯỢT LÊN MAIN) */
+        .v2-top { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 12px; }
+        .v2-score-slot { width: 220px; }
+        .v2-player-box {
+            background: var(--blue);
+            color: var(--white);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .v2-question {
+            position: relative;
+            color: white;
+            padding: 20px 40px;
+            margin: 40px auto 20px auto;
+            width: 80%;
+            height: 280px;
+            font-size: 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-image: url('v2questionbox.png');
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .v2-time-box {
+            width: 110px;
+            height: 110px;
+            border: 4px solid white;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 2.6rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        /* VIEW: V2 ANSWERS SEPARATE */
+        .v2-answers-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            max-width: 950px;
+            margin: 20px auto;
+        }
+
+        .v2-answers-side-img {
+            width: 120px;
+            height: 420px;
+            background-image: url('Vượt lên.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            flex-shrink: 0;
+        }
+
+        .v2-answers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .v2-answer-item {
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .v2-answer-name {
+            background: var(--blue);
+            color: var(--white);
+            padding: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .v2-answer-text {
+            background: var(--aqua);
+            color: var(--black);
+            padding: 12px;
+            font-size: 1.3rem;
+            text-align: center;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* VIEW: V2 BOARD SEPARATE */
+        .v2-board-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .v2-board-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 52px);
+            gap: 8px;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .v2-board-cell {
+            width: 52px;
+            height: 52px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            background: var(--blue);
+            color: var(--white);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .v2-questions-top, .v2-questions-bottom { display: flex; gap: 10px; justify-content: center; margin: 10px 0; }
+        .v2-questions-middle { display: flex; align-items: center; gap: 16px; justify-content: center; }
+        .v2-question-cell {
+            width: 120px;
+            height: 48px;
+            border-radius: 8px;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .v2-question-cell.selected { background: var(--aqua); color: var(--black); }
+        .v2-question-cell.used { background: var(--black); color: var(--white); }
+
+        /* VIEW: V3 (ĐỐI ĐẦU MAIN) */
+        .v3-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .v3-timer {
+            background: var(--blue);
+            color: var(--white);
+            width: 110px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+        }
+
+        .v3-box {
+            width: 85%;
+            min-height: 90px;
+            background: var(--purple);
+            color: var(--white);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 12px;
+            padding: 14px;
+            border: 3px solid black;
+        }
+        .v3-box.question { background: var(--red); }
+        .v3-box.revealed { background: var(--blue); }
+
+        /* VIEW: V3 ANSWERS SEPARATE */
+        .v3-answers-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            max-width: 950px;
+            margin: 20px auto;
+        }
+
+        .v3-answers-side-img {
+            width: 120px;
+            height: 420px;
+            background-image: url('Đối đầu.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            flex-shrink: 0;
+        }
+
+        .v3-answers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .v3-answer-item {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            grid-template-rows: 48px 52px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .v3-answer-name {
+            grid-column: 1;
+            grid-row: 1;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .v3-answer-text {
+            grid-column: 1;
+            grid-row: 2;
+            background: var(--aqua);
+            color: var(--black);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .v3-answer-time {
+            grid-column: 2;
+            grid-row: 2;
+            background: var(--pink);
+            color: var(--white);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* VIEW: V4 (VINH QUANG) */
+        .v4-question {
+            color: white;
+            padding: 20px 40px;
+            margin: 20px auto;
+            width: 80%;
+            height: 260px;
+            font-size: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-image: url('v4questionbox.png');
+            background-size: 100% 100%;
+            position: relative;
+        }
+
+        /* VIEW: SCOREBOARD FULL SCREEN LEADERBOARD */
+        .scoreboard-view-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        .scoreboard-grid {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .score-card-viewer {
+            background: var(--blue);
+            color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            width: 230px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .score-card-name {
+            font-size: 1.6rem;
+            color: var(--aqua);
+            margin-bottom: 16px;
+        }
+
+        .score-card-value {
+            font-size: 3.5rem;
+            background: var(--pink);
+            color: var(--white);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        /* VIEW: VQPHU ANSWERS SEPARATE */
+        .vqphu-item-viewer {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+            border: 2px solid var(--blue);
+        }
+
+        .vqphu-top-row {
+            display: flex;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 1.2rem;
+            height: 48px;
+        }
+
+        .vqphu-name-col {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .vqphu-time-col {
+            width: 140px;
+            background: var(--pink);
+            text-align: center;
+            padding: 10px;
+        }
+
+        .vqphu-ans-row {
+            background: var(--aqua);
+            color: var(--black);
+            padding: 14px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <!-- VIEW 1: OPENING -->
+        <div id="view-opening" class="view-panel">
+            <div class="opening-screen">
+                <div class="opening-title">CHÀO MỪNG ĐẾN VỚI CHƯƠNG TRÌNH</div>
+                <div class="opening-subtitle">THỬ THÁCH 2026 - DEX VERSION</div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: PLAYERS LIST -->
+        <div id="view-players" class="view-panel hidden">
+            <h2 id="matchNameDisplay" class="match-name-header">THỬ THÁCH 2026</h2>
+            <div class="players-list" id="playersListArea"></div>
+        </div>
+
+        <!-- VIEW 3: V1 (NHẬP CUỘC) -->
+        <div id="view-v1" class="view-panel hidden">
+            <div class="v1-top" id="v1Top">
+                <div class="score-slot">
+                    <div class="player-box" id="box0">
+                        <div class="score-name" id="name0">Người 1</div>
+                        <div class="score-value" id="score0">30</div>
+                    </div>
+                </div>
+                <div class="score-slot">
+                    <div class="player-box" id="box1">
+                        <div class="score-name" id="name1">Người 2</div>
+                        <div class="score-value" id="score1">30</div>
+                    </div>
+                </div>
+                <div class="score-slot">
+                    <div class="player-box" id="box2">
+                        <div class="score-name" id="name2">Người 3</div>
+                        <div class="score-value" id="score2">30</div>
+                    </div>
+                </div>
+                <div class="score-slot">
+                    <div class="player-box" id="box3">
+                        <div class="score-name" id="name3">Người 4</div>
+                        <div class="score-value" id="score3">30</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="time-box" id="timeBox">45</div>
+
+            <div class="question-box" id="questionBox">
+                <div id="qText"></div>
+                <div id="qHint" style="margin-top:12px; color:#c2410c;"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 4: V2 (VƯỢT LÊN MAIN) -->
+        <div id="view-v2" class="view-panel hidden">
+            <div class="v2-top" id="v2Top">
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2box0">
+                        <div class="score-name" id="v2name0">Người 1</div>
+                        <div class="score-value" id="v2score0">30</div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2box1">
+                        <div class="score-name" id="v2name1">Người 2</div>
+                        <div class="score-value" id="v2score1">30</div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2box2">
+                        <div class="score-name" id="v2name2">Người 3</div>
+                        <div class="score-value" id="v2score2">30</div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2box3">
+                        <div class="score-name" id="v2name3">Người 4</div>
+                        <div class="score-value" id="v2score3">30</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="v2-question" id="v2QuestionBox">
+                <div class="v2-time-box" id="v2TimeBox">15</div>
+                <div id="v2qText"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 5: V2 ANSWERS SEPARATE VIEW -->
+        <div id="view-v2_answers" class="view-panel hidden">
+            <div class="v2-answers-container">
+                <div class="v2-answers-side-img"></div>
+                <div class="v2-answers-list" id="v2AnswersListViewer"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 6: V2 BOARD SEPARATE VIEW -->
+        <div id="view-v2_board" class="view-panel hidden">
+            <div class="v2-board-container">
+                <div class="v2-questions-top" id="v2QTopViewer"></div>
+                <div class="v2-questions-middle">
+                    <div id="v2QLeftViewer"></div>
+                    <div id="v2BoardGridViewer" class="v2-board-grid"></div>
+                    <div id="v2QRightViewer"></div>
+                </div>
+                <div class="v2-questions-bottom" id="v2QBottomViewer"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 7: V3 (ĐỐI ĐẦU MAIN) -->
+        <div id="view-v3" class="view-panel hidden">
+            <div class="v3-container">
+                <div id="v3Timer" class="v3-timer">30</div>
+                <div id="v3QuestionBox" class="v3-box question"></div>
+                <div id="v3Hint1" class="v3-box"></div>
+                <div id="v3Hint2" class="v3-box"></div>
+                <div id="v3Hint3" class="v3-box"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 8: V3 ANSWERS SEPARATE VIEW -->
+        <div id="view-v3_answers" class="view-panel hidden">
+            <div class="v3-answers-container">
+                <div class="v3-answers-side-img"></div>
+                <div class="v3-answers-list" id="v3AnswersListViewer"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 9: V4 (VINH QUANG) -->
+        <div id="view-v4" class="view-panel hidden">
+            <div class="v2-top" id="v4Top">
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v4box0">
+                        <div class="score-name" id="v4name0">Người 1</div>
+                        <div class="score-value" id="v4score0">30</div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v4box1">
+                        <div class="score-name" id="v4name1">Người 2</div>
+                        <div class="score-value" id="v4score1">30</div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v4box2">
+                        <div class="score-name" id="v4name2">Người 3</div>
+                        <div class="score-value" id="v4score2">30</div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v4box3">
+                        <div class="score-name" id="v4name3">Người 4</div>
+                        <div class="score-value" id="v4score3">30</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="v4-question" id="v4QuestionBox">
+                <div class="v2-time-box" id="v4TimeBox" style="margin:0;">15</div>
+                <div id="v4qText"></div>
+            </div>
+        </div>
+
+        <!-- VIEW 10: VQPHU (CÂU HỎI PHỤ MAIN) -->
+        <div id="view-vqphu" class="view-panel hidden">
+            <div id="vqphuQuestion" style="background:var(--pink);color:white;text-align:center;font-size:1.4rem;min-height:70px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:12px;"></div>
+
+            <div id="vqphuDataArea" style="display:flex;justify-content:space-between;margin-top:16px;gap:16px;">
+                <div id="vqphuLeft" style="width:48%;display:flex;flex-direction:column;gap:10px;"></div>
+                <div id="vqphuRight" style="width:48%;display:flex;flex-direction:column;gap:10px;"></div>
+            </div>
+
+            <div class="v2-time-box" id="vqphuTimeBox" style="position:relative !important; top:auto !important; left:auto !important; transform:none !important; margin:20px auto 0 auto;">
+                20
+            </div>
+        </div>
+
+        <!-- VIEW 11: VQPHU ANSWERS SEPARATE VIEW -->
+        <div id="view-vqphu_answers" class="view-panel hidden">
+            <h2 style="text-align:center; font-size:2rem; margin-bottom:20px;">ĐÁP ÁN CÂU HỎI PHỤ</h2>
+            <div id="vqphuAnswersListViewer" style="max-width:800px; margin:0 auto;"></div>
+        </div>
+
+        <!-- VIEW 12: SCOREBOARD SEPARATE VIEW -->
+        <div id="view-scoreboard" class="view-panel hidden">
+            <h1 class="scoreboard-view-title">BẢNG ĐIỂM XẾP HẠNG</h1>
+            <div class="scoreboard-grid" id="scoreboardGridFull"></div>
+        </div>
+    </div>
+
+    <!-- SOCKET.IO CLIENT & AUDIO PLAYER LOGIC -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        const socket = io();
+
+        // Audio Objects Cache
+        const audioCache = {};
+
+        function getAudio(soundName) {
+            if (!audioCache[soundName]) {
+                audioCache[soundName] = new Audio(soundName);
+            }
+            return audioCache[soundName];
+        }
+
+        function playSound(soundName) {
+            try {
+                const audio = getAudio(soundName);
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log(`[Audio Play Error] ${soundName}:`, e));
+            } catch (err) {
+                console.error("Audio error:", err);
+            }
+        }
+
+        function stopSound(soundName) {
+            try {
+                if (audioCache[soundName]) {
+                    audioCache[soundName].pause();
+                    audioCache[soundName].currentTime = 0;
+                }
+            } catch (err) {}
+        }
+
+        function stopAllSounds() {
+            Object.keys(audioCache).forEach(k => {
+                try {
+                    audioCache[k].pause();
+                    audioCache[k].currentTime = 0;
+                } catch(e) {}
+            });
+        }
+
+        // Socket Audio Events
+        socket.on('playAudio', (data) => {
+            if (typeof data === 'string') {
+                playSound(data);
+            } else if (data && data.name) {
+                playSound(data.name);
+            }
+        });
+
+        socket.on('stopAudio', (soundName) => {
+            stopSound(soundName);
+        });
+
+        socket.on('stopAllAudio', () => {
+            stopAllSounds();
+        });
+
+        // View Sync
+        socket.on('viewChanged', (viewName) => {
+            switchViewerScreen(viewName);
+        });
+
+        // Full State Sync
+        socket.on('initState', (state) => {
+            applyStateToViewer(state);
+        });
+
+        socket.on('stateUpdated', (state) => {
+            applyStateToViewer(state);
+        });
+
+        socket.on('graphicToggled', (viewGraphics) => {
+            applyGraphicVisibility(viewGraphics);
+        });
+
+        let currentActiveView = 'opening';
+        let currentViewGraphics = {};
+
+        function switchViewerScreen(view) {
+            currentActiveView = view;
+            document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
+            const target = document.getElementById(`view-${view}`);
+            if (target) target.classList.remove('hidden');
+
+            applyGraphicVisibility(currentViewGraphics);
+        }
+
+        function applyGraphicVisibility(viewGraphics) {
+            if (!viewGraphics) return;
+            currentViewGraphics = viewGraphics;
+            const mainBox = document.getElementById('main');
+            const isVisible = viewGraphics[currentActiveView] !== false;
+
+            if (isVisible) {
+                mainBox.classList.remove('graphics-off');
+            } else {
+                mainBox.classList.add('graphics-off');
+            }
+        }
+
+        function applyStateToViewer(state) {
+            if (!state) return;
+
+            // View switch
+            if (state.currentView) {
+                switchViewerScreen(state.currentView);
+            }
+
+            // Graphic toggle
+            if (state.viewGraphics) {
+                applyGraphicVisibility(state.viewGraphics);
+            }
+
+            // Match Name
+            if (state.matchName && document.getElementById('matchNameDisplay')) {
+                document.getElementById('matchNameDisplay').textContent = state.matchName;
+            }
+
+            // Player Names & Scores
+            const names = state.playerNames || ["Người 1", "Người 2", "Người 3", "Người 4"];
+            const scores = state.playerScores || [30, 30, 30, 30];
+
+            for (let i = 0; i < 4; i++) {
+                // V1
+                if (document.getElementById(`name${i}`)) document.getElementById(`name${i}`).textContent = names[i];
+                if (document.getElementById(`score${i}`)) document.getElementById(`score${i}`).textContent = scores[i];
+
+                // V2
+                if (document.getElementById(`v2name${i}`)) document.getElementById(`v2name${i}`).textContent = names[i];
+                if (document.getElementById(`v2score${i}`)) document.getElementById(`v2score${i}`).textContent = scores[i];
+
+                // V4
+                if (document.getElementById(`v4name${i}`)) document.getElementById(`v4name${i}`).textContent = names[i];
+                if (document.getElementById(`v4score${i}`)) document.getElementById(`v4score${i}`).textContent = scores[i];
+            }
+
+            // Render Players List
+            const playersList = document.getElementById('playersListArea');
+            if (playersList) {
+                playersList.innerHTML = '';
+                for (let i = 0; i < 4; i++) {
+                    const card = document.createElement('div');
+                    card.className = 'player-card';
+                    card.textContent = names[i];
+                    playersList.appendChild(card);
+                }
+            }
+
+            // V1 State
+            if (state.v1State) {
+                if (document.getElementById('timeBox')) document.getElementById('timeBox').textContent = state.v1State.time;
+                if (document.getElementById('qText')) document.getElementById('qText').textContent = state.v1State.qText || "";
+                if (document.getElementById('qHint')) document.getElementById('qHint').textContent = state.v1State.qHint || "";
+
+                if (state.v1State.currentPlayer !== null) {
+                    for (let j = 0; j < 4; j++) {
+                        const box = document.getElementById(`box${j}`);
+                        if (box) {
+                            if (j === state.v1State.currentPlayer) box.classList.add('active');
+                            else box.classList.remove('active');
+                        }
+                    }
+                }
+            }
+
+            // V2 State
+            if (state.v2State) {
+                if (document.getElementById('v2TimeBox')) document.getElementById('v2TimeBox').textContent = state.v2State.time;
+                if (document.getElementById('v2qText')) document.getElementById('v2qText').textContent = state.v2State.qText || "";
+
+                // Render V2 Answers Separate View
+                renderV2AnswersViewer(names, state.v2State.answers);
+
+                // Render V2 Board Separate View
+                renderV2BoardViewer(state.v2State);
+            }
+
+            // V3 State
+            if (state.v3State) {
+                if (document.getElementById('v3Timer')) document.getElementById('v3Timer').textContent = state.v3State.time;
+                if (document.getElementById('v3QuestionBox')) document.getElementById('v3QuestionBox').textContent = state.v3State.qText || "";
+                if (state.v3State.hints) {
+                    for (let h = 1; h <= 3; h++) {
+                        const hEl = document.getElementById(`v3Hint${h}`);
+                        if (hEl) hEl.textContent = state.v3State.hints[h - 1] || "";
+                    }
+                }
+
+                // Render V3 Answers Separate View
+                renderV3AnswersViewer(names, state.v3State.answers);
+            }
+
+            // V4 State
+            if (state.v4State) {
+                if (document.getElementById('v4TimeBox')) document.getElementById('v4TimeBox').textContent = state.v4State.time;
+                if (document.getElementById('v4qText')) document.getElementById('v4qText').textContent = state.v4State.qText || "";
+            }
+
+            // VQPhu State
+            if (state.vqphuState) {
+                if (document.getElementById('vqphuTimeBox')) document.getElementById('vqphuTimeBox').textContent = state.vqphuState.time;
+                if (document.getElementById('vqphuQuestion')) document.getElementById('vqphuQuestion').textContent = state.vqphuState.question || "";
+
+                renderVQPhuViewer(state.vqphuState);
+            }
+
+            // Full Scoreboard View
+            renderFullScoreboardViewer(names, scores);
+        }
+
+        function renderV2AnswersViewer(names, answers) {
+            const container = document.getElementById('v2AnswersListViewer');
+            if (!container) return;
+            container.innerHTML = '';
+            const ansArr = answers || ["", "", "", ""];
+            for (let i = 0; i < 4; i++) {
+                const item = document.createElement('div');
+                item.className = 'v2-answer-item';
+                item.innerHTML = `
+                    <div class="v2-answer-name">${names[i]}</div>
+                    <div class="v2-answer-text">${ansArr[i] || '(Chưa có đáp án)'}</div>
+                `;
+                container.appendChild(item);
+            }
+        }
+
+        function renderV2BoardViewer(v2State) {
+            const top = document.getElementById("v2QTopViewer");
+            if (!top) return;
+            top.innerHTML = "";
+            const questions = v2State.questions || [];
+            const selectedIdx = v2State.selectedQuestionIndex;
+
+            for (let i = 0; i < 3; i++) {
+                const q = questions[i] || {};
+                const el = document.createElement("div");
+                el.className = "v2-question-cell" + (q.used ? " used" : "") + (selectedIdx === i ? " selected" : "");
+                el.textContent = i + 1;
+                top.appendChild(el);
+            }
+
+            const grid = document.getElementById("v2BoardGridViewer");
+            if (grid) {
+                grid.innerHTML = "";
+                const board = v2State.board || new Array(30).fill(' ');
+                const revealed = v2State.revealed || new Array(30).fill(false);
+                const redCells = v2State.redCells || [];
+
+                for (let i = 0; i < 30; i++) {
+                    const cell = document.createElement("div");
+                    cell.className = "v2-board-cell";
+                    if (!revealed[i]) {
+                        cell.style.background = "blue";
+                        cell.style.color = "white";
+                        cell.textContent = i + 1;
+                    } else {
+                        const isRed = redCells.includes(i);
+                        cell.style.background = isRed ? "red" : "aqua";
+                        cell.style.color = isRed ? "white" : "black";
+                        cell.textContent = board[i] === ' ' ? '' : board[i];
+                    }
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function renderV3AnswersViewer(names, answersData) {
+            const container = document.getElementById('v3AnswersListViewer');
+            if (!container) return;
+            container.innerHTML = '';
+            const list = answersData || [];
+            for (let i = 0; i < 4; i++) {
+                const item = list[i] || {};
+                const div = document.createElement('div');
+                div.className = 'v3-answer-item';
+                div.innerHTML = `
+                    <div class="v3-answer-name">${names[i]}</div>
+                    <div class="v3-answer-text">${item.ans || '(Chưa trả lời)'}</div>
+                    <div class="v3-answer-time">${item.time ? item.time + 's' : '--'}</div>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        function renderVQPhuViewer(vqState) {
+            const left = document.getElementById('vqphuLeft');
+            const right = document.getElementById('vqphuRight');
+            if (!left || !right) return;
+            left.innerHTML = right.innerHTML = "";
+
+            if (vqState.revealed && vqState.events) {
+                for (let i = 1; i <= 8; i++) {
+                    const text = vqState.events[i - 1] || "";
+                    const div = document.createElement('div');
+                    div.textContent = `${i}. ${text}`;
+                    div.style.cssText = 'background:blue; color:white; border-radius:8px; padding:12px; text-align:center; font-size:1.1rem; min-height:54px; display:flex; align-items:center; justify-content:center;';
+                    if (i <= 4) left.appendChild(div);
+                    else right.appendChild(div);
+                }
+            }
+
+            // Answers Separate View
+            const ansContainer = document.getElementById('vqphuAnswersListViewer');
+            if (ansContainer) {
+                ansContainer.innerHTML = '';
+                const answers = vqState.answers || [];
+                answers.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'vqphu-item-viewer';
+                    div.innerHTML = `
+                        <div class="vqphu-top-row">
+                            <div class="vqphu-name-col">${item.name}</div>
+                            <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
+                        </div>
+                        <div class="vqphu-ans-row">${item.ans || '(Chưa có đáp án)'}</div>
+                    `;
+                    ansContainer.appendChild(div);
+                });
+            }
+        }
+
+        function renderFullScoreboardViewer(names, scores) {
+            const grid = document.getElementById('scoreboardGridFull');
+            if (!grid) return;
+            grid.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const card = document.createElement('div');
+                card.className = 'score-card-viewer';
+                card.innerHTML = `
+                    <div class="score-card-name">${names[i]}</div>
+                    <div class="score-card-value">${scores[i]}</div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+    </script>
+</body>
+
+</html>

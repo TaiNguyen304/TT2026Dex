@@ -1,0 +1,1964 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Thử Thách 2026 - Controller (Bộ Điều Khiển)</title>
+    <style>
+        :root {
+            --blue: blue;
+            --aqua: aqua;
+            --yellow: yellow;
+            --green: green;
+            --red: red;
+            --pink: #ff00cc;
+            --purple: purple;
+            --lime: #39ff14;
+            --orange: orange;
+            --black: #000000;
+            --white: #ffffff;
+        }
+
+        @font-face {
+            font-family: 'Noto Sans Black';
+            src: url('NotoSans-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Noto Sans Black', sans-serif !important;
+            font-weight: bold !important;
+        }
+
+        body {
+            margin: 16px;
+            background-color: rgb(0, 140, 80);
+            color: #111;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: bold;
+            transition: all .12s ease;
+            outline: none;
+        }
+
+        button:not(.v2-color-btn):hover {
+            background: var(--orange) !important;
+            color: var(--white) !important;
+        }
+
+        .v2-color-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            padding: 0;
+            line-height: 0;
+            transition: all .12s ease;
+        }
+
+        .top-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-match-name { background: var(--lime); color: var(--black); }
+        .btn-import { background: var(--green); color: var(--white); }
+        .btn-player { background: var(--yellow); color: var(--black); }
+        .btn-score { background: var(--purple); color: var(--white); }
+        .btn-option { background: var(--red); color: var(--white); }
+        .btn-graphic { background: #111; color: var(--lime); border: 2px solid var(--lime); }
+        .btn-graphic.off { background: #555; color: #aaa; border-color: #777; }
+
+        .rounds {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin: 8px 0;
+            flex-wrap: wrap;
+        }
+
+        .round-btn {
+            background: var(--blue);
+            color: var(--white);
+            padding: 10px 12px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        .round-btn.active {
+            background: var(--aqua);
+            color: var(--black);
+        }
+
+        .graphic-toggle-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        #main {
+            max-width: 1100px;
+            margin: 14px auto;
+            padding: 18px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .opening-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 50vh;
+            text-align: center;
+        }
+
+        .opening-title { font-size: 2rem; margin-bottom: 16px; }
+        .opening-subtitle { font-size: 2rem; }
+
+        .match-name-header {
+            text-align: center;
+            font-weight: bold;
+            color: black;
+            margin-bottom: 1px;
+            font-size: 2rem;
+        }
+
+        .players-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .player-card {
+            color: var(--white);
+            font-weight: bold;
+            width: 70%;
+            height: 90px;
+            font-size: 22px;
+            border-radius: 10px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-size: 100% 110%;
+            background-position: center 60%;
+            background-repeat: no-repeat;
+        }
+
+        .players-list .player-card:nth-child(1) { background-image: url('Player1.png'); }
+        .players-list .player-card:nth-child(2) { background-image: url('Player2.png'); }
+        .players-list .player-card:nth-child(3) { background-image: url('Player3.png'); }
+        .players-list .player-card:nth-child(4) { background-image: url('Player4.png'); }
+
+        .v1-top { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; }
+        .score-slot { width: 150px; }
+        .player-box {
+            background: var(--blue);
+            color: var(--white);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .player-box.active { background: var(--pink); color: var(--white); }
+        .score-value { font-size: 1.4rem; }
+
+        .turn-controls { display: flex; gap: 8px; justify-content: center; margin-top: 8px; }
+        .btn-turn-on { background: var(--pink); color: var(--white); }
+        .btn-turn-off { background: var(--blue); color: var(--white); }
+
+        .time-box {
+            width: 90px;
+            height: 50px;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 1.6rem;
+            border-radius: 8px;
+            margin: 12px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-box {
+            background: #39ff14;
+            color: black;
+            border: 3px solid black;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 12px auto;
+            width: 75%;
+            min-height: 180px;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+        .btn-start { background: var(--aqua); color: var(--black); }
+        .btn-hint { background: var(--yellow); color: var(--black); }
+        .btn-correct { background: var(--green); color: var(--white); }
+        .btn-wrong { background: var(--red); color: var(--white); }
+        .btn-pause { background: var(--purple); color: var(--white); }
+        .btn-reset { background: var(--lime); color: var(--black); }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 18px;
+            width: 420px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal h3 { margin-top: 0; text-align: center; }
+        .modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        .modal .actions { display: flex; gap: 12px; justify-content: center; margin-top: 12px; }
+        .btn-save { background: var(--green); color: var(--white); }
+        .btn-close { background: var(--red); color: var(--white); }
+
+        .v2-top { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 6px; }
+        .v2-score-slot { width: 200px; }
+        .v2-player-box { background: var(--blue); color: var(--white); border-radius: 8px; padding: 10px; text-align: center; }
+        .v2-state-buttons { display: flex; gap: 8px; justify-content: center; margin-top: 8px; }
+
+        .v2-board-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 42px);
+            gap: 6px;
+            justify-content: center;
+            padding: 6px;
+            background: #fff;
+        }
+
+        .v2-board-cell {
+            width: 42px;
+            height: 42px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--blue);
+            color: var(--white);
+            cursor: pointer;
+            user-select: none;
+            border: 2px solid rgba(0,0,0,0.05);
+        }
+
+        .v2-questions-top, .v2-questions-bottom { display: flex; gap: 6px; justify-content: center; margin: 10px 0; }
+        .v2-questions-middle { display: flex; align-items: center; gap: 12px; justify-content: center; }
+        .v2-question-cell {
+            width: 110px;
+            height: 40px;
+            border-radius: 6px;
+            background: var(--blue);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .v2-question-cell.selected { background: var(--aqua); color: var(--black); }
+        .v2-question-cell.used { background: var(--black); color: var(--white); }
+
+        .v2-question {
+            position: relative;
+            color: white;
+            padding: 10px 30px;
+            margin: 30px auto 12px auto;
+            width: 75%;
+            height: 250px;
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-image: url('v2questionbox.png');
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .v2-time-box {
+            width: 90px;
+            height: 90px;
+            border: 3px solid white;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .v3-box {
+            width: 80%;
+            min-height: 80px;
+            background: var(--purple);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 6px auto;
+            border: 3px solid black;
+            padding: 10px;
+        }
+        .v3-box.question { background: var(--red); }
+        .v3-box.revealed { background: var(--blue); }
+
+        .v3-timer {
+            background: var(--blue);
+            color: var(--white);
+            width: 90px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin: 0 auto;
+        }
+
+        .v4-question {
+            color: white;
+            padding: 10px 40px;
+            margin: 12px auto;
+            width: 75%;
+            height: 220px;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-image: url('v4questionbox.png');
+            background-size: 100% 100%;
+            position: relative;
+        }
+
+        .hidden { display: none !important; }
+
+        .scoreboard-grid {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+        }
+
+        .scorecell {
+            width: 190px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .scorecell .top {
+            background: var(--blue);
+            color: var(--white);
+            padding: 8px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+
+        .scorecell .bottom {
+            background: var(--aqua);
+            color: var(--black);
+            padding: 16px;
+            text-align: center;
+            font-size: 1.4rem;
+        }
+
+        .scorecell .ops {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .scorecell .ops button {
+            background: var(--blue);
+            color: var(--white);
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            margin-left: 10px;
+            background: #ff00cc;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Action Row -->
+    <div class="top-row">
+        <button id="openMatchNameBtn" class="btn-match-name">Nhập tên trận</button>
+        <button id="importBtn" class="btn-import">Nhập đề Excel</button>
+        <button id="openPlayersBtn" class="btn-player">Nhập tên người chơi</button>
+        <button id="openScoreBtn" class="btn-score">Bảng điểm (Popup Controller)</button>
+        <button id="showViewerScoreBtn" class="btn-score" style="background:#ff00cc;" onclick="switchView('scoreboard')">Hiện Bảng Điểm (Viewer)</button>
+        <button class="btn-option" id="btnOption">Tùy chọn điểm số</button>
+    </div>
+
+    <!-- View Navigation Buttons -->
+    <div class="rounds" id="roundButtons">
+        <button class="round-btn active" data-view="opening">Mở đầu</button>
+        <button class="round-btn" data-view="players">Danh sách người chơi</button>
+        <button class="round-btn" data-view="v1">Nhập cuộc (V1)</button>
+        <button class="round-btn" data-view="v2">Vượt lên (V2 Main)</button>
+        <button class="round-btn" data-view="v2_answers" style="background:purple;">V2 Hiện Đáp Án (Viewer)</button>
+        <button class="round-btn" data-view="v2_board" style="background:#d97706;">V2 Ô Chữ (Viewer)</button>
+        <button class="round-btn" data-view="v3">Đối đầu (V3 Main)</button>
+        <button class="round-btn" data-view="v3_answers" style="background:purple;">V3 Đáp Án Thí Sinh (Viewer)</button>
+        <button class="round-btn" data-view="v4">Vinh quang (V4)</button>
+        <button class="round-btn" data-view="vqphu">Câu hỏi phụ</button>
+        <button class="round-btn" data-view="vqphu_answers" style="background:purple;">VQPhu Đáp Án (Viewer)</button>
+    </div>
+
+    <!-- Graphic Show/Hide Toggle Bar per round/view -->
+    <div class="graphic-toggle-bar">
+        <span>Giao diện Graphic trên Viewer:</span>
+        <button id="graphicToggleBtn" class="btn-graphic" onclick="toggleGraphicCurrentView()">Graphic: HIỆN</button>
+        <span id="currentViewStatus" class="status-badge">View hiện tại: Mở đầu</span>
+        <a href="/Viewer.html" target="_blank" style="color:yellow; text-decoration:underline; font-size:0.9rem;">Mở Cửa Sổ Viewer (Sân Sân) ↗</a>
+    </div>
+
+    <div class="modal-backdrop" id="optionModal">
+        <div class="modal">
+            <h3>Tùy chọn điểm số</h3>
+            <div id="optionsContainer">
+                <label class="option-box">
+                    <input type="radio" name="scoreOption" value="save">
+                    <span>Lưu số điểm hiện tại.</span>
+                </label><br><br>
+                <label class="option-box">
+                    <input type="radio" name="scoreOption" value="reset" checked>
+                    <span>Reset số điểm về mặc định.</span>
+                </label>
+            </div>
+            <div class="actions">
+                <button class="btn-save" id="saveOptionBtn">Lưu</button>
+                <button class="btn-close" id="closeOptionBtn">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main">
+        <!-- VIEW 1: OPENING -->
+        <div id="view-opening" class="view-panel">
+            <div class="opening-screen">
+                <div class="opening-title">CHÀO MỪNG ĐẾN VỚI CHƯƠNG TRÌNH</div>
+                <div class="opening-subtitle">THỬ THÁCH 2026 - DEX VERSION</div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: PLAYERS LIST -->
+        <div id="view-players" class="view-panel hidden">
+            <h2 id="matchNameDisplay" class="match-name-header">THỬ THÁCH 2026 - LƯỢT X(BẢNG Y)</h2>
+            <div class="players-list" id="playersListArea"></div>
+        </div>
+
+        <!-- VIEW 3: V1 (NHẬP CUỘC) -->
+        <div id="view-v1" class="view-panel hidden">
+            <div class="v1-top" id="v1Top">
+                <div class="score-slot">
+                    <div class="player-box" id="box0">
+                        <div class="score-name" id="name0">Người 1</div>
+                        <div class="score-value" id="score0">30</div>
+                    </div>
+                    <div class="turn-controls">
+                        <button class="btn-turn-on" onclick="setTurn(0)">Lượt</button>
+                        <button class="btn-turn-off" onclick="unsetTurn(0)">Không</button>
+                    </div>
+                </div>
+                <div class="score-slot">
+                    <div class="player-box" id="box1">
+                        <div class="score-name" id="name1">Người 2</div>
+                        <div class="score-value" id="score1">30</div>
+                    </div>
+                    <div class="turn-controls">
+                        <button class="btn-turn-on" onclick="setTurn(1)">Lượt</button>
+                        <button class="btn-turn-off" onclick="unsetTurn(1)">Không</button>
+                    </div>
+                </div>
+                <div class="score-slot">
+                    <div class="player-box" id="box2">
+                        <div class="score-name" id="name2">Người 3</div>
+                        <div class="score-value" id="score2">30</div>
+                    </div>
+                    <div class="turn-controls">
+                        <button class="btn-turn-on" onclick="setTurn(2)">Lượt</button>
+                        <button class="btn-turn-off" onclick="unsetTurn(2)">Không</button>
+                    </div>
+                </div>
+                <div class="score-slot">
+                    <div class="player-box" id="box3">
+                        <div class="score-name" id="name3">Người 4</div>
+                        <div class="score-value" id="score3">30</div>
+                    </div>
+                    <div class="turn-controls">
+                        <button class="btn-turn-on" onclick="setTurn(3)">Lượt</button>
+                        <button class="btn-turn-off" onclick="unsetTurn(3)">Không</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="time-box" id="timeBox">45</div>
+
+            <div class="question-box" id="questionBox">
+                <div id="qText">Nội dung câu hỏi sẽ hiển thị ở đây</div>
+                <div id="qHint" style="margin-top:10px; color:#c2410c;"></div>
+            </div>
+
+            <div class="controls">
+                <button id="startBtn" class="btn-start" onclick="v1Start()">Bắt đầu</button>
+                <button id="hintBtn" class="btn-hint" onclick="v1Hint()">Gợi ý</button>
+                <button id="correctBtn" class="btn-correct" onclick="v1Correct()">Đúng</button>
+                <button id="wrongBtn" class="btn-wrong" onclick="v1Wrong()">Sai</button>
+                <button id="pauseBtn" class="btn-pause" onclick="v1Pause()">Tạm dừng</button>
+                <button id="resetBtn" class="btn-reset" onclick="v1Reset()">Reset</button>
+            </div>
+        </div>
+
+        <!-- VIEW 4: V2 (VƯỢT LÊN MAIN) -->
+        <div id="view-v2" class="view-panel hidden">
+            <div class="v2-top" id="v2Top">
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2box0">
+                        <div class="score-name" id="v2name0">Người 1</div>
+                        <div class="score-value" id="v2score0">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(0,'blue')"></button>
+                        <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(0,'aqua')"></button>
+                        <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(0,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="setPlayerState(0,'black')"></button>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2box1">
+                        <div class="score-name" id="v2name1">Người 2</div>
+                        <div class="score-value" id="v2score1">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(1,'blue')"></button>
+                        <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(1,'aqua')"></button>
+                        <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(1,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="setPlayerState(1,'black')"></button>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2box2">
+                        <div class="score-name" id="v2name2">Người 3</div>
+                        <div class="score-value" id="v2score2">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(2,'blue')"></button>
+                        <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(2,'aqua')"></button>
+                        <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(2,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="setPlayerState(2,'black')"></button>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2box3">
+                        <div class="score-name" id="v2name3">Người 4</div>
+                        <div class="score-value" id="v2score3">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(3,'blue')"></button>
+                        <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(3,'aqua')"></button>
+                        <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(3,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="setPlayerState(3,'black')"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="v2-question" id="v2QuestionBox">
+                <div class="v2-time-box" id="v2TimeBox">15</div>
+                <div id="v2qText">Chọn câu hỏi bên dưới</div>
+                <div id="v2qHint" style="margin-top:8px;"></div>
+            </div>
+
+            <div class="controls">
+                <button style="background:green;color:white;" onclick="openV2InputAnswers()">Nhập đáp án</button>
+                <button style="background:purple;color:white;" onclick="openV2ShowAnswers()">Hiện đáp án (Chuyển View Viewer)</button>
+                <button style="background:#39ff14;color:black;" onclick="v2StartTimer()">Bắt đầu (15s)</button>
+                <button style="background:red;color:white;" onclick="v2CloseQuestion()">Đóng câu hỏi</button>
+                <button style="background:yellow;color:black;" onclick="openV2BoardPopup()">Bảng ô chữ (Chuyển View Viewer)</button>
+                <button style="background: var(--green); color: var(--white);" onclick="sendSound('Dung V2.mp3')">Âm Đúng V2</button>
+                <button style="background: var(--red); color: var(--white);" onclick="sendSound('Sai V2.mp3')">Âm Sai V2</button>
+            </div>
+        </div>
+
+        <!-- VIEW 5: V2 ANSWERS SEPARATE (VIEWER DISPLAY PREVIEW) -->
+        <div id="view-v2_answers" class="view-panel hidden">
+            <h3 style="text-align:center;">VÒNG VƯỢT LÊN - HIỆN ĐÁP ÁN THÍ SINH (VIEWER SEPARATE VIEW)</h3>
+            <div id="v2AnswersPreviewArea" style="max-width:800px; margin:20px auto;"></div>
+            <div style="text-align:center; margin-top:15px;">
+                <button style="background:blue; color:white;" onclick="switchView('v2')">Quay lại Vượt Lên Main</button>
+            </div>
+        </div>
+
+        <!-- VIEW 6: V2 WORD GRID BOARD SEPARATE (VIEWER DISPLAY PREVIEW) -->
+        <div id="view-v2_board" class="view-panel hidden">
+            <h3 style="text-align:center;">VÒNG VƯỢT LÊN - BẢNG Ô CHỮ 30 Ô (VIEWER SEPARATE VIEW)</h3>
+            <div id="v2BoardPreviewArea" style="margin:20px auto; text-align:center;">
+                <div class="v2-questions-top" id="v2QTop"></div>
+                <div class="v2-questions-middle">
+                    <div id="v2QLeft"></div>
+                    <div id="v2BoardGrid" class="v2-board-grid"></div>
+                    <div id="v2QRight"></div>
+                </div>
+                <div class="v2-questions-bottom" id="v2QBottom"></div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
+                <button style="background:yellow; color:black;" onclick="v2ResetBoard()">Reset bảng</button>
+                <button style="background:green; color:white;" onclick="v2RevealAll()">Hiện tất cả ô chữ</button>
+                <button style="background:blue; color:white;" onclick="switchView('v2')">Quay lại Vượt Lên Main</button>
+            </div>
+        </div>
+
+        <!-- VIEW 7: V3 (ĐỐI ĐẦU MAIN) -->
+        <div id="view-v3" class="view-panel hidden">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+                <div id="v3Timer" class="v3-timer">30</div>
+                <div id="v3QuestionBox" class="v3-box question" onclick="v3ShowQuestion()">Bấm để hiện câu hỏi</div>
+                <div id="v3Hint1" class="v3-box" onclick="v3RevealHint(1)">Dữ kiện 1</div>
+                <div id="v3Hint2" class="v3-box" onclick="v3RevealHint(2)">Dữ kiện 2</div>
+                <div id="v3Hint3" class="v3-box" onclick="v3RevealHint(3)">Dữ kiện 3</div>
+                <div class="controls">
+                    <button style="background:green; color:white;" onclick="openV3Input()">Nhập đáp án</button>
+                    <button style="background:purple; color:white;" onclick="openV3Show()">Hiện đáp án (Chuyển View Viewer)</button>
+                    <button style="background:#39ff14; color:black;" onclick="v3Start()">Bắt đầu (30s)</button>
+                    <button style="background:red; color:white;" onclick="v3Close()">Đóng câu hỏi</button>
+                    <button style="background:yellow; color:black;" onclick="v3Next()">Câu hỏi mới</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 8: V3 ANSWERS SEPARATE VIEW -->
+        <div id="view-v3_answers" class="view-panel hidden">
+            <h3 style="text-align:center;">VÒNG ĐỐI ĐẦU - HIỆN ĐÁP ÁN THÍ SINH (VIEWER SEPARATE VIEW)</h3>
+            <div id="v3AnswersPreviewArea" style="max-width:800px; margin:20px auto;"></div>
+            <div style="text-align:center; margin-top:15px;">
+                <button style="background:blue; color:white;" onclick="switchView('v3')">Quay lại Đối Đầu Main</button>
+            </div>
+        </div>
+
+        <!-- VIEW 9: V4 (VINH QUANG) -->
+        <div id="view-v4" class="view-panel hidden">
+            <div class="v2-top" id="v4Top">
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v4box0">
+                        <div class="score-name" id="v4name0">Người 1</div>
+                        <div class="score-value" id="v4score0">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(0,'blue')"></button>
+                        <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(0,'yellow')"></button>
+                        <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(0,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(0,'black')"></button>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v4box1">
+                        <div class="score-name" id="v4name1">Người 2</div>
+                        <div class="score-value" id="v4score1">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(1,'blue')"></button>
+                        <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(1,'yellow')"></button>
+                        <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(1,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(1,'black')"></button>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v4box2">
+                        <div class="score-name" id="v4name2">Người 3</div>
+                        <div class="score-value" id="v4score2">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(2,'blue')"></button>
+                        <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(2,'yellow')"></button>
+                        <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(2,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(2,'black')"></button>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v4box3">
+                        <div class="score-name" id="v4name3">Người 4</div>
+                        <div class="score-value" id="v4score3">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(3,'blue')"></button>
+                        <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(3,'yellow')"></button>
+                        <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(3,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(3,'black')"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="v4-question" id="v4QuestionBox">
+                <div class="v2-time-box" id="v4TimeBox" style="margin:0;">15</div>
+                <div id="v4qText">Nội dung câu hỏi vòng Vinh quang</div>
+            </div>
+
+            <div class="controls">
+                <button style="background:yellow;color:black;" onclick="v4ShowQuestion()">Hiện câu hỏi</button>
+                <button style="background:green;color:white;" onclick="v4StartTimer()">15s Bắt đầu</button>
+                <button style="background:#39ff14;color:black;" onclick="v4CloseQuestion()">Đóng câu hỏi</button>
+                <button style="background:purple;color:white;" onclick="v4NextQuestion()">Câu hỏi mới</button>
+                <button style="background:red;color:white;" onclick="openV4RemoveBetPopup()">Gỡ cược điểm</button>
+                <button id="v4PauseBtn" style="background:aqua;color:black;" onclick="toggleV4Pause()">Tạm dừng</button>
+                <button style="background: var(--green); color: var(--white);" onclick="sendSound('Dung V4.mp3')">Đúng V4</button>
+                <button style="background: var(--red); color: var(--white);" onclick="sendSound('Sai V4.mp3')">Sai V4</button>
+            </div>
+        </div>
+
+        <!-- VIEW 10: VQPHU (CÂU HỎI PHỤ) -->
+        <div id="view-vqphu" class="view-panel hidden">
+            <div id="vqphuQuestion" style="background:var(--pink);color:white;text-align:center;font-size:1.2rem;min-height:60px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:10px;">
+                Nội dung câu hỏi phụ
+            </div>
+
+            <div id="vqphuDataArea" style="display:flex;justify-content:space-between;margin-top:10px;gap:10px;">
+                <div id="vqphuLeft" style="width:48%;display:flex;flex-direction:column;gap:8px;"></div>
+                <div id="vqphuRight" style="width:48%;display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+
+            <div class="v2-time-box" id="vqphuTimeBox" style="position:relative !important; top:auto !important; left:auto !important; transform:none !important; margin:16px auto 0 auto;">
+                20
+            </div>
+
+            <div class="controls" style="margin-top:16px;">
+                <button style="background:green;color:white;" onclick="openVQPhuInput()">Nhập đáp án</button>
+                <button style="background:purple;color:white;" onclick="openVQPhuShow()">Hiện đáp án (Chuyển View Viewer)</button>
+                <button style="background:#39ff14;color:black;" onclick="vqphuStartTimer()">Bắt đầu (20s)</button>
+                <button style="background:red;color:white;" onclick="vqphuCloseQuestion()">Đóng câu hỏi</button>
+                <button style="background:yellow;color:black;" onclick="vqphuNext()">Câu hỏi mới</button>
+                <button style="background:aqua;color:black;" onclick="vqphuReveal()">Hiện câu hỏi & dữ kiện</button>
+            </div>
+        </div>
+
+        <!-- VIEW 11: VQPHU ANSWERS SEPARATE VIEW -->
+        <div id="view-vqphu_answers" class="view-panel hidden">
+            <h3 style="text-align:center;">CÂU HỎI PHỤ - HIỆN ĐÁP ÁN THÍ SINH (VIEWER SEPARATE VIEW)</h3>
+            <div id="vqphuAnswersPreviewArea" style="max-width:800px; margin:20px auto;"></div>
+            <div style="text-align:center; margin-top:15px;">
+                <button style="background:blue; color:white;" onclick="switchView('vqphu')">Quay lại Câu Hỏi Phụ Main</button>
+            </div>
+        </div>
+
+        <!-- VIEW 12: SCOREBOARD SEPARATE VIEW (FULL SCREEN LEADERBOARD FOR VIEWER) -->
+        <div id="view-scoreboard" class="view-panel hidden">
+            <h2 style="text-align:center; font-size:2.5rem; margin-bottom:20px;">BẢNG ĐIỂM TỔNG KẾT</h2>
+            <div class="scoreboard-grid" id="fullScoreboardDisplay" style="justify-content:center; gap:20px; max-width:900px; margin:0 auto;"></div>
+            <div style="text-align:center; margin-top:30px;">
+                <button style="background:yellow; color:black; font-size:1.2rem; padding:12px 24px;" onclick="sendSound('TongKetDiem.mp3')">Phát Nhạc Tổng Kết Điểm</button>
+                <button style="background:blue; color:white; font-size:1.2rem; padding:12px 24px; margin-left:10px;" onclick="switchView('opening')">Về Màn Hình Mở Đầu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODALS & POPUPS -->
+    <div id="modalMatchName" class="modal-backdrop">
+        <div class="modal">
+            <h3>Nhập tên trận</h3>
+            <input id="inpMatchName" placeholder="Tên trận đấu" />
+            <div class="actions">
+                <button id="saveMatchName" class="btn-save">Lưu</button>
+                <button id="closeMatchName" class="btn-close">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalPlayers" class="modal-backdrop">
+        <div class="modal">
+            <h3>Nhập tên 4 người chơi</h3>
+            <input id="inpName0" placeholder="Người 1" />
+            <input id="inpName1" placeholder="Người 2" />
+            <input id="inpName2" placeholder="Người 3" />
+            <input id="inpName3" placeholder="Người 4" />
+            <div class="actions">
+                <button id="saveNames" class="btn-save">Lưu</button>
+                <button id="closeNames" class="btn-close">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalScore" class="modal-backdrop">
+        <div class="modal" style="width:700px;">
+            <h3>Bảng điểm (Điều khiển)</h3>
+            <div class="scoreboard-grid" id="scoreboardGrid"></div>
+            <div class="actions">
+                <button id="saveScores" class="btn-save">Lưu điểm</button>
+                <button id="closeScores" class="btn-close">Đóng</button>
+            </div>
+            <div style="text-align:center; margin-top:10px;">
+                <button style="background: var(--yellow); color: var(--black); font-weight: bold;" onclick="sendSound('TongKetDiem.mp3')">Phát Nhạc Tổng Kết Điểm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalV2Input" class="modal-backdrop">
+        <div class="modal" style="width: 550px;">
+            <h3>Nhập đáp án 4 thí sinh (Vòng 2)</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 16px 0;">
+                <input id="ansName0" disabled style="background:#e9ecef;" />
+                <input id="ansInp0" placeholder="Đáp án Người 1" />
+
+                <input id="ansName1" disabled style="background:#e9ecef;" />
+                <input id="ansInp1" placeholder="Đáp án Người 2" />
+
+                <input id="ansName2" disabled style="background:#e9ecef;" />
+                <input id="ansInp2" placeholder="Đáp án Người 3" />
+
+                <input id="ansName3" disabled style="background:#e9ecef;" />
+                <input id="ansInp3" placeholder="Đáp án Người 4" />
+            </div>
+            <div class="actions">
+                <button id="saveV2Answers" class="btn-save">Lưu</button>
+                <button id="closeV2Input" class="btn-close">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalV3Input" class="modal-backdrop">
+        <div class="modal" style="width:600px;">
+            <h3>Nhập đáp án & thời gian (Vòng 3)</h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;">
+                <div>
+                    <input id="v3Name0" disabled />
+                    <input id="v3Name1" disabled />
+                    <input id="v3Name2" disabled />
+                    <input id="v3Name3" disabled />
+                </div>
+                <div>
+                    <input id="v3Ans0" placeholder="Đáp án N1" />
+                    <input id="v3Ans1" placeholder="Đáp án N2" />
+                    <input id="v3Ans2" placeholder="Đáp án N3" />
+                    <input id="v3Ans3" placeholder="Đáp án N4" />
+                </div>
+                <div>
+                    <input id="v3Time0" placeholder="Thời gian (s)" />
+                    <input id="v3Time1" placeholder="Thời gian (s)" />
+                    <input id="v3Time2" placeholder="Thời gian (s)" />
+                    <input id="v3Time3" placeholder="Thời gian (s)" />
+                </div>
+            </div>
+            <div class="actions">
+                <button id="saveV3Ans" class="btn-save">Lưu</button>
+                <button id="closeV3Inp" class="btn-close">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalVQPhuInput" class="modal-backdrop">
+        <div class="modal" style="width:600px; max-height:80vh; overflow-y:auto;">
+            <h3>Nhập đáp án Câu Hỏi Phụ</h3>
+            <div id="vqphuInputContainer"></div>
+            <div class="actions">
+                <button class="btn-save" onclick="vqphuSaveInput()">Lưu</button>
+                <button class="btn-close" onclick="closeVQPhuInput()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalV4RemoveBet" class="modal-backdrop">
+        <div class="modal" style="width:380px; text-align:center;">
+            <h3>Gỡ cược điểm</h3>
+            <div style="display:flex; flex-direction:column; gap:10px; margin:15px 0;">
+                <label><input type="radio" name="removeBet" value="0"> <span id="removeName0">Người 1</span></label>
+                <label><input type="radio" name="removeBet" value="1"> <span id="removeName1">Người 2</span></label>
+                <label><input type="radio" name="removeBet" value="2"> <span id="removeName2">Người 3</span></label>
+                <label><input type="radio" name="removeBet" value="3"> <span id="removeName3">Người 4</span></label>
+            </div>
+            <div class="actions">
+                <button id="saveRemoveBetBtn" class="btn-save">Lưu</button>
+                <button id="closeRemoveBetBtn" class="btn-close">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SOCKET.IO & EXCEL JS -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <script>
+        const socket = io();
+
+        // Application State
+        let currentView = 'opening';
+        let graphicsVisible = true;
+        let viewGraphics = {
+            opening: true, players: true, v1: true, v2: true, v2_answers: true,
+            v2_board: true, v3: true, v3_answers: true, v4: true, vqphu: true,
+            vqphu_answers: true, scoreboard: true
+        };
+
+        let matchName = "THỬ THÁCH 2026 - LƯỢT X(BẢNG Y)";
+        let playerNames = ["Người 1", "Người 2", "Người 3", "Người 4"];
+        let playerScores = [30, 30, 30, 30];
+
+        // V1 State
+        let currentPlayer = null;
+        let round1Data = [[], [], [], []];
+        let questionIndex = [0, 0, 0, 0];
+        let timer = 45;
+        let timerInterval = null;
+        let hintUsedForCurrent = false;
+
+        // V2 State
+        let v2Questions = Array.from({ length: 8 }, (_, i) => ({ question: `Câu ${i + 1}`, answer: '', boardRaw: '', used: false }));
+        let v2Board = new Array(30).fill(' ');
+        let v2Revealed = new Array(30).fill(false);
+        let v2RedCells = [];
+        let v2SelectedQuestionIndex = null;
+        let v2Answers = ["", "", "", ""];
+        let v2Timer = 15;
+        let v2TimerInterval = null;
+
+        // V3 State
+        let v3Data = [];
+        let v3Current = 0;
+        let v3Timer = 30;
+        let v3Interval = null;
+        let v3Answers = [
+            { name: 'Người 1', ans: '', time: '' },
+            { name: 'Người 2', ans: '', time: '' },
+            { name: 'Người 3', ans: '', time: '' },
+            { name: 'Người 4', ans: '', time: '' }
+        ];
+
+        // V4 State
+        let v4Questions = [];
+        let v4Index = -1;
+        let v4Time = 15;
+        let v4Interval = null;
+        let v4Paused = false;
+        let v4BracketState = [0, 0, 0, 0];
+        let v4PrevColors = ['blue', 'blue', 'blue', 'blue'];
+
+        // VQPhu State
+        let vqphuData = [];
+        let vqphuIndex = 0;
+        let vqphuTimer = 20;
+        let vqphuTimerInterval = null;
+        let vqphuAnswers = [];
+        let vqphuRevealed = false;
+
+        // Send Sound to Viewer
+        function sendSound(soundFile) {
+            socket.emit('playSound', soundFile);
+        }
+
+        function stopSound(soundFile) {
+            socket.emit('stopSound', soundFile);
+        }
+
+        function stopAllSounds() {
+            socket.emit('stopAllSounds');
+        }
+
+        // View Navigation
+        document.querySelectorAll('.round-btn').forEach(btn => {
+            btn.onclick = () => {
+                const view = btn.getAttribute('data-view');
+                switchView(view);
+            };
+        });
+
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.round-btn').forEach(b => {
+                if (b.getAttribute('data-view') === view) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+
+            document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
+            const targetEl = document.getElementById(`view-${view}`);
+            if (targetEl) targetEl.classList.remove('hidden');
+
+            document.getElementById('currentViewStatus').textContent = `View hiện tại: ${getPrettyViewName(view)}`;
+
+            // Render specific subviews
+            if (view === 'players') renderPlayerList();
+            if (view === 'v2_answers') renderV2AnswersPreview();
+            if (view === 'v2_board') renderV2QuestionsAndBoard();
+            if (view === 'v3_answers') renderV3AnswersPreview();
+            if (view === 'vqphu_answers') renderVQPhuAnswersPreview();
+            if (view === 'scoreboard') renderFullScoreboard();
+
+            // Sync graphic button text
+            const isGraphicOn = viewGraphics[view] !== false;
+            const btn = document.getElementById('graphicToggleBtn');
+            if (btn) {
+                btn.textContent = isGraphicOn ? "Graphic: HIỆN" : "Graphic: ẨN";
+                if (isGraphicOn) btn.classList.remove('off');
+                else btn.classList.add('off');
+            }
+
+            // Sync to server -> Viewer
+            socket.emit('changeView', view);
+            syncFullStateToServer();
+        }
+
+        function getPrettyViewName(v) {
+            const map = {
+                opening: "Mở đầu", players: "Danh sách người chơi", v1: "V1 Nhập cuộc",
+                v2: "V2 Vượt lên Main", v2_answers: "V2 Đáp án (Viewer)", v2_board: "V2 Bảng ô chữ (Viewer)",
+                v3: "V3 Đối đầu Main", v3_answers: "V3 Đáp án thí sinh (Viewer)", v4: "V4 Vinh quang",
+                vqphu: "Câu hỏi phụ Main", vqphu_answers: "VQPhu Đáp án (Viewer)", scoreboard: "Bảng điểm tổng kết"
+            };
+            return map[v] || v;
+        }
+
+        function toggleGraphicCurrentView() {
+            const isCurrentlyOn = viewGraphics[currentView] !== false;
+            viewGraphics[currentView] = !isCurrentlyOn;
+
+            const btn = document.getElementById('graphicToggleBtn');
+            if (btn) {
+                btn.textContent = !isCurrentlyOn ? "Graphic: HIỆN" : "Graphic: ẨN";
+                if (!isCurrentlyOn) btn.classList.remove('off');
+                else btn.classList.add('off');
+            }
+
+            socket.emit('toggleGraphic', { view: currentView, visible: !isCurrentlyOn });
+        }
+
+        function syncFullStateToServer() {
+            socket.emit('updateState', {
+                currentView,
+                graphicsVisible,
+                viewGraphics,
+                matchName,
+                playerNames,
+                playerScores,
+                v1State: {
+                    currentPlayer,
+                    questionIndex,
+                    qText: document.getElementById('qText')?.textContent || "",
+                    qHint: document.getElementById('qHint')?.textContent || "",
+                    time: timer
+                },
+                v2State: {
+                    questions: v2Questions,
+                    board: v2Board,
+                    revealed: v2Revealed,
+                    redCells: v2RedCells,
+                    selectedQuestionIndex: v2SelectedQuestionIndex,
+                    answers: v2Answers,
+                    qText: document.getElementById('v2qText')?.textContent || "",
+                    time: v2Timer
+                },
+                v3State: {
+                    current: v3Current,
+                    qText: document.getElementById('v3QuestionBox')?.textContent || "",
+                    hints: [
+                        document.getElementById('v3Hint1')?.textContent || "",
+                        document.getElementById('v3Hint2')?.textContent || "",
+                        document.getElementById('v3Hint3')?.textContent || ""
+                    ],
+                    answers: v3Answers,
+                    time: v3Timer
+                },
+                v4State: {
+                    index: v4Index,
+                    qText: document.getElementById('v4qText')?.textContent || "",
+                    time: v4Time,
+                    bracketState: v4BracketState
+                },
+                vqphuState: {
+                    index: vqphuIndex,
+                    question: document.getElementById('vqphuQuestion')?.textContent || "",
+                    revealed: vqphuRevealed,
+                    time: vqphuTimer,
+                    answers: vqphuAnswers
+                }
+            });
+        }
+
+        function showPopup(msg) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-backdrop';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal" style="width:400px; text-align:center;">
+                    <h3>Thông báo</h3>
+                    <p style="font-weight:700;">${msg}</p>
+                    <div class="actions">
+                        <button class="btn-save" onclick="this.closest('.modal-backdrop').remove()">OK</button>
+                    </div>
+                </div>`;
+            document.body.appendChild(modal);
+        }
+
+        function renderPlayerList() {
+            document.getElementById('matchNameDisplay').textContent = matchName || "";
+            const list = document.getElementById('playersListArea');
+            list.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const div = document.createElement('div');
+                div.className = 'player-card';
+                div.textContent = playerNames[i];
+                div.onclick = () => {
+                    div.textContent = playerNames[i];
+                };
+                list.appendChild(div);
+            }
+        }
+
+        // Match Name Modal
+        document.getElementById('openMatchNameBtn').onclick = () => {
+            document.getElementById('inpMatchName').value = matchName;
+            document.getElementById('modalMatchName').style.display = 'flex';
+        };
+        document.getElementById('closeMatchName').onclick = () => {
+            document.getElementById('modalMatchName').style.display = 'none';
+        };
+        document.getElementById('saveMatchName').onclick = () => {
+            matchName = document.getElementById('inpMatchName').value;
+            document.getElementById('matchNameDisplay').textContent = matchName;
+            document.getElementById('modalMatchName').style.display = 'none';
+            syncFullStateToServer();
+        };
+
+        // Player Names Modal
+        document.getElementById('openPlayersBtn').onclick = () => {
+            document.getElementById('modalPlayers').style.display = 'flex';
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`inpName${i}`).value = playerNames[i];
+            }
+        };
+        document.getElementById('closeNames').onclick = () => {
+            document.getElementById('modalPlayers').style.display = 'none';
+        };
+        document.getElementById('saveNames').onclick = () => {
+            for (let i = 0; i < 4; i++) {
+                playerNames[i] = document.getElementById(`inpName${i}`).value || `Người ${i + 1}`;
+                if (document.getElementById(`name${i}`)) document.getElementById(`name${i}`).textContent = playerNames[i];
+                if (document.getElementById(`v2name${i}`)) document.getElementById(`v2name${i}`).textContent = playerNames[i];
+                if (document.getElementById(`v4name${i}`)) document.getElementById(`v4name${i}`).textContent = playerNames[i];
+            }
+            document.getElementById('modalPlayers').style.display = 'none';
+            syncFullStateToServer();
+        };
+
+        // Scoreboard Modal
+        document.getElementById('openScoreBtn').onclick = () => openScoreboard();
+        function openScoreboard() {
+            const grid = document.getElementById('scoreboardGrid');
+            grid.innerHTML = "";
+            for (let i = 0; i < 4; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'scorecell';
+                cell.innerHTML = `
+                    <div class="top">${playerNames[i]}</div>
+                    <div class="bottom" id="scoreModal${i}">${playerScores[i]}</div>
+                    <div class="ops">
+                        <button onclick="changeScore(${i},5)">+5</button>
+                        <button onclick="changeScore(${i},-5)">-5</button>
+                    </div>`;
+                grid.appendChild(cell);
+            }
+            document.getElementById('modalScore').style.display = 'flex';
+        }
+
+        document.getElementById('closeScores').onclick = () => {
+            document.getElementById('modalScore').style.display = 'none';
+        };
+        document.getElementById('saveScores').onclick = () => {
+            updateDisplayedScores();
+            document.getElementById('modalScore').style.display = 'none';
+            syncFullStateToServer();
+        };
+
+        function changeScore(i, delta) {
+            playerScores[i] += delta;
+            if (document.getElementById(`scoreModal${i}`)) document.getElementById(`scoreModal${i}`).textContent = playerScores[i];
+            updateDisplayedScores();
+            syncFullStateToServer();
+        }
+
+        function updateDisplayedScores() {
+            for (let i = 0; i < 4; i++) {
+                const s = playerScores[i];
+                if (document.getElementById(`score${i}`)) document.getElementById(`score${i}`).textContent = s;
+                if (document.getElementById(`v2score${i}`)) document.getElementById(`v2score${i}`).textContent = s;
+                if (document.getElementById(`v4score${i}`)) document.getElementById(`v4score${i}`).textContent = s;
+            }
+        }
+
+        function renderFullScoreboard() {
+            const container = document.getElementById('fullScoreboardDisplay');
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const card = document.createElement('div');
+                card.style.cssText = 'background:blue; color:white; border-radius:12px; padding:20px; width:200px; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.2);';
+                card.innerHTML = `
+                    <div style="font-size:1.4rem; margin-bottom:10px; color:aqua;">${playerNames[i]}</div>
+                    <div style="font-size:3rem; font-weight:bold; background:#ff00cc; border-radius:8px; padding:10px;">${playerScores[i]}</div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        // V1 Controls
+        function setTurn(i) {
+            currentPlayer = i;
+            for (let j = 0; j < 4; j++) {
+                document.getElementById(`box${j}`).classList.remove('active');
+            }
+            document.getElementById(`box${i}`).classList.add('active');
+            hintUsedForCurrent = false;
+            syncFullStateToServer();
+        }
+
+        function unsetTurn(i) {
+            if (currentPlayer === i) currentPlayer = null;
+            document.getElementById(`box${i}`).classList.remove('active');
+            syncFullStateToServer();
+        }
+
+        function v1Start() {
+            if (currentPlayer === null) return showPopup("Chưa chọn người chơi có lượt!");
+            timer = 45;
+            document.getElementById('timeBox').textContent = timer;
+            questionIndex[currentPlayer] = 0;
+            showV1Question();
+            startV1Timer();
+            sendSound('45Giay.mp3');
+        }
+
+        function startV1Timer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timer--;
+                document.getElementById('timeBox').textContent = timer;
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    stopSound('45Giay.mp3');
+                }
+                syncFullStateToServer();
+            }, 1000);
+        }
+
+        function showV1Question() {
+            const q = round1Data[currentPlayer] ? round1Data[currentPlayer][questionIndex[currentPlayer]] : null;
+            if (!q) return;
+            document.getElementById('qText').textContent = `Câu ${questionIndex[currentPlayer] + 1}/8: ${q.question}`;
+            document.getElementById('qHint').textContent = "";
+            syncFullStateToServer();
+        }
+
+        function v1Hint() {
+            if (currentPlayer === null) return;
+            hintUsedForCurrent = true;
+            const q = round1Data[currentPlayer][questionIndex[currentPlayer]];
+            const hintText = q && q.hint ? q.hint : "";
+            document.getElementById('qHint').textContent = "Gợi ý: " + hintText;
+            sendSound('GoiY.mp3');
+            syncFullStateToServer();
+        }
+
+        function v1Correct() {
+            if (currentPlayer === null) return;
+            const gain = hintUsedForCurrent ? 5 : 10;
+            playerScores[currentPlayer] += gain;
+            updateDisplayedScores();
+            sendSound('Dung V1.mp3');
+            hintUsedForCurrent = false;
+            nextV1Question();
+        }
+
+        function v1Wrong() {
+            if (currentPlayer === null) return;
+            playerScores[currentPlayer] = Math.max(0, playerScores[currentPlayer] - 10);
+            updateDisplayedScores();
+            sendSound('Sai V1.mp3');
+            hintUsedForCurrent = false;
+            nextV1Question();
+        }
+
+        function nextV1Question() {
+            questionIndex[currentPlayer]++;
+            hintUsedForCurrent = false;
+            document.getElementById('qHint').textContent = "";
+            if (questionIndex[currentPlayer] >= 8) {
+                clearInterval(timerInterval);
+                stopSound('45Giay.mp3');
+            } else {
+                showV1Question();
+            }
+            syncFullStateToServer();
+        }
+
+        function v1Pause() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                stopSound('45Giay.mp3');
+            } else {
+                startV1Timer();
+                sendSound('45Giay.mp3');
+            }
+        }
+
+        function v1Reset() {
+            clearInterval(timerInterval);
+            timer = 45;
+            document.getElementById('timeBox').textContent = timer;
+            document.getElementById('qText').textContent = "Đã reset Vòng 1";
+            document.getElementById('qHint').textContent = "";
+            stopSound('45Giay.mp3');
+            sendSound('Complete Nhập cuộc.mp3');
+            syncFullStateToServer();
+        }
+
+        // V2 Controls
+        function setPlayerState(pIndex, state) {
+            const el = document.getElementById(`v2box${pIndex}`);
+            if (!el) return;
+            if (state === 'blue') { el.style.background = 'var(--blue)'; el.style.color = 'white'; }
+            else if (state === 'pink') { el.style.background = '#ff00cc'; el.style.color = 'white'; sendSound('Bell V2.mp3'); }
+            else if (state === 'aqua') { el.style.background = 'aqua'; el.style.color = 'black'; }
+            else if (state === 'black') { el.style.background = 'black'; el.style.color = 'white'; sendSound('Bell V2.mp3'); }
+            syncFullStateToServer();
+        }
+
+        function openV2InputAnswers() {
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`ansName${i}`).value = playerNames[i];
+                document.getElementById(`ansInp${i}`).value = v2Answers[i] || '';
+            }
+            document.getElementById('modalV2Input').style.display = 'flex';
+        }
+        document.getElementById('closeV2Input').onclick = () => document.getElementById('modalV2Input').style.display = 'none';
+        document.getElementById('saveV2Answers').onclick = () => {
+            for (let i = 0; i < 4; i++) {
+                v2Answers[i] = document.getElementById(`ansInp${i}`).value || '';
+            }
+            document.getElementById('modalV2Input').style.display = 'none';
+            syncFullStateToServer();
+        };
+
+        function openV2ShowAnswers() {
+            sendSound('AnswersShowing.mp3');
+            switchView('v2_answers');
+        }
+
+        function renderV2AnswersPreview() {
+            const area = document.getElementById('v2AnswersPreviewArea');
+            if (!area) return;
+            area.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = 'display:flex; flex-direction:column; margin-bottom:12px; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);';
+                wrapper.innerHTML = `
+                    <div style="background:blue; color:white; padding:10px; font-weight:bold; text-align:center;">${playerNames[i]}</div>
+                    <div style="background:aqua; color:black; padding:12px; font-weight:bold; text-align:center; font-size:1.2rem;">${v2Answers[i] || '(Chưa nhập)'}</div>
+                `;
+                area.appendChild(wrapper);
+            }
+        }
+
+        function openV2BoardPopup() {
+            switchView('v2_board');
+        }
+
+        function v2StartTimer() {
+            sendSound('15s Vượt Lên.mp3');
+            clearInterval(v2TimerInterval);
+            v2Timer = 15;
+            document.getElementById('v2TimeBox').textContent = v2Timer;
+            v2TimerInterval = setInterval(() => {
+                v2Timer--;
+                document.getElementById('v2TimeBox').textContent = v2Timer;
+                if (v2Timer <= 0) clearInterval(v2TimerInterval);
+                syncFullStateToServer();
+            }, 1000);
+        }
+
+        function v2CloseQuestion() {
+            clearInterval(v2TimerInterval);
+            stopSound('15s Vượt Lên.mp3');
+            document.getElementById('v2qText').textContent = "Đã đóng câu hỏi";
+            v2Timer = 15;
+            document.getElementById('v2TimeBox').textContent = v2Timer;
+            syncFullStateToServer();
+        }
+
+        function renderV2QuestionsAndBoard() {
+            const top = document.getElementById("v2QTop");
+            if (!top) return;
+            top.innerHTML = "";
+            for (let i = 0; i < 3; i++) {
+                const q = v2Questions[i] || { used: false };
+                const el = document.createElement("div");
+                el.className = "v2-question-cell" + (q.used ? " used" : "") + (v2SelectedQuestionIndex === i ? " selected" : "");
+                el.textContent = i + 1;
+                el.onclick = () => { v2SelectedQuestionIndex = i; sendSound('ChonOCauhoi.mp3'); renderV2QuestionsAndBoard(); selectV2Question(i); };
+                top.appendChild(el);
+            }
+
+            const grid = document.getElementById("v2BoardGrid");
+            if (grid) {
+                grid.innerHTML = "";
+                for (let i = 0; i < 30; i++) {
+                    const cell = document.createElement("div");
+                    cell.className = "v2-board-cell";
+                    if (!v2Revealed[i]) {
+                        cell.style.background = "blue"; cell.style.color = "white"; cell.textContent = i + 1;
+                    } else {
+                        const isRed = v2RedCells.includes(i);
+                        cell.style.background = isRed ? "red" : "aqua";
+                        cell.style.color = isRed ? "white" : "black";
+                        cell.textContent = v2Board[i] === ' ' ? '' : v2Board[i];
+                    }
+                    cell.onclick = () => { v2Revealed[i] = true; renderV2QuestionsAndBoard(); syncFullStateToServer(); };
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function selectV2Question(idx) {
+            const q = v2Questions[idx];
+            if (q) {
+                document.getElementById('v2qText').textContent = q.question || `Câu ${idx + 1}`;
+                syncFullStateToServer();
+            }
+        }
+
+        function v2RevealAll() {
+            v2Revealed.fill(true);
+            renderV2QuestionsAndBoard();
+            sendSound('DungCNV.mp3');
+            syncFullStateToServer();
+        }
+
+        function v2ResetBoard() {
+            v2Revealed.fill(false);
+            v2Questions.forEach(q => q.used = false);
+            renderV2QuestionsAndBoard();
+            syncFullStateToServer();
+        }
+
+        // V3 Controls
+        function v3ShowQuestion() {
+            const q = v3Data[v3Current];
+            if (!q) return showPopup("Chưa có dữ liệu Vòng 3!");
+            document.getElementById('v3QuestionBox').textContent = `${v3Current + 1}. ${q.question}`;
+            sendSound('QuestionShowing.mp3');
+            syncFullStateToServer();
+        }
+
+        function v3RevealHint(i) {
+            const q = v3Data[v3Current];
+            if (!q) return;
+            const el = document.getElementById(`v3Hint${i}`);
+            el.textContent = q[`g${i}`] || `Dữ kiện ${i}`;
+            el.classList.add('revealed');
+            syncFullStateToServer();
+        }
+
+        function v3Start() {
+            v3Timer = 30;
+            document.getElementById('v3Timer').textContent = v3Timer;
+            sendSound('30s Chinh Phục.mp3');
+            clearInterval(v3Interval);
+            v3RevealHint(1);
+            v3Interval = setInterval(() => {
+                v3Timer--;
+                document.getElementById('v3Timer').textContent = v3Timer;
+                if (v3Timer === 20) v3RevealHint(2);
+                if (v3Timer === 10) v3RevealHint(3);
+                if (v3Timer <= 0) clearInterval(v3Interval);
+                syncFullStateToServer();
+            }, 1000);
+        }
+
+        function v3Close() {
+            clearInterval(v3Interval);
+            stopSound('30s Chinh Phục.mp3');
+            ['v3QuestionBox', 'v3Hint1', 'v3Hint2', 'v3Hint3'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.textContent = ""; el.classList.remove('revealed'); }
+            });
+            v3Timer = 30;
+            document.getElementById('v3Timer').textContent = v3Timer;
+            syncFullStateToServer();
+        }
+
+        function openV3Input() {
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`v3Name${i}`).value = playerNames[i];
+                document.getElementById(`v3Ans${i}`).value = v3Answers[i].ans || '';
+                document.getElementById(`v3Time${i}`).value = v3Answers[i].time || '';
+            }
+            document.getElementById('modalV3Input').style.display = 'flex';
+        }
+        document.getElementById('closeV3Inp').onclick = () => document.getElementById('modalV3Input').style.display = 'none';
+        document.getElementById('saveV3Ans').onclick = () => {
+            for (let i = 0; i < 4; i++) {
+                v3Answers[i].name = playerNames[i];
+                v3Answers[i].ans = document.getElementById(`v3Ans${i}`).value;
+                v3Answers[i].time = document.getElementById(`v3Time${i}`).value;
+            }
+            document.getElementById('modalV3Input').style.display = 'none';
+            syncFullStateToServer();
+        };
+
+        function openV3Show() {
+            sendSound('AnswersShowing.mp3');
+            switchView('v3_answers');
+        }
+
+        function renderV3AnswersPreview() {
+            const area = document.getElementById('v3AnswersPreviewArea');
+            if (!area) return;
+            area.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                const item = document.createElement('div');
+                item.style.cssText = 'background:blue; color:white; margin-bottom:12px; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;';
+                item.innerHTML = `
+                    <div>
+                        <div style="font-size:1.1rem; font-weight:bold; color:aqua;">${playerNames[i]}</div>
+                        <div style="font-size:1.3rem; margin-top:4px;">${v3Answers[i].ans || '(Không trả lời)'}</div>
+                    </div>
+                    <div style="background:#ff00cc; padding:6px 14px; border-radius:6px; font-size:1.2rem;">${v3Answers[i].time ? v3Answers[i].time + 's' : '--'}</div>
+                `;
+                area.appendChild(item);
+            }
+        }
+
+        function v3Next() {
+            v3Current++;
+            if (v3Data.length > 0 && v3Current >= v3Data.length) v3Current = 0;
+            v3Close();
+        }
+
+        // V4 Controls
+        function v4SetPlayerState(pIndex, state) {
+            const el = document.getElementById(`v4box${pIndex}`);
+            if (!el) return;
+            if (state === 'blue') { el.style.background = 'var(--blue)'; el.style.color = 'white'; }
+            else if (state === 'yellow') { el.style.background = 'yellow'; el.style.color = 'black'; sendSound('Star.mp3'); }
+            else if (state === 'pink') {
+                el.style.background = '#ff00cc'; el.style.color = 'white'; sendSound('Chuông V4.mp3');
+                if (v4PrevColors[pIndex] === 'yellow') {
+                    v4BracketState[pIndex] = (v4BracketState[pIndex] + 1) % 3;
+                }
+            }
+            else if (state === 'black') { el.style.background = 'black'; el.style.color = 'white'; }
+            v4PrevColors[pIndex] = state;
+            syncFullStateToServer();
+        }
+
+        function v4StartTimer() {
+            sendSound('15s Về Đích.mp3');
+            clearInterval(v4Interval);
+            v4Time = 15;
+            document.getElementById('v4TimeBox').textContent = v4Time;
+            v4Interval = setInterval(() => {
+                if (!v4Paused) {
+                    v4Time--;
+                    document.getElementById('v4TimeBox').textContent = v4Time;
+                    if (v4Time <= 0) clearInterval(v4Interval);
+                    syncFullStateToServer();
+                }
+            }, 1000);
+        }
+
+        function v4CloseQuestion() {
+            clearInterval(v4Interval);
+            stopSound('15s Về Đích.mp3');
+            document.getElementById('v4qText').textContent = "";
+            v4Time = 15;
+            document.getElementById('v4TimeBox').textContent = v4Time;
+            v4Paused = false;
+            document.getElementById("v4PauseBtn").textContent = "Tạm dừng";
+            syncFullStateToServer();
+        }
+
+        function v4NextQuestion() {
+            v4Index++;
+            if (v4Questions.length > 0 && v4Index >= v4Questions.length) v4Index = 0;
+            v4CloseQuestion();
+        }
+
+        function v4ShowQuestion() {
+            if (v4Index === -1 && v4Questions.length > 0) v4Index = 0;
+            const q = v4Questions[v4Index];
+            if (q) {
+                document.getElementById('v4qText').textContent = q.question;
+                syncFullStateToServer();
+            }
+        }
+
+        function toggleV4Pause() {
+            v4Paused = !v4Paused;
+            document.getElementById("v4PauseBtn").textContent = v4Paused ? "Tiếp tục" : "Tạm dừng";
+            syncFullStateToServer();
+        }
+
+        function openV4RemoveBetPopup() {
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`removeName${i}`).textContent = playerNames[i];
+            }
+            document.getElementById("modalV4RemoveBet").style.display = "flex";
+        }
+        document.getElementById("closeRemoveBetBtn").onclick = () => document.getElementById("modalV4RemoveBet").style.display = "none";
+        document.getElementById("saveRemoveBetBtn").onclick = () => {
+            const selected = document.querySelector('input[name="removeBet"]:checked');
+            if (selected) {
+                const idx = parseInt(selected.value);
+                v4BracketState[idx] = 0;
+            }
+            document.getElementById("modalV4RemoveBet").style.display = "none";
+            syncFullStateToServer();
+        };
+
+        // VQPhu Controls
+        function vqphuStartTimer() {
+            sendSound('20s Câu Hỏi Phụ.mp3');
+            clearInterval(vqphuTimerInterval);
+            vqphuTimer = 20;
+            document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
+            vqphuTimerInterval = setInterval(() => {
+                vqphuTimer--;
+                document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
+                if (vqphuTimer <= 0) clearInterval(vqphuTimerInterval);
+                syncFullStateToServer();
+            }, 1000);
+        }
+
+        function vqphuCloseQuestion() {
+            clearInterval(vqphuTimerInterval);
+            stopSound('20s Câu Hỏi Phụ.mp3');
+            document.getElementById('vqphuQuestion').textContent = "";
+            document.getElementById('vqphuLeft').innerHTML = "";
+            document.getElementById('vqphuRight').innerHTML = "";
+            vqphuRevealed = false;
+            vqphuTimer = 20;
+            document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
+            syncFullStateToServer();
+        }
+
+        function vqphuNext() {
+            if (vqphuData.length > 0) vqphuIndex = (vqphuIndex + 1) % vqphuData.length;
+            vqphuCloseQuestion();
+        }
+
+        function vqphuReveal() {
+            vqphuRevealed = true;
+            renderVQPhu();
+            syncFullStateToServer();
+        }
+
+        function renderVQPhu() {
+            const q = vqphuData[vqphuIndex];
+            if (!q) return;
+            document.getElementById('vqphuQuestion').textContent = q.question || "";
+            const left = document.getElementById('vqphuLeft');
+            const right = document.getElementById('vqphuRight');
+            left.innerHTML = right.innerHTML = "";
+            for (let i = 1; i <= 8; i++) {
+                const text = q[`event${i}`] || "";
+                const div = document.createElement('div');
+                div.textContent = vqphuRevealed ? `${i}. ${text}` : "";
+                div.style.cssText = 'background:blue; color:white; border-radius:8px; padding:10px; text-align:center; min-height:50px; display:flex; align-items:center; justify-content:center;';
+                if (i <= 4) left.appendChild(div);
+                else right.appendChild(div);
+            }
+        }
+
+        function openVQPhuInput() {
+            const modal = document.getElementById('modalVQPhuInput');
+            modal.style.display = 'flex';
+            const cont = document.getElementById('vqphuInputContainer');
+            cont.innerHTML = `
+                <label style="display:block;text-align:center;font-weight:bold;margin-bottom:6px;">
+                  Nhập số lượng người chơi (2-16):
+                </label>
+                <input id="vqphuNumPlayers" type="number" min="2" max="16" value="4" style="width:100%;text-align:center;">
+                <div id="vqphuInputs" style="margin-top:8px;"></div>
+            `;
+            document.getElementById('vqphuNumPlayers').onchange = () => buildVQPhuInputs();
+            buildVQPhuInputs();
+        }
+
+        function buildVQPhuInputs() {
+            const n = parseInt(document.getElementById('vqphuNumPlayers').value) || 4;
+            const box = document.getElementById('vqphuInputs');
+            box.innerHTML = "";
+            for (let i = 0; i < n; i++) {
+                box.innerHTML += `
+                  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:6px;">
+                    <input placeholder="Tên người chơi ${i + 1}" value="${playerNames[i] || 'Thí sinh ' + (i+1)}">
+                    <input placeholder="Đáp án">
+                    <input placeholder="Thời gian (s)">
+                  </div>`;
+            }
+        }
+
+        function vqphuSaveInput() {
+            const rows = [...document.querySelectorAll('#vqphuInputs > div')];
+            vqphuAnswers = rows.map((row, idx) => {
+                const inputs = row.querySelectorAll('input');
+                return {
+                    name: inputs[0].value || `Thí sinh ${idx + 1}`,
+                    ans: inputs[1].value || "",
+                    time: inputs[2].value || ""
+                };
+            });
+            document.getElementById('modalVQPhuInput').style.display = 'none';
+            syncFullStateToServer();
+        }
+
+        function openVQPhuShow() {
+            sendSound('AnswersShowing.mp3');
+            switchView('vqphu_answers');
+        }
+
+        function renderVQPhuAnswersPreview() {
+            const area = document.getElementById('vqphuAnswersPreviewArea');
+            if (!area) return;
+            area.innerHTML = '';
+            vqphuAnswers.forEach(item => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background:blue; color:white; border-radius:8px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;';
+                div.innerHTML = `
+                    <div>
+                        <div style="color:aqua; font-size:1.1rem; font-weight:bold;">${item.name}</div>
+                        <div style="font-size:1.2rem; margin-top:4px;">${item.ans || '(Chưa có đáp án)'}</div>
+                    </div>
+                    <div style="background:#ff00cc; padding:6px 12px; border-radius:6px;">${item.time ? item.time + 's' : '--'}</div>
+                `;
+                area.appendChild(div);
+            });
+        }
+
+        function closeVQPhuInput() { document.getElementById('modalVQPhuInput').style.display = 'none'; }
+
+        // Excel Import Handler
+        document.getElementById('importBtn').onclick = () => {
+            let input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.xlsx,.xls';
+            input.onchange = e => {
+                let file = e.target.files[0];
+                if (!file) return;
+                let reader = new FileReader();
+                reader.onload = evt => {
+                    try {
+                        let data = new Uint8Array(evt.target.result);
+                        let workbook = XLSX.read(data, { type: 'array' });
+                        let msgs = [];
+
+                        // V1
+                        if (workbook.Sheets['Vòng 1'] || workbook.Sheets['Vong 1']) {
+                            let sheet = workbook.Sheets['Vòng 1'] || workbook.Sheets['Vong 1'];
+                            let json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                            round1Data = [[], [], [], []];
+                            for (let i = 2; i < json.length; i++) {
+                                let row = json[i] || [];
+                                for (let p = 0; p < 4; p++) {
+                                    round1Data[p].push({
+                                        question: row[1 + p * 3] ? row[1 + p * 3].toString().trim() : "",
+                                        answer: row[2 + p * 3] ? row[2 + p * 3].toString().trim() : "",
+                                        hint: row[3 + p * 3] ? row[3 + p * 3].toString().trim() : ""
+                                    });
+                                }
+                            }
+                            msgs.push("Vòng 1");
+                        }
+
+                        // V2
+                        if (workbook.Sheets['Vòng 2'] || workbook.Sheets['Vong 2']) {
+                            let sheet = workbook.Sheets['Vòng 2'] || workbook.Sheets['Vong 2'];
+                            let json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                            v2Questions = [];
+                            for (let i = 1; i <= 8 && i < json.length; i++) {
+                                let row = json[i] || [];
+                                v2Questions.push({
+                                    question: row[1] ? row[1].toString().trim() : "",
+                                    answer: row[2] ? row[2].toString().trim() : "",
+                                    boardRaw: row[3] ? row[3].toString().trim() : "",
+                                    used: false
+                                });
+                            }
+                            // Assign Board
+                            let boardSource = "";
+                            for (let q of v2Questions) {
+                                if (q.boardRaw) { boardSource = q.boardRaw; break; }
+                            }
+                            boardSource = boardSource.replace(/\s+/g, '').toUpperCase().replace(/[^A-Z0-9]/gi, '');
+                            let arr = boardSource.split('');
+                            while (arr.length < 30) arr.splice(Math.floor(Math.random() * (arr.length + 1)), 0, ' ');
+                            v2Board = arr.slice(0, 30);
+                            v2Revealed = new Array(30).fill(false);
+
+                            // Random 12 red cells
+                            const indices = [...Array(30).keys()].sort(() => Math.random() - 0.5);
+                            v2RedCells = indices.slice(0, 12);
+                            renderV2QuestionsAndBoard();
+                            msgs.push("Vòng 2");
+                        }
+
+                        // V3
+                        if (workbook.Sheets['Vòng 3'] || workbook.Sheets['Vong 3']) {
+                            let sheet = workbook.Sheets['Vòng 3'] || workbook.Sheets['Vong 3'];
+                            let json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                            v3Data = [];
+                            for (let i = 1; i < json.length; i++) {
+                                let r = json[i] || [];
+                                if (r[1]) {
+                                    v3Data.push({
+                                        question: r[1].toString().trim(),
+                                        g1: r[2] ? r[2].toString().trim() : "",
+                                        g2: r[3] ? r[3].toString().trim() : "",
+                                        g3: r[4] ? r[4].toString().trim() : "",
+                                        answer: r[5] ? r[5].toString().trim() : ""
+                                    });
+                                }
+                            }
+                            msgs.push("Vòng 3");
+                        }
+
+                        // V4
+                        if (workbook.Sheets['Vòng 4'] || workbook.Sheets['Vong 4']) {
+                            let sheet = workbook.Sheets['Vòng 4'] || workbook.Sheets['Vong 4'];
+                            let json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                            v4Questions = [];
+                            for (let i = 1; i < json.length; i++) {
+                                let r = json[i] || [];
+                                if (r[1]) {
+                                    v4Questions.push({
+                                        question: r[1].toString().trim(),
+                                        answer: r[2] ? r[2].toString().trim() : ""
+                                    });
+                                }
+                            }
+                            msgs.push("Vòng 4");
+                        }
+
+                        // VQPhu
+                        if (workbook.Sheets['Câu Hỏi Phụ'] || workbook.Sheets['Cau Hoi Phu']) {
+                            let sheet = workbook.Sheets['Câu Hỏi Phụ'] || workbook.Sheets['Cau Hoi Phu'];
+                            let json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                            vqphuData = [];
+                            for (let i = 1; i < json.length; i++) {
+                                let r = json[i] || [];
+                                if (r[0]) {
+                                    vqphuData.push({
+                                        question: r[0].toString().trim(),
+                                        event1: r[1] ? r[1].toString().trim() : "",
+                                        event2: r[2] ? r[2].toString().trim() : "",
+                                        event3: r[3] ? r[3].toString().trim() : "",
+                                        event4: r[4] ? r[4].toString().trim() : "",
+                                        event5: r[5] ? r[5].toString().trim() : "",
+                                        event6: r[6] ? r[6].toString().trim() : "",
+                                        event7: r[7] ? r[7].toString().trim() : "",
+                                        event8: r[8] ? r[8].toString().trim() : ""
+                                    });
+                                }
+                            }
+                            msgs.push("Câu hỏi phụ");
+                        }
+
+                        showPopup("✅ Đã nhập đề thành công: " + msgs.join(", "));
+                        syncFullStateToServer();
+                    } catch (err) {
+                        showPopup("❌ Lỗi đọc file Excel.");
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            };
+            input.click();
+        };
+
+        // Option Score Modal
+        document.getElementById("btnOption").onclick = () => {
+            document.getElementById("optionModal").style.display = "flex";
+        };
+        document.getElementById("closeOptionBtn").onclick = () => {
+            document.getElementById("optionModal").style.display = "none";
+        };
+        document.getElementById("saveOptionBtn").onclick = () => {
+            const selected = document.querySelector('input[name="scoreOption"]:checked').value;
+            if (selected === "reset") playerScores = [30, 30, 30, 30];
+            updateDisplayedScores();
+            document.getElementById("optionModal").style.display = "none";
+            syncFullStateToServer();
+        };
+
+        // Init on Socket Connect
+        socket.on('connect', () => {
+            console.log('[Controller] Connected to server.');
+            syncFullStateToServer();
+        });
+    </script>
+</body>
+
+</html>
