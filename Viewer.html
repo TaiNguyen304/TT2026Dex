@@ -243,11 +243,11 @@
         }
 
         .v2-answers-side-img {
-            width: 180px;
-            height: 420px;
-            background-image: url('Vượt lên.png');
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
+            max-width: 180px;
+            max-height: 420px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             flex-shrink: 0;
         }
 
@@ -390,11 +390,11 @@
         }
 
         .v3-answers-side-img {
-            width: 180px;
-            height: 420px;
-            background-image: url('Đối đầu.png');
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
+            max-width: 180px;
+            max-height: 420px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
             flex-shrink: 0;
         }
 
@@ -651,7 +651,7 @@
         <!-- VIEW 5: V2 ANSWERS SEPARATE VIEW -->
         <div id="view-v2_answers" class="view-panel hidden">
             <div class="v2-answers-container">
-                <div class="v2-answers-side-img"></div>
+                <img src="Vượt lên.png" class="v2-answers-side-img" alt="Vượt lên">
                 <div class="v2-answers-list" id="v2AnswersListViewer"></div>
             </div>
         </div>
@@ -683,7 +683,7 @@
         <!-- VIEW 8: V3 ANSWERS SEPARATE VIEW -->
         <div id="view-v3_answers" class="view-panel hidden">
             <div class="v3-answers-container">
-                <div class="v3-answers-side-img"></div>
+                <img src="Đối đầu.png" class="v3-answers-side-img" alt="Đối đầu">
                 <div class="v3-answers-list" id="v3AnswersListViewer"></div>
             </div>
         </div>
@@ -836,6 +836,11 @@
         let currentViewGraphics = {};
 
         function switchViewerScreen(view) {
+            if (currentActiveView !== view) {
+                if (view === 'v2_answers' || view === 'v3_answers') {
+                    playSound('AnswersShowing.mp3');
+                }
+            }
             currentActiveView = view;
             document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
             const target = document.getElementById(`view-${view}`);
