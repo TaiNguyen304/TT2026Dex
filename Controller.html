@@ -1638,6 +1638,9 @@
             if (state === 'pink' || state === 'black') {
                 sendSound('Bell V2.mp3');
             }
+            if (currentView === 'v2_answers') {
+                renderV2AnswersPreview();
+            }
             syncFullStateToServer();
         }
 
@@ -1654,6 +1657,9 @@
                 v2Answers[i] = document.getElementById(`ansInp${i}`).value || '';
             }
             document.getElementById('modalV2Input').style.display = 'none';
+            if (currentView === 'v2_answers') {
+                renderV2AnswersPreview();
+            }
             syncFullStateToServer();
         };
 
@@ -1667,11 +1673,14 @@
             if (!area) return;
             area.innerHTML = '';
             for (let i = 0; i < 4; i++) {
+                const isBlack = v2PlayerColors && v2PlayerColors[i] === 'black';
+                const nameStyle = isBlack ? 'background:#000000; color:#ffffff;' : 'background:blue; color:white;';
+                const ansStyle = isBlack ? 'background:#000000; color:#ffffff;' : 'background:aqua; color:black;';
                 const wrapper = document.createElement('div');
                 wrapper.style.cssText = 'display:flex; flex-direction:column; align-items:flex-start; margin-bottom:12px; width:100%; max-width:780px;';
                 wrapper.innerHTML = `
-                    <div style="background:blue; color:white; width:180px; padding:8px 10px; font-weight:bold; text-align:center; border-radius:8px 8px 0 0; box-sizing:border-box;">${playerNames[i]}</div>
-                    <div style="background:aqua; color:black; width:100%; min-height:54px; height:54px; padding:12px; font-weight:bold; text-align:center; font-size:1.2rem; border-radius:0 8px 8px 8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); box-sizing:border-box; display:flex; align-items:center; justify-content:center;">${v2Answers[i] || ''}</div>
+                    <div style="${nameStyle} width:180px; padding:8px 10px; font-weight:bold; text-align:center; border-radius:8px 8px 0 0; box-sizing:border-box;">${playerNames[i]}</div>
+                    <div style="${ansStyle} width:100%; min-height:54px; height:54px; padding:12px; font-weight:bold; text-align:center; font-size:1.2rem; border-radius:0 8px 8px 8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); box-sizing:border-box; display:flex; align-items:center; justify-content:center;">${v2Answers[i] || ''}</div>
                 `;
                 area.appendChild(wrapper);
             }

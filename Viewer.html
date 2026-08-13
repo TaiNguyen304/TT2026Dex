@@ -1154,7 +1154,7 @@
                 }
 
                 // Render V2 Answers Separate View
-                renderV2AnswersViewer(names, state.v2State.answers);
+                renderV2AnswersViewer(names, state.v2State.answers, state.v2State.playerColors);
 
                 // Render V2 Board Separate View
                 renderV2BoardViewer(state.v2State);
@@ -1224,17 +1224,21 @@
             renderFullScoreboardViewer(names, scores);
         }
 
-        function renderV2AnswersViewer(names, answers) {
+        function renderV2AnswersViewer(names, answers, playerColors) {
             const container = document.getElementById('v2AnswersListViewer');
             if (!container) return;
             container.innerHTML = '';
             const ansArr = answers || ["", "", "", ""];
+            const colors = playerColors || ['blue', 'blue', 'blue', 'blue'];
             for (let i = 0; i < 4; i++) {
+                const isBlack = colors[i] === 'black';
+                const nameStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
+                const textStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
                 const item = document.createElement('div');
                 item.className = 'v2-answer-item';
                 item.innerHTML = `
-                    <div class="v2-answer-name">${names[i]}</div>
-                    <div class="v2-answer-text">${ansArr[i] || ''}</div>
+                    <div class="v2-answer-name" style="${nameStyle}">${names[i]}</div>
+                    <div class="v2-answer-text" style="${textStyle}">${ansArr[i] || ''}</div>
                 `;
                 container.appendChild(item);
             }
