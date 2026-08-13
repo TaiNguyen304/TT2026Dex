@@ -417,6 +417,116 @@
 
         .hidden { display: none !important; }
 
+        /* VIEW: V2 & V3 ANSWERS CONTAINERS */
+        .v2-answers-container, .v3-answers-container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            max-width: 100%;
+            margin: 20px auto;
+        }
+
+        .v2-answers-side-img, .v3-answers-side-img {
+            max-width: 180px;
+            max-height: 420px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .v2-answers-list, .v3-answers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 0 0 auto;
+            max-width: 100%;
+        }
+
+        .v2-answer-item, .v3-answer-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 780px;
+            max-width: 100%;
+        }
+
+        .v2-answer-name, .v3-answer-name {
+            width: 180px;
+            background: var(--blue);
+            color: var(--white);
+            padding: 8px 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .v2-answer-text {
+            width: 780px;
+            max-width: 100%;
+            background: var(--aqua);
+            color: var(--black);
+            padding: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            min-height: 54px;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-top-right-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        .v3-answer-bottom {
+            display: flex;
+            width: 780px;
+            max-width: 100%;
+            height: 54px;
+            min-height: 54px;
+            background: var(--aqua);
+            color: var(--black);
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-top-right-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+
+        .v3-answer-text {
+            flex: 1;
+            padding: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .v3-answer-time {
+            background: var(--pink);
+            color: var(--white);
+            width: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            height: 100%;
+        }
+
         .scoreboard-grid {
             display: flex;
             gap: 12px;
@@ -686,7 +796,10 @@
         <!-- VIEW 5: V2 ANSWERS SEPARATE (VIEWER DISPLAY PREVIEW) -->
         <div id="view-v2_answers" class="view-panel hidden">
             <h3 style="text-align:center;">VÒNG VƯỢT LÊN - HIỆN ĐÁP ÁN THÍ SINH (VIEWER SEPARATE VIEW)</h3>
-            <div id="v2AnswersPreviewArea" style="max-width:800px; margin:20px auto;"></div>
+            <div class="v2-answers-container">
+                <img src="Vượt lên.png" class="v2-answers-side-img" alt="Vượt lên">
+                <div class="v2-answers-list" id="v2AnswersPreviewArea"></div>
+            </div>
             <div style="text-align:center; margin-top:15px;">
                 <button style="background:blue; color:white;" onclick="switchView('v2')">Quay lại Vượt Lên Main</button>
             </div>
@@ -734,7 +847,10 @@
         <!-- VIEW 8: V3 ANSWERS SEPARATE VIEW -->
         <div id="view-v3_answers" class="view-panel hidden">
             <h3 style="text-align:center;">VÒNG ĐỐI ĐẦU - HIỆN ĐÁP ÁN THÍ SINH (VIEWER SEPARATE VIEW)</h3>
-            <div id="v3AnswersPreviewArea" style="max-width:800px; margin:20px auto;"></div>
+            <div class="v3-answers-container">
+                <img src="Đối đầu.png" class="v3-answers-side-img" alt="Đối đầu">
+                <div class="v3-answers-list" id="v3AnswersPreviewArea"></div>
+            </div>
             <div style="text-align:center; margin-top:15px;">
                 <button style="background:blue; color:white;" onclick="switchView('v3')">Quay lại Đối Đầu Main</button>
             </div>
@@ -1674,13 +1790,13 @@
             area.innerHTML = '';
             for (let i = 0; i < 4; i++) {
                 const isBlack = v2PlayerColors && v2PlayerColors[i] === 'black';
-                const nameStyle = isBlack ? 'background:#000000; color:#ffffff;' : 'background:blue; color:white;';
-                const ansStyle = isBlack ? 'background:#000000; color:#ffffff;' : 'background:aqua; color:black;';
+                const nameStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
+                const ansStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
                 const wrapper = document.createElement('div');
-                wrapper.style.cssText = 'display:flex; flex-direction:column; align-items:flex-start; margin-bottom:12px; width:100%; max-width:780px;';
+                wrapper.className = 'v2-answer-item';
                 wrapper.innerHTML = `
-                    <div style="${nameStyle} width:180px; padding:8px 10px; font-weight:bold; text-align:center; border-radius:8px 8px 0 0; box-sizing:border-box;">${playerNames[i]}</div>
-                    <div style="${ansStyle} width:100%; min-height:54px; height:54px; padding:12px; font-weight:bold; text-align:center; font-size:1.2rem; border-radius:0 8px 8px 8px; box-shadow:0 4px 10px rgba(0,0,0,0.1); box-sizing:border-box; display:flex; align-items:center; justify-content:center;">${v2Answers[i] || ''}</div>
+                    <div class="v2-answer-name" style="${nameStyle}">${playerNames[i]}</div>
+                    <div class="v2-answer-text" style="${ansStyle}">${v2Answers[i] || ''}</div>
                 `;
                 area.appendChild(wrapper);
             }
@@ -1885,12 +2001,12 @@
             area.innerHTML = '';
             for (let i = 0; i < 4; i++) {
                 const item = document.createElement('div');
-                item.style.cssText = 'display:flex; flex-direction:column; align-items:flex-start; margin-bottom:12px; width:100%; max-width:780px;';
+                item.className = 'v3-answer-item';
                 item.innerHTML = `
-                    <div style="background:blue; color:white; width:180px; padding:8px 10px; font-weight:bold; text-align:center; border-radius:8px 8px 0 0; box-sizing:border-box;">${playerNames[i]}</div>
-                    <div style="display:flex; width:100%; min-height:54px; height:54px; background:aqua; color:black; border-radius:0 8px 8px 8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1); box-sizing:border-box;">
-                        <div style="flex:1; padding:12px; font-size:1.2rem; font-weight:bold; text-align:center; display:flex; align-items:center; justify-content:center;">${v3Answers[i].ans || ''}</div>
-                        <div style="background:#ff00cc; color:white; width:100px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; font-weight:bold; height:100%;">${v3Answers[i].time ? v3Answers[i].time + 's' : '--'}</div>
+                    <div class="v3-answer-name">${playerNames[i]}</div>
+                    <div class="v3-answer-bottom">
+                        <div class="v3-answer-text">${v3Answers[i].ans || ''}</div>
+                        <div class="v3-answer-time">${v3Answers[i].time ? v3Answers[i].time + 's' : '--'}</div>
                     </div>
                 `;
                 area.appendChild(item);
