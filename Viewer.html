@@ -1068,7 +1068,8 @@
 
             // Player Names & Scores
             const names = state.playerNames || ["Người 1", "Người 2", "Người 3", "Người 4"];
-            const scores = state.playerScores || [30, 30, 30, 30];
+            const rawScores = state.playerScores || [30, 30, 30, 30];
+            const scores = rawScores.map(s => Math.max(0, s));
 
             for (let i = 0; i < 4; i++) {
                 // V1

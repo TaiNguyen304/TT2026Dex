@@ -1243,6 +1243,7 @@
         }
 
         function syncFullStateToServer() {
+            playerScores = playerScores.map(s => Math.max(0, s));
             socket.emit('updateState', {
                 currentView,
                 graphicsVisible,
@@ -1402,6 +1403,7 @@
 
         function changeScore(i, delta) {
             playerScores[i] += delta;
+            if (playerScores[i] < 0) playerScores[i] = 0;
             if (document.getElementById(`scoreModal${i}`)) document.getElementById(`scoreModal${i}`).textContent = playerScores[i];
             updateDisplayedScores();
             syncFullStateToServer();
@@ -1409,6 +1411,7 @@
 
         function updateDisplayedScores() {
             for (let i = 0; i < 4; i++) {
+                if (playerScores[i] < 0) playerScores[i] = 0;
                 const s = playerScores[i];
                 if (document.getElementById(`score${i}`)) document.getElementById(`score${i}`).textContent = s;
                 if (document.getElementById(`v2score${i}`)) document.getElementById(`v2score${i}`).textContent = s;
@@ -1421,6 +1424,7 @@
             if (!container) return;
             container.innerHTML = '';
             for (let i = 0; i < 4; i++) {
+                if (playerScores[i] < 0) playerScores[i] = 0;
                 const card = document.createElement('div');
                 card.style.cssText = 'background:blue; color:white; border-radius:12px; padding:20px; width:200px; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.2);';
                 card.innerHTML = `
@@ -1438,9 +1442,8 @@
             if (currentPlayer === null) return false;
             const qCountReached = questionIndex[currentPlayer] >= 8;
             const timeOut = timer <= 0;
-            const scoreNeg = playerScores[currentPlayer] < 0;
 
-            if (qCountReached || timeOut || scoreNeg) {
+            if (qCountReached || timeOut) {
                 isV1Ended = true;
                 if (timerInterval) {
                     clearInterval(timerInterval);
@@ -1457,7 +1460,7 @@
             const timeBox = document.getElementById('timeBox');
             if (!timeBox) return;
             timeBox.textContent = timer;
-            if (isV1Ended || timer <= 0 || (currentPlayer !== null && (questionIndex[currentPlayer] >= 8 || playerScores[currentPlayer] < 0))) {
+            if (isV1Ended || timer <= 0 || (currentPlayer !== null && questionIndex[currentPlayer] >= 8)) {
                 timeBox.style.background = '#000000';
                 timeBox.style.color = '#ffffff';
                 isV1Ended = true;
@@ -1547,6 +1550,7 @@
             if (currentPlayer === null) return;
             if (isV1Ended) return showPopup("Lượt chơi đã kết thúc!");
             playerScores[currentPlayer] = playerScores[currentPlayer] - 10;
+            if (playerScores[currentPlayer] < 0) playerScores[currentPlayer] = 0;
             updateDisplayedScores();
             sendSound('Sai V1.mp3');
             hintUsedForCurrent = false;
