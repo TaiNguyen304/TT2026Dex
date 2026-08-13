@@ -1441,9 +1441,8 @@
         function checkAndTriggerV1End() {
             if (currentPlayer === null) return false;
             const qCountReached = questionIndex[currentPlayer] >= 8;
-            const timeOut = timer <= 0;
 
-            if (qCountReached || timeOut) {
+            if (qCountReached) {
                 isV1Ended = true;
                 if (timerInterval) {
                     clearInterval(timerInterval);
@@ -1459,11 +1458,10 @@
         function updateV1ClockDisplay() {
             const timeBox = document.getElementById('timeBox');
             if (!timeBox) return;
-            timeBox.textContent = timer;
+            timeBox.textContent = Math.max(0, timer);
             if (isV1Ended || timer <= 0 || (currentPlayer !== null && questionIndex[currentPlayer] >= 8)) {
                 timeBox.style.background = '#000000';
                 timeBox.style.color = '#ffffff';
-                isV1Ended = true;
             } else {
                 timeBox.style.background = 'var(--blue)';
                 timeBox.style.color = 'var(--white)';
@@ -1503,10 +1501,15 @@
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timer--;
-                updateV1ClockDisplay();
                 if (timer <= 0) {
-                    checkAndTriggerV1End();
+                    timer = 0;
+                    if (timerInterval) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                    }
+                    stopSound('45Giay.mp3');
                 }
+                updateV1ClockDisplay();
                 syncFullStateToServer();
             }, 1000);
         }
@@ -1520,10 +1523,10 @@
         }
 
         function v1Hint() {
-            if (currentPlayer === null) return;
-            if (isV1Ended) return showPopup("Lượt chơi đã kết thúc!");
+            if (currentPlayer === null) return showPopup("Chưa chọn người chơi!");
             hintUsedForCurrent = true;
-            const q = round1Data[currentPlayer][questionIndex[currentPlayer]];
+            const idx = Math.min(questionIndex[currentPlayer] || 0, 7);
+            const q = round1Data[currentPlayer] ? round1Data[currentPlayer][idx] : null;
             const hintText = q && q.hint ? q.hint : "";
             document.getElementById('qHint').textContent = "Gợi ý: " + hintText;
             sendSound('GoiY.mp3');
