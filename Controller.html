@@ -974,10 +974,62 @@
     </div>
 
     <!-- SOCKET.IO & EXCEL JS -->
+    <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <script>
+        function disableDevTools() {
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+                return false;
+            }, false);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'S' || e.key === 's' || e.keyCode === 83)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, true);
+
+            document.addEventListener('dragstart', function (e) {
+                e.preventDefault();
+            });
+
+            if (window.DisableDevtool) {
+                try {
+                    window.DisableDevtool();
+                } catch (err) {}
+            }
+        }
+        disableDevTools();
+
         const socketHost = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.includes('file://'))
           ? window.location.origin
           : 'https://tt2026dex.onrender.com';
@@ -996,8 +1048,8 @@
         let currentView = 'opening';
         let graphicsVisible = true;
         let viewGraphics = {
-            opening: true, players: true, v1: true, v2: true, v2_answers: true,
-            v2_board: true, v3: true, v3_answers: true, v4: true, vqphu: true,
+            opening: true, players: true, v1: false, v2: true, v2_answers: true,
+            v2_board: true, v3: false, v3_answers: true, v4: true, vqphu: true,
             vqphu_answers: true, scoreboard: true
         };
 
@@ -1055,8 +1107,14 @@
         let vqphuRevealed = false;
 
         // Send Sound to Viewer
-        function sendSound(soundFile) {
-            socket.emit('playSound', soundFile);
+        function sendSound(soundFile, volume) {
+            if (typeof soundFile === 'object' && soundFile !== null) {
+                socket.emit('playSound', soundFile);
+            } else if (volume !== undefined) {
+                socket.emit('playSound', { name: soundFile, volume: volume });
+            } else {
+                socket.emit('playSound', soundFile);
+            }
         }
 
         function stopSound(soundFile) {
@@ -1258,15 +1316,22 @@
         function renderPlayerList() {
             document.getElementById('matchNameDisplay').textContent = matchName || "";
             const list = document.getElementById('playersListArea');
-            list.innerHTML = '';
+            if (!list) return;
+            const pVis = playerVisibility || [false, false, false, false];
             for (let i = 0; i < 4; i++) {
-                const div = document.createElement('div');
-                div.className = 'player-card';
-                div.textContent = playerNames[i];
-                div.onclick = () => {
-                    div.textContent = playerNames[i];
-                };
-                list.appendChild(div);
+                let card = document.getElementById(`ctrlPlayerCard${i}`);
+                if (!card) {
+                    card = document.createElement('div');
+                    card.id = `ctrlPlayerCard${i}`;
+                    card.className = `player-card card-p${i}`;
+                    list.appendChild(card);
+                }
+                card.textContent = playerNames[i];
+                if (pVis[i]) {
+                    card.classList.add('visible');
+                } else {
+                    card.classList.remove('visible');
+                }
             }
         }
 
@@ -1359,7 +1424,7 @@
                 const card = document.createElement('div');
                 card.style.cssText = 'background:blue; color:white; border-radius:12px; padding:20px; width:200px; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.2);';
                 card.innerHTML = `
-                    <div style="font-size:1.4rem; margin-bottom:10px; color:aqua;">${playerNames[i]}</div>
+                    <div style="font-size:1.4rem; margin-bottom:10px; color:white;">${playerNames[i]}</div>
                     <div style="font-size:3rem; font-weight:bold; background:#ff00cc; border-radius:8px; padding:10px;">${playerScores[i]}</div>
                 `;
                 container.appendChild(card);
@@ -1428,7 +1493,7 @@
             questionIndex[currentPlayer] = 0;
             showV1Question();
             startV1Timer();
-            sendSound('45Giay.mp3');
+            sendSound('45Giay.mp3', 0.5);
         }
 
         function startV1Timer() {
@@ -1704,6 +1769,8 @@
         function v2ResetBoard() {
             v2Revealed.fill(false);
             v2Questions.forEach(q => q.used = false);
+            v2SelectedQuestionIndex = null;
+            if (document.getElementById('v2qText')) document.getElementById('v2qText').textContent = "";
             renderV2QuestionsAndBoard();
             syncFullStateToServer();
         }

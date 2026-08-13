@@ -21,14 +21,15 @@ const PORT = process.env.PORT || 3000;
 let gameState = {
   currentView: 'opening', // opening, players, v1, v2, v2_answers, v2_board, v3, v3_answers, v4, vqphu, vqphu_answers, scoreboard
   graphicsVisible: true,
+  playerVisibility: [false, false, false, false],
   viewGraphics: {
     opening: true,
     players: true,
-    v1: true,
+    v1: false,
     v2: true,
     v2_answers: true,
     v2_board: true,
-    v3: true,
+    v3: false,
     v3_answers: true,
     v4: true,
     vqphu: true,

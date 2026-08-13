@@ -605,7 +605,7 @@
 
         .score-card-name {
             font-size: 1.6rem;
-            color: var(--aqua);
+            color: var(--white);
             margin-bottom: 16px;
         }
 
@@ -671,7 +671,12 @@
         <!-- VIEW 2: PLAYERS LIST -->
         <div id="view-players" class="view-panel hidden">
             <h2 id="matchNameDisplay" class="match-name-header">THỬ THÁCH 2026</h2>
-            <div class="players-list" id="playersListArea"></div>
+            <div class="players-list" id="playersListArea">
+                <div class="player-card card-p0" id="playerCard0"></div>
+                <div class="player-card card-p1" id="playerCard1"></div>
+                <div class="player-card card-p2" id="playerCard2"></div>
+                <div class="player-card card-p3" id="playerCard3"></div>
+            </div>
         </div>
 
         <!-- VIEW 3: V1 (NHẬP CUỘC) -->
@@ -843,15 +848,67 @@
 
         <!-- VIEW 12: SCOREBOARD SEPARATE VIEW -->
         <div id="view-scoreboard" class="view-panel hidden">
-            <h1 class="scoreboard-view-title">BẢNG ĐIỂM XẾP HẠNG</h1>
+            <h1 class="scoreboard-view-title">BẢNG ĐIỂM</h1>
             <div class="scoreboard-grid" id="scoreboardGridFull"></div>
         </div>
     </div>
 
     <!-- SOCKET.IO CLIENT & AUDIO PLAYER LOGIC -->
+    <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
+        function disableDevTools() {
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+                return false;
+            }, false);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'S' || e.key === 's' || e.keyCode === 83)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, true);
+
+            document.addEventListener('dragstart', function (e) {
+                e.preventDefault();
+            });
+
+            if (window.DisableDevtool) {
+                try {
+                    window.DisableDevtool();
+                } catch (err) {}
+            }
+        }
+        disableDevTools();
+
         const socketHost = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.includes('file://'))
           ? window.location.origin
           : 'https://tt2026dex.onrender.com';
@@ -867,11 +924,28 @@
             return audioCache[soundName];
         }
 
-        function playSound(soundName) {
+        function playSound(soundName, volume) {
             try {
-                const audio = getAudio(soundName);
+                let name = soundName;
+                let vol = volume;
+                if (typeof soundName === 'object' && soundName !== null) {
+                    name = soundName.name;
+                    vol = soundName.volume;
+                }
+                if (!name) return;
+
+                const audio = getAudio(name);
                 audio.currentTime = 0;
-                audio.play().catch(e => console.log(`[Audio Play Error] ${soundName}:`, e));
+
+                if (vol !== undefined) {
+                    audio.volume = vol;
+                } else if (name.includes('45Giay')) {
+                    audio.volume = 0.5;
+                } else {
+                    audio.volume = 1.0;
+                }
+
+                audio.play().catch(e => console.log(`[Audio Play Error] ${name}:`, e));
             } catch (err) {
                 console.error("Audio error:", err);
             }
@@ -879,9 +953,10 @@
 
         function stopSound(soundName) {
             try {
-                if (audioCache[soundName]) {
-                    audioCache[soundName].pause();
-                    audioCache[soundName].currentTime = 0;
+                let name = typeof soundName === 'object' && soundName !== null ? soundName.name : soundName;
+                if (name && audioCache[name]) {
+                    audioCache[name].pause();
+                    audioCache[name].currentTime = 0;
                 }
             } catch (err) {}
         }
@@ -900,7 +975,7 @@
             if (typeof data === 'string') {
                 playSound(data);
             } else if (data && data.name) {
-                playSound(data.name);
+                playSound(data.name, data.volume);
             }
         });
 
@@ -1012,13 +1087,21 @@
             // Render Players List
             const playersList = document.getElementById('playersListArea');
             if (playersList) {
-                playersList.innerHTML = '';
                 const pVis = state.playerVisibility || [false, false, false, false];
                 for (let i = 0; i < 4; i++) {
-                    const card = document.createElement('div');
-                    card.className = `player-card card-p${i}` + (pVis[i] ? ' visible' : '');
+                    let card = document.getElementById(`playerCard${i}`);
+                    if (!card) {
+                        card = document.createElement('div');
+                        card.id = `playerCard${i}`;
+                        card.className = `player-card card-p${i}`;
+                        playersList.appendChild(card);
+                    }
                     card.textContent = names[i];
-                    playersList.appendChild(card);
+                    if (pVis[i]) {
+                        card.classList.add('visible');
+                    } else {
+                        card.classList.remove('visible');
+                    }
                 }
             }
 
