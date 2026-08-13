@@ -598,7 +598,7 @@
 
             <div class="question-box" id="questionBox">
                 <div id="qText"></div>
-                <div id="qHint" style="margin-top:10px; color:#c2410c;"></div>
+                <div id="qHint" style="margin-top:10px; color:#000000;"></div>
             </div>
 
             <div class="controls">
@@ -1549,6 +1549,24 @@
         function v1Wrong() {
             if (currentPlayer === null) return;
             if (isV1Ended) return showPopup("Lượt chơi đã kết thúc!");
+
+            const currentScore = playerScores[currentPlayer];
+            if (currentScore <= 5) {
+                playerScores[currentPlayer] = 0;
+                isV1Ended = true;
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                stopSound('45Giay.mp3');
+                updateV1ClockDisplay();
+                updateDisplayedScores();
+                sendSound('Sai V1.mp3');
+                hintUsedForCurrent = false;
+                syncFullStateToServer();
+                return;
+            }
+
             playerScores[currentPlayer] = playerScores[currentPlayer] - 10;
             if (playerScores[currentPlayer] < 0) playerScores[currentPlayer] = 0;
             updateDisplayedScores();
