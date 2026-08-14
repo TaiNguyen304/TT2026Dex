@@ -225,7 +225,7 @@
             pointer-events: none;
         }
 
-        #qText, #qHint, #v2qText, #v4qText {
+        #qText, #qHint, #v2qText {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -568,21 +568,35 @@
 
         .v4-question {
             color: white;
-            padding: 55px 40px 15px 40px;
             margin: 25px auto 20px auto;
             width: 80%;
             height: 260px;
-            font-size: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
             background-image: url('v4questionbox.png');
             background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
             position: relative;
             transform-origin: center;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #v4qText {
+            position: absolute;
+            top: 22%;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 50px 16px 50px;
+            font-size: 18px;
+            line-height: 1.45;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            box-sizing: border-box;
         }
 
         /* VIEW: SCOREBOARD FULL SCREEN LEADERBOARD */
