@@ -1407,7 +1407,9 @@
                     qText: document.getElementById('v4qText')?.textContent || "",
                     time: v4Time,
                     playerColors: v4PlayerColors,
-                    bracketState: v4BracketState
+                    bracketState: v4BracketState,
+                    isRunning: !!v4Interval && !v4Paused,
+                    isPaused: v4Paused
                 },
                 vqphuState: {
                     index: vqphuIndex,

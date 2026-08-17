@@ -941,10 +941,29 @@
 
         function getAudio(soundName) {
             if (!audioCache[soundName]) {
-                audioCache[soundName] = new Audio(soundName);
+                const audio = new Audio(encodeURI(soundName));
+                audio.preload = 'auto';
+                audioCache[soundName] = audio;
             }
             return audioCache[soundName];
         }
+
+        // Global unlock on any user click in Viewer
+        let isAudioUnlocked = false;
+        function unlockAudio() {
+            if (isAudioUnlocked) return;
+            isAudioUnlocked = true;
+            try {
+                const sounds = ['15s Về Đích.mp3', 'AnswersShowing.mp3', 'QuestionShowing.mp3', 'TongKetDiem.mp3', 'Bell V2.mp3', 'Star.mp3'];
+                sounds.forEach(s => {
+                    const a = getAudio(s);
+                    a.load();
+                });
+            } catch (e) {}
+        }
+        document.addEventListener('click', unlockAudio, { once: false });
+        document.addEventListener('touchstart', unlockAudio, { once: false });
+        document.addEventListener('keydown', unlockAudio, { once: false });
 
         function playSound(soundData, volume) {
             try {
@@ -960,14 +979,6 @@
 
                 const audio = getAudio(name);
 
-                if (seekTime !== undefined && typeof seekTime === 'number') {
-                    try {
-                        audio.currentTime = seekTime;
-                    } catch (e) {}
-                } else if (typeof soundData === 'string' || (soundData && soundData.seekTime === undefined && soundData.restart !== false)) {
-                    audio.currentTime = 0;
-                }
-
                 if (vol !== undefined) {
                     audio.volume = vol;
                 } else if (name.includes('45Giay')) {
@@ -976,7 +987,32 @@
                     audio.volume = 1.0;
                 }
 
-                audio.play().catch(e => console.log(`[Audio Play Error] ${name}:`, e));
+                if (seekTime !== undefined && typeof seekTime === 'number') {
+                    const setTimeAndPlay = () => {
+                        try {
+                            audio.currentTime = seekTime;
+                        } catch (e) {}
+                        audio.play().catch(e => console.log(`[Audio Play Error] ${name}:`, e));
+                    };
+
+                    if (audio.readyState >= 1) {
+                        try {
+                            audio.currentTime = seekTime;
+                        } catch (e) {}
+                        audio.play().catch(e => console.log(`[Audio Play Error] ${name}:`, e));
+                    } else {
+                        audio.addEventListener('loadedmetadata', setTimeAndPlay, { once: true });
+                        audio.addEventListener('canplay', setTimeAndPlay, { once: true });
+                        audio.play().catch(e => console.log(`[Audio Play Error] ${name}:`, e));
+                    }
+                } else {
+                    if (typeof soundData === 'string' || (soundData && soundData.restart !== false)) {
+                        try {
+                            audio.currentTime = 0;
+                        } catch (e) {}
+                    }
+                    audio.play().catch(e => console.log(`[Audio Play Error] ${name}:`, e));
+                }
             } catch (err) {
                 console.error("Audio error:", err);
             }
@@ -996,7 +1032,9 @@
                 let name = typeof soundName === 'object' && soundName !== null ? soundName.name : soundName;
                 if (name && audioCache[name]) {
                     audioCache[name].pause();
-                    audioCache[name].currentTime = 0;
+                    try {
+                        audioCache[name].currentTime = 0;
+                    } catch (e) {}
                 }
             } catch (err) {}
         }
@@ -1050,6 +1088,9 @@
 
         function switchViewerScreen(view) {
             if (currentActiveView !== view) {
+                if (currentActiveView === 'v4' && view !== 'v4') {
+                    stopSound('15s Về Đích.mp3');
+                }
                 if (view === 'v2_answers' || view === 'v3_answers') {
                     playSound('AnswersShowing.mp3');
                     // Reset containers on new view transition so entrance animation plays
@@ -1256,8 +1297,8 @@
             // V4 State
             if (state.v4State) {
                 const v4TimeBox = document.getElementById('v4TimeBox');
+                const t = state.v4State.time !== undefined ? state.v4State.time : 15;
                 if (v4TimeBox) {
-                    const t = state.v4State.time !== undefined ? state.v4State.time : 15;
                     v4TimeBox.textContent = t;
                     const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
                     v4TimeBox.style.background = `linear-gradient(to bottom, #ff00cc ${pct}%, var(--blue) ${pct}%)`;
@@ -1271,6 +1312,24 @@
                         applyPlayerBoxColor(box, state.v4State.playerColors[i]);
                     }
                 }
+
+                // V4 Sound Sync:
+                const v4Audio = audioCache['15s Về Đích.mp3'];
+                if (state.v4State.isPaused) {
+                    // Nếu đồng hồ dừng, nhạc bên Viewer cũng phải dừng
+                    if (v4Audio && !v4Audio.paused) {
+                        v4Audio.pause();
+                    }
+                } else if (state.v4State.isRunning && t > 0) {
+                    // Nếu đồng hồ chạy, nhạc mới phát. Nhạc phải gắn theo số giây.
+                    const expectedTime = Math.max(0, 15 - t);
+                    if (!v4Audio || v4Audio.paused) {
+                        playSound({ name: '15s Về Đích.mp3', seekTime: expectedTime });
+                    } else if (Math.abs(v4Audio.currentTime - expectedTime) > 1.2) {
+                        try { v4Audio.currentTime = expectedTime; } catch(e) {}
+                    }
+                }
+                // Khi t === 0: không can thiệp để nhạc tiếp tục phát hết bài tự nhiên
             }
 
             // VQPhu State
