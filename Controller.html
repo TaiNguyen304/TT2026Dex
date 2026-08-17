@@ -1233,6 +1233,10 @@
             }
         }
 
+        function sendPauseSound(soundFile) {
+            socket.emit('pauseSound', soundFile);
+        }
+
         function stopSound(soundFile) {
             socket.emit('stopSound', soundFile);
         }
@@ -2036,28 +2040,46 @@
         }
 
         function v4StartTimer() {
-            sendSound('15s Về Đích.mp3');
-            clearInterval(v4Interval);
+            if (v4Interval) {
+                clearInterval(v4Interval);
+                v4Interval = null;
+            }
             v4Time = 15;
+            v4Paused = false;
+            const pauseBtn = document.getElementById("v4PauseBtn");
+            if (pauseBtn) pauseBtn.textContent = "Tạm dừng";
             document.getElementById('v4TimeBox').textContent = v4Time;
+
+            sendSound({ name: '15s Về Đích.mp3', seekTime: 0 });
+
             v4Interval = setInterval(() => {
                 if (!v4Paused) {
                     v4Time--;
                     document.getElementById('v4TimeBox').textContent = v4Time;
-                    if (v4Time <= 0) clearInterval(v4Interval);
+                    if (v4Time <= 0) {
+                        v4Time = 0;
+                        clearInterval(v4Interval);
+                        v4Interval = null;
+                        stopSound('15s Về Đích.mp3');
+                    }
                     syncFullStateToServer();
                 }
             }, 1000);
+            syncFullStateToServer();
         }
 
         function v4CloseQuestion() {
-            clearInterval(v4Interval);
+            if (v4Interval) {
+                clearInterval(v4Interval);
+                v4Interval = null;
+            }
             stopSound('15s Về Đích.mp3');
             document.getElementById('v4qText').textContent = "";
             v4Time = 15;
-            document.getElementById('v4TimeBox').textContent = v4Time;
             v4Paused = false;
-            document.getElementById("v4PauseBtn").textContent = "Tạm dừng";
+            const pauseBtn = document.getElementById("v4PauseBtn");
+            if (pauseBtn) pauseBtn.textContent = "Tạm dừng";
+            document.getElementById('v4TimeBox').textContent = v4Time;
             syncFullStateToServer();
         }
 
@@ -2077,8 +2099,22 @@
         }
 
         function toggleV4Pause() {
+            if (v4Time <= 0) return;
+
             v4Paused = !v4Paused;
-            document.getElementById("v4PauseBtn").textContent = v4Paused ? "Tiếp tục" : "Tạm dừng";
+            const pauseBtn = document.getElementById("v4PauseBtn");
+            if (pauseBtn) {
+                pauseBtn.textContent = v4Paused ? "Tiếp tục" : "Tạm dừng";
+            }
+
+            if (v4Paused) {
+                // Nếu đồng hồ dừng, nhạc bên Viewer cũng phải dừng
+                sendPauseSound('15s Về Đích.mp3');
+            } else {
+                // Nếu đồng hồ chạy, nhạc mới phát. Nhạc phải gắn theo số giây
+                const elapsed = Math.max(0, 15 - v4Time);
+                sendSound({ name: '15s Về Đích.mp3', seekTime: elapsed });
+            }
             syncFullStateToServer();
         }
 

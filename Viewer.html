@@ -946,18 +946,27 @@
             return audioCache[soundName];
         }
 
-        function playSound(soundName, volume) {
+        function playSound(soundData, volume) {
             try {
-                let name = soundName;
+                let name = soundData;
                 let vol = volume;
-                if (typeof soundName === 'object' && soundName !== null) {
-                    name = soundName.name;
-                    vol = soundName.volume;
+                let seekTime = undefined;
+                if (typeof soundData === 'object' && soundData !== null) {
+                    name = soundData.name;
+                    vol = soundData.volume;
+                    seekTime = soundData.seekTime;
                 }
                 if (!name) return;
 
                 const audio = getAudio(name);
-                audio.currentTime = 0;
+
+                if (seekTime !== undefined && typeof seekTime === 'number') {
+                    try {
+                        audio.currentTime = seekTime;
+                    } catch (e) {}
+                } else if (typeof soundData === 'string' || (soundData && soundData.seekTime === undefined && soundData.restart !== false)) {
+                    audio.currentTime = 0;
+                }
 
                 if (vol !== undefined) {
                     audio.volume = vol;
@@ -971,6 +980,15 @@
             } catch (err) {
                 console.error("Audio error:", err);
             }
+        }
+
+        function pauseSound(soundName) {
+            try {
+                let name = typeof soundName === 'object' && soundName !== null ? soundName.name : soundName;
+                if (name && audioCache[name]) {
+                    audioCache[name].pause();
+                }
+            } catch (err) {}
         }
 
         function stopSound(soundName) {
@@ -994,11 +1012,11 @@
 
         // Socket Audio Events
         socket.on('playAudio', (data) => {
-            if (typeof data === 'string') {
-                playSound(data);
-            } else if (data && data.name) {
-                playSound(data.name, data.volume);
-            }
+            playSound(data);
+        });
+
+        socket.on('pauseAudio', (soundName) => {
+            pauseSound(soundName);
         });
 
         socket.on('stopAudio', (soundName) => {
@@ -1034,14 +1052,35 @@
             if (currentActiveView !== view) {
                 if (view === 'v2_answers' || view === 'v3_answers') {
                     playSound('AnswersShowing.mp3');
+                    // Reset containers on new view transition so entrance animation plays
+                    if (view === 'v2_answers') {
+                        const c = document.getElementById('v2AnswersListViewer');
+                        if (c) c.innerHTML = '';
+                        const img = document.querySelector('.v2-answers-side-img');
+                        if (img) {
+                            img.style.animation = 'none';
+                            img.offsetHeight;
+                            img.style.animation = '';
+                        }
+                    }
+                    if (view === 'v3_answers') {
+                        const c = document.getElementById('v3AnswersListViewer');
+                        if (c) c.innerHTML = '';
+                        const img = document.querySelector('.v3-answers-side-img');
+                        if (img) {
+                            img.style.animation = 'none';
+                            img.offsetHeight;
+                            img.style.animation = '';
+                        }
+                    }
                 }
-            }
-            currentActiveView = view;
-            document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
-            const target = document.getElementById(`view-${view}`);
-            if (target) target.classList.remove('hidden');
+                currentActiveView = view;
+                document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
+                const target = document.getElementById(`view-${view}`);
+                if (target) target.classList.remove('hidden');
 
-            applyGraphicVisibility(currentViewGraphics);
+                applyGraphicVisibility(currentViewGraphics);
+            }
         }
 
         function applyGraphicVisibility(viewGraphics) {
@@ -1249,20 +1288,41 @@
         function renderV2AnswersViewer(names, answers, playerColors) {
             const container = document.getElementById('v2AnswersListViewer');
             if (!container) return;
-            container.innerHTML = '';
             const ansArr = answers || ["", "", "", ""];
             const colors = playerColors || ['blue', 'blue', 'blue', 'blue'];
-            for (let i = 0; i < 4; i++) {
-                const isBlack = colors[i] === 'black';
-                const nameStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
-                const textStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
-                const item = document.createElement('div');
-                item.className = 'v2-answer-item';
-                item.innerHTML = `
-                    <div class="v2-answer-name" style="${nameStyle}">${names[i]}</div>
-                    <div class="v2-answer-text" style="${textStyle}">${ansArr[i] || ''}</div>
-                `;
-                container.appendChild(item);
+
+            const existingItems = container.querySelectorAll('.v2-answer-item');
+            if (existingItems.length === 4) {
+                // Update in-place to avoid re-triggering animations on score changes
+                existingItems.forEach((item, i) => {
+                    const isBlack = colors[i] === 'black';
+                    const nameEl = item.querySelector('.v2-answer-name');
+                    const textEl = item.querySelector('.v2-answer-text');
+                    if (nameEl) {
+                        nameEl.textContent = names[i];
+                        nameEl.style.background = isBlack ? '#000000' : 'var(--blue)';
+                        nameEl.style.color = isBlack ? '#ffffff' : 'var(--white)';
+                    }
+                    if (textEl) {
+                        textEl.textContent = ansArr[i] || '';
+                        textEl.style.background = isBlack ? '#000000' : 'var(--aqua)';
+                        textEl.style.color = isBlack ? '#ffffff' : 'var(--black)';
+                    }
+                });
+            } else {
+                container.innerHTML = '';
+                for (let i = 0; i < 4; i++) {
+                    const isBlack = colors[i] === 'black';
+                    const nameStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
+                    const textStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
+                    const item = document.createElement('div');
+                    item.className = 'v2-answer-item';
+                    item.innerHTML = `
+                        <div class="v2-answer-name" style="${nameStyle}">${names[i]}</div>
+                        <div class="v2-answer-text" style="${textStyle}">${ansArr[i] || ''}</div>
+                    `;
+                    container.appendChild(item);
+                }
             }
         }
 
@@ -1326,20 +1386,35 @@
         function renderV3AnswersViewer(names, answersData) {
             const container = document.getElementById('v3AnswersListViewer');
             if (!container) return;
-            container.innerHTML = '';
             const list = answersData || [];
-            for (let i = 0; i < 4; i++) {
-                const item = list[i] || {};
-                const div = document.createElement('div');
-                div.className = 'v3-answer-item';
-                div.innerHTML = `
-                    <div class="v3-answer-name">${names[i]}</div>
-                    <div class="v3-answer-bottom">
-                        <div class="v3-answer-text">${item.ans || ''}</div>
-                        <div class="v3-answer-time">${item.time ? item.time + 's' : '--'}</div>
-                    </div>
-                `;
-                container.appendChild(div);
+
+            const existingItems = container.querySelectorAll('.v3-answer-item');
+            if (existingItems.length === 4) {
+                // Update in-place without re-animating
+                existingItems.forEach((div, i) => {
+                    const item = list[i] || {};
+                    const nameEl = div.querySelector('.v3-answer-name');
+                    const textEl = div.querySelector('.v3-answer-text');
+                    const timeEl = div.querySelector('.v3-answer-time');
+                    if (nameEl) nameEl.textContent = names[i];
+                    if (textEl) textEl.textContent = item.ans || '';
+                    if (timeEl) timeEl.textContent = item.time ? item.time + 's' : '--';
+                });
+            } else {
+                container.innerHTML = '';
+                for (let i = 0; i < 4; i++) {
+                    const item = list[i] || {};
+                    const div = document.createElement('div');
+                    div.className = 'v3-answer-item';
+                    div.innerHTML = `
+                        <div class="v3-answer-name">${names[i]}</div>
+                        <div class="v3-answer-bottom">
+                            <div class="v3-answer-text">${item.ans || ''}</div>
+                            <div class="v3-answer-time">${item.time ? item.time + 's' : '--'}</div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                }
             }
         }
 

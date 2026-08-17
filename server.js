@@ -157,8 +157,12 @@ io.on('connection', (socket) => {
 
   // Sound triggers (Controller triggers, Server broadcasts to Viewer)
   socket.on('playSound', (soundData) => {
-    // soundData can be string "Dung V1.mp3" or object { name: "Dung V1.mp3", loop: false, volume: 1 }
+    // soundData can be string "Dung V1.mp3" or object { name: "Dung V1.mp3", loop: false, volume: 1, seekTime: 0 }
     io.emit('playAudio', soundData);
+  });
+
+  socket.on('pauseSound', (soundName) => {
+    io.emit('pauseAudio', soundName);
   });
 
   socket.on('stopSound', (soundName) => {
