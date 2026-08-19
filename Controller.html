@@ -1836,6 +1836,14 @@
                     v2Questions[v2SelectedQuestionIndex].used = true;
                 }
             }
+            v2Answers = ["", "", "", ""];
+            for (let i = 0; i < 4; i++) {
+                const inp = document.getElementById(`ansInp${i}`);
+                if (inp) inp.value = "";
+            }
+            if (currentView === 'v2_answers') {
+                renderV2AnswersPreview();
+            }
             renderV2QuestionsAndBoard();
             syncFullStateToServer();
         }
@@ -1927,6 +1935,14 @@
             v2Questions.forEach(q => q.used = false);
             v2SelectedQuestionIndex = null;
             if (document.getElementById('v2qText')) document.getElementById('v2qText').textContent = "";
+            v2Answers = ["", "", "", ""];
+            for (let i = 0; i < 4; i++) {
+                const inp = document.getElementById(`ansInp${i}`);
+                if (inp) inp.value = "";
+            }
+            if (currentView === 'v2_answers') {
+                renderV2AnswersPreview();
+            }
             renderV2QuestionsAndBoard();
             syncFullStateToServer();
         }
@@ -1974,6 +1990,17 @@
             });
             v3Timer = 30;
             document.getElementById('v3Timer').textContent = v3Timer;
+            for (let i = 0; i < 4; i++) {
+                v3Answers[i].ans = '';
+                v3Answers[i].time = '';
+                const ansInp = document.getElementById(`v3Ans${i}`);
+                if (ansInp) ansInp.value = "";
+                const timeInp = document.getElementById(`v3Time${i}`);
+                if (timeInp) timeInp.value = "";
+            }
+            if (currentView === 'v3_answers') {
+                renderV3AnswersPreview();
+            }
             syncFullStateToServer();
         }
 
