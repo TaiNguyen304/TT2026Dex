@@ -237,18 +237,12 @@ io.on('connection', (socket) => {
     } else if (data.round === 'vqphu' || data.round === 'vqphu_answers') {
       if (!gameState.vqphuState.answers) gameState.vqphuState.answers = [];
       const pName = gameState.playerNames[data.playerIndex] || `Thí sinh ${data.playerIndex + 1}`;
-      const existingIdx = gameState.vqphuState.answers.findIndex(a => a.playerIndex === data.playerIndex || a.name === pName);
-      const ansObj = {
+      gameState.vqphuState.answers[data.playerIndex] = {
         name: pName,
         ans: data.text,
         time: data.time,
         playerIndex: data.playerIndex
       };
-      if (existingIdx >= 0) {
-        gameState.vqphuState.answers[existingIdx] = ansObj;
-      } else {
-        gameState.vqphuState.answers.push(ansObj);
-      }
     }
     io.emit('playerAnswerReceived', data);
     io.emit('stateUpdated', gameState);

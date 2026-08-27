@@ -1443,7 +1443,7 @@
                 renderVQPhuTime(state.vqphuState);
                 if (document.getElementById('vqphuQuestion')) document.getElementById('vqphuQuestion').textContent = state.vqphuState.question || "";
 
-                renderVQPhuViewer(state.vqphuState);
+                renderVQPhuViewer(state.vqphuState, names);
             }
 
             // Full Scoreboard View
@@ -1583,7 +1583,7 @@
             }
         }
 
-        function renderVQPhuViewer(vqState) {
+        function renderVQPhuViewer(vqState, names) {
             const left = document.getElementById('vqphuLeft');
             const right = document.getElementById('vqphuRight');
             if (!left || !right) return;
@@ -1600,35 +1600,41 @@
                 }
             }
 
-            // Answers Separate View
+            // Answers Separate View - Defaults to 4 boxes for 4 players
             const ansContainer = document.getElementById('vqphuAnswersListViewer');
             if (ansContainer) {
                 const answers = vqState.answers || [];
+                const count = Math.max(4, answers.length);
+                const playerNamesList = names || ['Người 1', 'Người 2', 'Người 3', 'Người 4'];
+
                 const existingItems = ansContainer.querySelectorAll('.vqphu-item-viewer');
-                if (existingItems.length === answers.length && answers.length > 0) {
+                if (existingItems.length === count && count > 0) {
                     existingItems.forEach((div, i) => {
                         const item = answers[i] || {};
+                        const nameStr = item.name || playerNamesList[i] || `Thí sinh ${i + 1}`;
                         const nameEl = div.querySelector('.vqphu-name-col');
                         const timeEl = div.querySelector('.vqphu-time-col');
                         const ansEl = div.querySelector('.vqphu-ans-row');
-                        if (nameEl) nameEl.textContent = item.name || '';
+                        if (nameEl) nameEl.textContent = nameStr;
                         if (timeEl) timeEl.textContent = item.time ? item.time + 's' : '--';
                         if (ansEl) ansEl.textContent = item.ans || '';
                     });
                 } else {
                     ansContainer.innerHTML = '';
-                    answers.forEach(item => {
+                    for (let i = 0; i < count; i++) {
+                        const item = answers[i] || {};
+                        const nameStr = item.name || playerNamesList[i] || `Thí sinh ${i + 1}`;
                         const div = document.createElement('div');
                         div.className = 'vqphu-item-viewer';
                         div.innerHTML = `
                             <div class="vqphu-top-row">
-                                <div class="vqphu-name-col">${item.name}</div>
+                                <div class="vqphu-name-col">${nameStr}</div>
                                 <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
                             </div>
                             <div class="vqphu-ans-row">${item.ans || ''}</div>
                         `;
                         ansContainer.appendChild(div);
-                    });
+                    }
                 }
             }
         }

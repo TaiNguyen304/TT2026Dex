@@ -522,7 +522,7 @@
             const rawElapsed = (now - ansStartTime) / 1000;
             const elapsed = Math.min(ansDuration, Math.max(0, rawElapsed)).toFixed(2);
 
-            const activeRound = ansRound || (currentView.startsWith('v3') ? 'v3' : 'v2');
+            const activeRound = ansRound || (currentView.startsWith('v3') ? 'v3' : (currentView.startsWith('vqphu') ? 'vqphu' : 'v2'));
 
             socket.emit('playerSubmitAnswer', {
                 playerIndex: PLAYER_INDEX,

@@ -2733,18 +2733,21 @@
             const area = document.getElementById('vqphuAnswersPreviewArea');
             if (!area) return;
             area.innerHTML = '';
-            vqphuAnswers.forEach(item => {
+            const count = Math.max(4, vqphuAnswers.length);
+            for (let i = 0; i < count; i++) {
+                const item = vqphuAnswers[i] || {};
+                const nameStr = item.name || playerNames[i] || `Thí sinh ${i + 1}`;
                 const div = document.createElement('div');
                 div.className = 'vqphu-item-viewer';
                 div.innerHTML = `
                     <div class="vqphu-top-row">
-                        <div class="vqphu-name-col">${item.name}</div>
+                        <div class="vqphu-name-col">${nameStr}</div>
                         <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
                     </div>
                     <div class="vqphu-ans-row">${item.ans || ''}</div>
                 `;
                 area.appendChild(div);
-            });
+            }
         }
 
         function closeVQPhuInput() { document.getElementById('modalVQPhuInput').style.display = 'none'; }
@@ -2929,18 +2932,12 @@
                 if (currentView === 'v3_answers') renderV3AnswersPreview();
             } else if (data.round === 'vqphu' || data.round === 'vqphu_answers') {
                 const pName = playerNames[data.playerIndex] || `Thí sinh ${data.playerIndex + 1}`;
-                const existingIdx = vqphuAnswers.findIndex(a => a.playerIndex === data.playerIndex || a.name === pName);
-                const ansObj = {
+                vqphuAnswers[data.playerIndex] = {
                     name: pName,
                     ans: data.text,
                     time: data.time,
                     playerIndex: data.playerIndex
                 };
-                if (existingIdx >= 0) {
-                    vqphuAnswers[existingIdx] = ansObj;
-                } else {
-                    vqphuAnswers.push(ansObj);
-                }
                 if (currentView === 'vqphu_answers') renderVQPhuAnswersPreview();
             }
             syncFullStateToServer();
