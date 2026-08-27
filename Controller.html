@@ -580,6 +580,45 @@
             background: #ff00cc;
             color: white;
         }
+
+        /* VIEW: VQPHU ANSWERS SEPARATE */
+        .vqphu-item-viewer {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+            border: 2px solid var(--blue);
+        }
+
+        .vqphu-top-row {
+            display: flex;
+            background: var(--blue);
+            color: var(--white);
+            font-size: 1.2rem;
+            height: 48px;
+        }
+
+        .vqphu-name-col {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .vqphu-time-col {
+            width: 140px;
+            background: var(--pink);
+            text-align: center;
+            padding: 10px;
+        }
+
+        .vqphu-ans-row {
+            background: var(--aqua);
+            color: var(--black);
+            padding: 14px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -737,6 +776,18 @@
                         <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(0,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="setPlayerState(0,'black')"></button>
                     </div>
+                    <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(0, 15)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+15</button>
+                            <button class="btn-v2-score" onclick="changeScore(0, 10)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+10</button>
+                            <button class="btn-v2-score" onclick="changeScore(0, 80)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+80</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(0, 50)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+50</button>
+                            <button class="btn-v2-score" onclick="changeScore(0, 30)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+30</button>
+                            <button class="btn-v2-score" onclick="changeScore(0, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2box1">
@@ -748,6 +799,18 @@
                         <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(1,'aqua')"></button>
                         <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(1,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="setPlayerState(1,'black')"></button>
+                    </div>
+                    <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(1, 15)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+15</button>
+                            <button class="btn-v2-score" onclick="changeScore(1, 10)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+10</button>
+                            <button class="btn-v2-score" onclick="changeScore(1, 80)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+80</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(1, 50)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+50</button>
+                            <button class="btn-v2-score" onclick="changeScore(1, 30)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+30</button>
+                            <button class="btn-v2-score" onclick="changeScore(1, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                        </div>
                     </div>
                 </div>
                 <div class="v2-score-slot">
@@ -761,6 +824,18 @@
                         <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(2,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="setPlayerState(2,'black')"></button>
                     </div>
+                    <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(2, 15)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+15</button>
+                            <button class="btn-v2-score" onclick="changeScore(2, 10)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+10</button>
+                            <button class="btn-v2-score" onclick="changeScore(2, 80)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+80</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(2, 50)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+50</button>
+                            <button class="btn-v2-score" onclick="changeScore(2, 30)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+30</button>
+                            <button class="btn-v2-score" onclick="changeScore(2, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2box3">
@@ -772,6 +847,18 @@
                         <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(3,'aqua')"></button>
                         <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(3,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="setPlayerState(3,'black')"></button>
+                    </div>
+                    <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(3, 15)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+15</button>
+                            <button class="btn-v2-score" onclick="changeScore(3, 10)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+10</button>
+                            <button class="btn-v2-score" onclick="changeScore(3, 80)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+80</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(3, 50)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+50</button>
+                            <button class="btn-v2-score" onclick="changeScore(3, 30)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+30</button>
+                            <button class="btn-v2-score" onclick="changeScore(3, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -790,6 +877,11 @@
                 <button style="background:yellow;color:black;" onclick="openV2BoardPopup()">Bảng ô chữ (Chuyển View Viewer)</button>
                 <button style="background: var(--green); color: var(--white);" onclick="sendSound('Dung V2.mp3')">Âm Đúng V2</button>
                 <button style="background: var(--red); color: var(--white);" onclick="sendSound('Sai V2.mp3')">Âm Sai V2</button>
+            </div>
+            <div class="controls" style="margin-top: 10px;">
+                <button style="background: var(--lime); color: var(--black);" onclick="v2OpenBell()">Mở chuông</button>
+                <button style="background: var(--red); color: var(--white);" onclick="v2LockBell()">Khóa chuông</button>
+                <button style="background: var(--aqua); color: var(--black);" onclick="v2ResetBell()">Reset chuông</button>
             </div>
         </div>
 
@@ -870,6 +962,21 @@
                         <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(0,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(0,'black')"></button>
                     </div>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:6px;">
+                        <div id="v4counterCtrl0" style="background:var(--blue); color:white; font-size:1.1rem; padding:4px 12px; border-radius:6px; font-weight:bold; border:1px solid white;">0</div>
+                        <button onclick="changeV4Counter(0, 1)" style="background:var(--lime); color:black; font-weight:bold; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">+</button>
+                        <button onclick="changeV4Counter(0, -1)" style="background:var(--red); color:white; font-weight:bold; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">-</button>
+                    </div>
+                    <div class="v4-score-adjust-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button onclick="changeScore(0, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                            <button onclick="changeScore(0, -10)" style="flex:1; background:var(--red); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">-10</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button onclick="changeScore(0, 60)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+60</button>
+                            <button onclick="changeScore(0, -30)" style="flex:1; background:var(--red); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">-30</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v4box1">
@@ -881,6 +988,21 @@
                         <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(1,'yellow')"></button>
                         <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(1,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(1,'black')"></button>
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:6px;">
+                        <div id="v4counterCtrl1" style="background:var(--blue); color:white; font-size:1.1rem; padding:4px 12px; border-radius:6px; font-weight:bold; border:1px solid white;">0</div>
+                        <button onclick="changeV4Counter(1, 1)" style="background:var(--lime); color:black; font-weight:bold; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">+</button>
+                        <button onclick="changeV4Counter(1, -1)" style="background:var(--red); color:white; font-weight:bold; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">-</button>
+                    </div>
+                    <div class="v4-score-adjust-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button onclick="changeScore(1, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                            <button onclick="changeScore(1, -10)" style="flex:1; background:var(--red); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">-10</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button onclick="changeScore(1, 60)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+60</button>
+                            <button onclick="changeScore(1, -30)" style="flex:1; background:var(--red); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">-30</button>
+                        </div>
                     </div>
                 </div>
                 <div class="v2-score-slot">
@@ -894,6 +1016,21 @@
                         <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(2,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(2,'black')"></button>
                     </div>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:6px;">
+                        <div id="v4counterCtrl2" style="background:var(--blue); color:white; font-size:1.1rem; padding:4px 12px; border-radius:6px; font-weight:bold; border:1px solid white;">0</div>
+                        <button onclick="changeV4Counter(2, 1)" style="background:var(--lime); color:black; font-weight:bold; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">+</button>
+                        <button onclick="changeV4Counter(2, -1)" style="background:var(--red); color:white; font-weight:bold; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">-</button>
+                    </div>
+                    <div class="v4-score-adjust-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button onclick="changeScore(2, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                            <button onclick="changeScore(2, -10)" style="flex:1; background:var(--red); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">-10</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button onclick="changeScore(2, 60)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+60</button>
+                            <button onclick="changeScore(2, -30)" style="flex:1; background:var(--red); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">-30</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v4box3">
@@ -905,6 +1042,21 @@
                         <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(3,'yellow')"></button>
                         <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(3,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(3,'black')"></button>
+                    </div>
+                    <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:6px;">
+                        <div id="v4counterCtrl3" style="background:var(--blue); color:white; font-size:1.1rem; padding:4px 12px; border-radius:6px; font-weight:bold; border:1px solid white;">0</div>
+                        <button onclick="changeV4Counter(3, 1)" style="background:var(--lime); color:black; font-weight:bold; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">+</button>
+                        <button onclick="changeV4Counter(3, -1)" style="background:var(--red); color:white; font-weight:bold; border:none; border-radius:4px; padding:4px 10px; cursor:pointer;">-</button>
+                    </div>
+                    <div class="v4-score-adjust-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button onclick="changeScore(3, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                            <button onclick="changeScore(3, -10)" style="flex:1; background:var(--red); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">-10</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button onclick="changeScore(3, 60)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+60</button>
+                            <button onclick="changeScore(3, -30)" style="flex:1; background:var(--red); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">-30</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -923,6 +1075,14 @@
                 <button id="v4PauseBtn" style="background:aqua;color:black;" onclick="toggleV4Pause()">Tạm dừng</button>
                 <button style="background: var(--green); color: var(--white);" onclick="sendSound('Dung V4.mp3')">Đúng V4</button>
                 <button style="background: var(--red); color: var(--white);" onclick="sendSound('Sai V4.mp3')">Sai V4</button>
+            </div>
+            <div class="controls" style="margin-top: 10px;">
+                <button style="background: var(--lime); color: var(--black);" onclick="v4OpenBell()">Mở chuông</button>
+                <button style="background: var(--red); color: var(--white);" onclick="v4LockBell()">Khóa chuông</button>
+                <button style="background: var(--aqua); color: var(--black);" onclick="v4ResetBell()">Reset chuông</button>
+                <button style="background: var(--yellow); color: var(--black);" onclick="v4OpenStar()">Mở Sao</button>
+                <button style="background: var(--red); color: var(--white);" onclick="v4LockStar()">Khóa Sao</button>
+                <button style="background: var(--aqua); color: var(--black);" onclick="v4ResetStar()">Reset Sao</button>
             </div>
         </div>
 
@@ -1160,6 +1320,24 @@
           }
         }
 
+        // Server Time Synchronization (Standard Server Clock reference)
+        let serverTimeOffset = 0;
+        function syncTimeWithServer() {
+            if (!socket) return;
+            const clientSent = Date.now();
+            socket.emit('syncTime', clientSent, (res) => {
+                if (res && res.serverTime !== undefined) {
+                    const clientRecv = Date.now();
+                    const roundTrip = clientRecv - clientSent;
+                    serverTimeOffset = (res.serverTime + Math.round(roundTrip / 2)) - clientRecv;
+                }
+            });
+        }
+        function getServerTime() {
+            return Date.now() + serverTimeOffset;
+        }
+        setInterval(syncTimeWithServer, 5000);
+
         // Application State
         let currentView = 'opening';
         let graphicsVisible = true;
@@ -1178,6 +1356,9 @@
         let round1Data = [[], [], [], []];
         let questionIndex = [0, 0, 0, 0];
         let timer = 45;
+        let v1StartTime = 0;
+        let v1Duration = 45;
+        let v1IsRunning = false;
         let timerInterval = null;
         let hintUsedForCurrent = false;
 
@@ -1190,12 +1371,18 @@
         let v2Answers = ["", "", "", ""];
         let v2PlayerColors = ['blue', 'blue', 'blue', 'blue'];
         let v2Timer = 15;
+        let v2StartTime = 0;
+        let v2Duration = 15;
+        let v2IsRunning = false;
         let v2TimerInterval = null;
 
         // V3 State
         let v3Data = [];
         let v3Current = 0;
         let v3Timer = 30;
+        let v3StartTime = 0;
+        let v3Duration = 30;
+        let v3IsRunning = false;
         let v3Interval = null;
         let v3Answers = [
             { name: 'Người 1', ans: '', time: '' },
@@ -1208,16 +1395,43 @@
         let v4Questions = [];
         let v4Index = -1;
         let v4Time = 15;
+        let v4StartTime = 0;
+        let v4Duration = 15;
         let v4Interval = null;
         let v4Paused = false;
         let v4PlayerColors = ['blue', 'blue', 'blue', 'blue'];
         let v4BracketState = [0, 0, 0, 0];
         let v4PrevColors = ['blue', 'blue', 'blue', 'blue'];
+        let v4Counters = [0, 0, 0, 0];
+
+        function changeV4Counter(i, delta) {
+            v4Counters[i] = (v4Counters[i] || 0) + delta;
+            updateV4CountersUI();
+            syncFullStateToServer();
+        }
+
+        function updateV4CountersUI() {
+            for (let i = 0; i < 4; i++) {
+                const el = document.getElementById(`v4counterCtrl${i}`);
+                if (el) el.textContent = v4Counters[i];
+            }
+        }
+
+        // Player Interaction Variables (Bell & Star)
+        let v2BellRungList = [false, false, false, false];
+        let v4BellRungList = [false, false, false, false];
+        let v4BellWinner = null;
+        let v4BellLocked = false;
+        let starChosenList = [false, false, false, false];
+        let starSoundPlayedThisTurn = false;
 
         // VQPhu State
         let vqphuData = [];
         let vqphuIndex = 0;
         let vqphuTimer = 20;
+        let vqphuStartTime = 0;
+        let vqphuDuration = 20;
+        let vqphuIsRunning = false;
         let vqphuTimerInterval = null;
         let vqphuAnswers = [];
         let vqphuRevealed = false;
@@ -1378,6 +1592,9 @@
                     qText: document.getElementById('qText')?.textContent || "",
                     qHint: document.getElementById('qHint')?.textContent || "",
                     time: timer,
+                    startTime: v1StartTime,
+                    duration: v1Duration,
+                    isRunning: v1IsRunning,
                     isEnded: isV1Ended
                 },
                 v2State: {
@@ -1389,7 +1606,10 @@
                     answers: v2Answers,
                     playerColors: v2PlayerColors,
                     qText: document.getElementById('v2qText')?.textContent || "",
-                    time: v2Timer
+                    time: v2Timer,
+                    startTime: v2StartTime,
+                    duration: v2Duration,
+                    isRunning: v2IsRunning
                 },
                 v3State: {
                     current: v3Current,
@@ -1400,22 +1620,41 @@
                         document.getElementById('v3Hint3')?.textContent || ""
                     ],
                     answers: v3Answers,
-                    time: v3Timer
+                    time: v3Timer,
+                    startTime: v3StartTime,
+                    duration: v3Duration,
+                    isRunning: v3IsRunning
                 },
                 v4State: {
                     index: v4Index,
                     qText: document.getElementById('v4qText')?.textContent || "",
                     time: v4Time,
+                    startTime: v4StartTime,
+                    duration: v4Duration,
                     playerColors: v4PlayerColors,
                     bracketState: v4BracketState,
+                    counters: v4Counters,
                     isRunning: !!v4Interval && !v4Paused,
                     isPaused: v4Paused
                 },
                 vqphuState: {
                     index: vqphuIndex,
                     question: document.getElementById('vqphuQuestion')?.textContent || "",
+                    events: vqphuData[vqphuIndex] ? [
+                        vqphuData[vqphuIndex].event1 || "",
+                        vqphuData[vqphuIndex].event2 || "",
+                        vqphuData[vqphuIndex].event3 || "",
+                        vqphuData[vqphuIndex].event4 || "",
+                        vqphuData[vqphuIndex].event5 || "",
+                        vqphuData[vqphuIndex].event6 || "",
+                        vqphuData[vqphuIndex].event7 || "",
+                        vqphuData[vqphuIndex].event8 || ""
+                    ] : ["", "", "", "", "", "", "", ""],
                     revealed: vqphuRevealed,
                     time: vqphuTimer,
+                    startTime: vqphuStartTime,
+                    duration: vqphuDuration,
+                    isRunning: vqphuIsRunning,
                     answers: vqphuAnswers
                 }
             });
@@ -1566,6 +1805,7 @@
 
             if (qCountReached) {
                 isV1Ended = true;
+                v1IsRunning = false;
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -1580,7 +1820,7 @@
         function updateV1ClockDisplay() {
             const timeBox = document.getElementById('timeBox');
             if (!timeBox) return;
-            timeBox.textContent = Math.max(0, timer);
+            timeBox.textContent = Math.max(0, Math.ceil(timer));
             if (isV1Ended || timer <= 0 || (currentPlayer !== null && questionIndex[currentPlayer] >= 8)) {
                 timeBox.style.background = '#000000';
                 timeBox.style.color = '#ffffff';
@@ -1612,6 +1852,9 @@
             if (currentPlayer === null) return showPopup("Chưa chọn người chơi có lượt!");
             isV1Ended = false;
             timer = 45;
+            v1Duration = 45;
+            v1StartTime = getServerTime();
+            v1IsRunning = true;
             updateV1ClockDisplay();
             questionIndex[currentPlayer] = 0;
             showV1Question();
@@ -1621,19 +1864,29 @@
 
         function startV1Timer() {
             clearInterval(timerInterval);
+            v1IsRunning = true;
             timerInterval = setInterval(() => {
-                timer--;
-                if (timer <= 0) {
+                const elapsed = (getServerTime() - v1StartTime) / 1000;
+                const rem = Math.max(0, v1Duration - elapsed);
+                const nextSec = Math.ceil(rem);
+                if (nextSec !== timer) {
+                    timer = nextSec;
+                    updateV1ClockDisplay();
+                    syncFullStateToServer();
+                }
+                if (rem <= 0) {
                     timer = 0;
+                    v1IsRunning = false;
                     if (timerInterval) {
                         clearInterval(timerInterval);
                         timerInterval = null;
                     }
                     stopSound('45Giay.mp3');
+                    updateV1ClockDisplay();
+                    syncFullStateToServer();
                 }
-                updateV1ClockDisplay();
-                syncFullStateToServer();
-            }, 1000);
+            }, 100);
+            syncFullStateToServer();
         }
 
         function showV1Question() {
@@ -1679,6 +1932,7 @@
             if (currentScore <= 5) {
                 playerScores[currentPlayer] = 0;
                 isV1Ended = true;
+                v1IsRunning = false;
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
@@ -1718,11 +1972,17 @@
         }
 
         function v1Pause() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
+            if (v1IsRunning) {
+                v1IsRunning = false;
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
                 stopSound('45Giay.mp3');
+                syncFullStateToServer();
             } else {
+                v1Duration = timer;
+                v1StartTime = getServerTime();
                 startV1Timer();
                 sendSound('45Giay.mp3');
             }
@@ -1812,17 +2072,58 @@
             switchView('v2_board');
         }
 
+        function v2OpenBell() {
+            socket.emit('setPlayerInteraction', {
+                bell: { open: true, round: 'v2', startTime: getServerTime(), duration: 15, v2Rung: v2BellRungList }
+            });
+        }
+
+        function v2LockBell() {
+            socket.emit('setPlayerInteraction', {
+                bell: { open: false, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
+            });
+        }
+
+        function v2ResetBell() {
+            v2BellRungList = [false, false, false, false];
+            socket.emit('setPlayerInteraction', {
+                bell: { open: false, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
+            });
+            showPopup("Đã reset chuông Vòng 2 cho cả 4 người chơi!");
+        }
+
         function v2StartTimer() {
             sendSound('15s Vượt Lên.mp3');
             clearInterval(v2TimerInterval);
             v2Timer = 15;
+            v2Duration = 15;
+            v2StartTime = getServerTime();
+            v2IsRunning = true;
             document.getElementById('v2TimeBox').textContent = v2Timer;
+            socket.emit('setPlayerInteraction', {
+                answer: { open: true, round: 'v2', startTime: v2StartTime, duration: 15 }
+            });
             v2TimerInterval = setInterval(() => {
-                v2Timer--;
-                document.getElementById('v2TimeBox').textContent = v2Timer;
-                if (v2Timer <= 0) clearInterval(v2TimerInterval);
-                syncFullStateToServer();
-            }, 1000);
+                const elapsed = (getServerTime() - v2StartTime) / 1000;
+                const rem = Math.max(0, v2Duration - elapsed);
+                const nextSec = Math.ceil(rem);
+                if (nextSec !== v2Timer) {
+                    v2Timer = nextSec;
+                    document.getElementById('v2TimeBox').textContent = v2Timer;
+                    syncFullStateToServer();
+                }
+                if (rem <= 0) {
+                    v2Timer = 0;
+                    v2IsRunning = false;
+                    clearInterval(v2TimerInterval);
+                    socket.emit('setPlayerInteraction', {
+                        answer: { open: false, round: 'v2', startTime: 0, duration: 15 }
+                    });
+                    document.getElementById('v2TimeBox').textContent = 0;
+                    syncFullStateToServer();
+                }
+            }, 100);
+            syncFullStateToServer();
         }
 
         function v2CloseQuestion() {
@@ -1830,7 +2131,13 @@
             stopSound('15s Vượt Lên.mp3');
             document.getElementById('v2qText').textContent = "";
             v2Timer = 15;
+            v2Duration = 15;
+            v2StartTime = 0;
+            v2IsRunning = false;
             document.getElementById('v2TimeBox').textContent = v2Timer;
+            socket.emit('setPlayerInteraction', {
+                answer: { open: false, round: 'v2', startTime: 0, duration: 15 }
+            });
             if (v2SelectedQuestionIndex !== null && v2SelectedQuestionIndex !== undefined) {
                 if (v2Questions[v2SelectedQuestionIndex]) {
                     v2Questions[v2SelectedQuestionIndex].used = true;
@@ -1967,28 +2274,55 @@
 
         function v3Start() {
             v3Timer = 30;
+            v3Duration = 30;
+            v3StartTime = getServerTime();
+            v3IsRunning = true;
             document.getElementById('v3Timer').textContent = v3Timer;
             sendSound('30s Chinh Phục.mp3');
             clearInterval(v3Interval);
             v3RevealHint(1);
+            socket.emit('setPlayerInteraction', {
+                answer: { open: true, round: 'v3', startTime: v3StartTime, duration: 30 }
+            });
             v3Interval = setInterval(() => {
-                v3Timer--;
-                document.getElementById('v3Timer').textContent = v3Timer;
-                if (v3Timer === 20) v3RevealHint(2);
-                if (v3Timer === 10) v3RevealHint(3);
-                if (v3Timer <= 0) clearInterval(v3Interval);
-                syncFullStateToServer();
-            }, 1000);
+                const elapsed = (getServerTime() - v3StartTime) / 1000;
+                const rem = Math.max(0, v3Duration - elapsed);
+                const nextSec = Math.ceil(rem);
+                if (nextSec !== v3Timer) {
+                    v3Timer = nextSec;
+                    document.getElementById('v3Timer').textContent = v3Timer;
+                    if (v3Timer === 20) v3RevealHint(2);
+                    if (v3Timer === 10) v3RevealHint(3);
+                    syncFullStateToServer();
+                }
+                if (rem <= 0) {
+                    v3Timer = 0;
+                    v3IsRunning = false;
+                    clearInterval(v3Interval);
+                    socket.emit('setPlayerInteraction', {
+                        answer: { open: false, round: 'v3', startTime: 0, duration: 30 }
+                    });
+                    document.getElementById('v3Timer').textContent = 0;
+                    syncFullStateToServer();
+                }
+            }, 100);
+            syncFullStateToServer();
         }
 
         function v3Close() {
             clearInterval(v3Interval);
             stopSound('30s Chinh Phục.mp3');
+            v3Timer = 30;
+            v3Duration = 30;
+            v3StartTime = 0;
+            v3IsRunning = false;
+            socket.emit('setPlayerInteraction', {
+                answer: { open: false, round: 'v3', startTime: 0, duration: 30 }
+            });
             ['v3QuestionBox', 'v3Hint1', 'v3Hint2', 'v3Hint3'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) { el.textContent = ""; el.classList.remove('revealed'); }
             });
-            v3Timer = 30;
             document.getElementById('v3Timer').textContent = v3Timer;
             for (let i = 0; i < 4; i++) {
                 v3Answers[i].ans = '';
@@ -2036,7 +2370,17 @@
                 const item = document.createElement('div');
                 item.className = 'v3-answer-item';
                 item.innerHTML = `
-                    <div class="v3-answer-name">${playerNames[i]}</div>
+                    <div style="display:flex; align-items:center; justify-content:space-between; width:780px; max-width:100%;">
+                        <div class="v3-answer-name">${playerNames[i]}</div>
+                        <div style="display:flex; gap:4px; margin-bottom:4px;">
+                            <button onclick="changeScore(${i},30)" style="background:var(--green); color:white; border:none; border-radius:4px; padding:4px 8px; font-weight:bold; cursor:pointer;">+30</button>
+                            <button onclick="changeScore(${i},25)" style="background:var(--green); color:white; border:none; border-radius:4px; padding:4px 8px; font-weight:bold; cursor:pointer;">+25</button>
+                            <button onclick="changeScore(${i},20)" style="background:var(--green); color:white; border:none; border-radius:4px; padding:4px 8px; font-weight:bold; cursor:pointer;">+20</button>
+                            <button onclick="changeScore(${i},-5)" style="background:var(--red); color:white; border:none; border-radius:4px; padding:4px 8px; font-weight:bold; cursor:pointer;">-5</button>
+                            <button onclick="changeScore(${i},-10)" style="background:var(--red); color:white; border:none; border-radius:4px; padding:4px 8px; font-weight:bold; cursor:pointer;">-10</button>
+                            <button onclick="changeScore(${i},-15)" style="background:var(--red); color:white; border:none; border-radius:4px; padding:4px 8px; font-weight:bold; cursor:pointer;">-15</button>
+                        </div>
+                    </div>
                     <div class="v3-answer-bottom">
                         <div class="v3-answer-text">${v3Answers[i].ans || ''}</div>
                         <div class="v3-answer-time">${v3Answers[i].time ? v3Answers[i].time + 's' : '--'}</div>
@@ -2057,8 +2401,12 @@
             v4PlayerColors[pIndex] = state;
             const el = document.getElementById(`v4box${pIndex}`);
             applyPlayerBoxColor(el, state);
-            if (state === 'yellow') sendSound('Star.mp3');
-            else if (state === 'pink') {
+            if (state === 'yellow') {
+                if (!starSoundPlayedThisTurn) {
+                    sendSound('Star.mp3');
+                    starSoundPlayedThisTurn = true;
+                }
+            } else if (state === 'pink') {
                 sendSound('Chuông V4.mp3');
                 if (v4PrevColors[pIndex] === 'yellow') {
                     v4BracketState[pIndex] = (v4BracketState[pIndex] + 1) % 3;
@@ -2068,12 +2416,61 @@
             syncFullStateToServer();
         }
 
+        function v4OpenBell() {
+            v4BellWinner = null;
+            v4BellLocked = false;
+            socket.emit('setPlayerInteraction', {
+                bell: { open: true, round: 'v4', startTime: getServerTime() - Math.max(0, 15 - v4Time) * 1000, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+            });
+        }
+
+        function v4LockBell() {
+            v4BellLocked = true;
+            socket.emit('setPlayerInteraction', {
+                bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
+            });
+        }
+
+        function v4ResetBell() {
+            v4BellRungList = [false, false, false, false];
+            v4BellWinner = null;
+            v4BellLocked = false;
+            socket.emit('setPlayerInteraction', {
+                bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+            });
+            showPopup("Đã reset chuông Vòng 4 cho cả 4 người chơi!");
+        }
+
+        function v4OpenStar() {
+            starSoundPlayedThisTurn = false;
+            socket.emit('setPlayerInteraction', {
+                star: { open: true, chosen: starChosenList, soundPlayed: false }
+            });
+        }
+
+        function v4LockStar() {
+            socket.emit('setPlayerInteraction', {
+                star: { open: false, chosen: starChosenList, soundPlayed: starSoundPlayedThisTurn }
+            });
+        }
+
+        function v4ResetStar() {
+            starChosenList = [false, false, false, false];
+            starSoundPlayedThisTurn = false;
+            socket.emit('setPlayerInteraction', {
+                star: { open: false, chosen: starChosenList, soundPlayed: false }
+            });
+            showPopup("Đã reset Chọn Sao cho cả 4 người chơi!");
+        }
+
         function v4StartTimer() {
             if (v4Interval) {
                 clearInterval(v4Interval);
                 v4Interval = null;
             }
             v4Time = 15;
+            v4Duration = 15;
+            v4StartTime = getServerTime();
             v4Paused = false;
             const pauseBtn = document.getElementById("v4PauseBtn");
             if (pauseBtn) pauseBtn.textContent = "Tạm dừng";
@@ -2081,18 +2478,37 @@
 
             sendSound({ name: '15s Về Đích.mp3', seekTime: 0 });
 
+            // Mở chuông 4 người chơi
+            v4BellWinner = null;
+            v4BellLocked = false;
+            socket.emit('setPlayerInteraction', {
+                bell: { open: true, round: 'v4', startTime: v4StartTime, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+            });
+
             v4Interval = setInterval(() => {
                 if (!v4Paused) {
-                    v4Time--;
-                    document.getElementById('v4TimeBox').textContent = v4Time;
-                    if (v4Time <= 0) {
+                    const elapsed = (getServerTime() - v4StartTime) / 1000;
+                    const rem = Math.max(0, v4Duration - elapsed);
+                    const nextSec = Math.ceil(rem);
+                    if (nextSec !== v4Time) {
+                        v4Time = nextSec;
+                        document.getElementById('v4TimeBox').textContent = v4Time;
+                        syncFullStateToServer();
+                    }
+                    if (rem <= 0) {
                         v4Time = 0;
                         clearInterval(v4Interval);
                         v4Interval = null;
+                        // Tự động khóa chuông khi hết giờ
+                        v4BellLocked = true;
+                        socket.emit('setPlayerInteraction', {
+                            bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
+                        });
+                        document.getElementById('v4TimeBox').textContent = 0;
+                        syncFullStateToServer();
                     }
-                    syncFullStateToServer();
                 }
-            }, 1000);
+            }, 100);
             syncFullStateToServer();
         }
 
@@ -2104,10 +2520,16 @@
             stopSound('15s Về Đích.mp3');
             document.getElementById('v4qText').textContent = "";
             v4Time = 15;
+            v4Duration = 15;
+            v4StartTime = 0;
             v4Paused = false;
             const pauseBtn = document.getElementById("v4PauseBtn");
             if (pauseBtn) pauseBtn.textContent = "Tạm dừng";
             document.getElementById('v4TimeBox').textContent = v4Time;
+            v4BellLocked = true;
+            socket.emit('setPlayerInteraction', {
+                bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
+            });
             syncFullStateToServer();
         }
 
@@ -2138,10 +2560,20 @@
             if (v4Paused) {
                 // Nếu đồng hồ dừng, nhạc bên Viewer cũng phải dừng
                 sendPauseSound('15s Về Đích.mp3');
+                socket.emit('setPlayerInteraction', {
+                    bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
+                });
             } else {
-                // Nếu đồng hồ chạy, nhạc mới phát. Nhạc phải gắn theo số giây
+                // Khi bấm tiếp tục: Cập nhật lại startTime và duration cho thời gian còn lại
+                v4Duration = v4Time;
+                v4StartTime = getServerTime();
                 const elapsed = Math.max(0, 15 - v4Time);
                 sendSound({ name: '15s Về Đích.mp3', seekTime: elapsed });
+                v4BellWinner = null;
+                v4BellLocked = false;
+                socket.emit('setPlayerInteraction', {
+                    bell: { open: true, round: 'v4', startTime: v4StartTime, duration: v4Duration, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+                });
             }
             syncFullStateToServer();
         }
@@ -2168,29 +2600,58 @@
             sendSound('20s Câu Hỏi Phụ.mp3');
             clearInterval(vqphuTimerInterval);
             vqphuTimer = 20;
+            vqphuDuration = 20;
+            vqphuStartTime = getServerTime();
+            vqphuIsRunning = true;
             document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
+            vqphuAnswers = []; // Reset đáp án câu hỏi mới
+            socket.emit('setPlayerInteraction', {
+                answer: { open: true, round: 'vqphu', startTime: vqphuStartTime, duration: 20 }
+            });
             vqphuTimerInterval = setInterval(() => {
-                vqphuTimer--;
-                document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
-                if (vqphuTimer <= 0) clearInterval(vqphuTimerInterval);
-                syncFullStateToServer();
-            }, 1000);
+                const elapsed = (getServerTime() - vqphuStartTime) / 1000;
+                const rem = Math.max(0, vqphuDuration - elapsed);
+                const nextSec = Math.ceil(rem);
+                if (nextSec !== vqphuTimer) {
+                    vqphuTimer = nextSec;
+                    document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
+                    syncFullStateToServer();
+                }
+                if (rem <= 0) {
+                    vqphuTimer = 0;
+                    vqphuIsRunning = false;
+                    clearInterval(vqphuTimerInterval);
+                    document.getElementById('vqphuTimeBox').textContent = 0;
+                    socket.emit('setPlayerInteraction', {
+                        answer: { open: false, round: 'vqphu' }
+                    });
+                    syncFullStateToServer();
+                }
+            }, 100);
+            syncFullStateToServer();
         }
 
         function vqphuCloseQuestion() {
             clearInterval(vqphuTimerInterval);
             stopSound('20s Câu Hỏi Phụ.mp3');
+            socket.emit('setPlayerInteraction', {
+                answer: { open: false, round: 'vqphu' }
+            });
             document.getElementById('vqphuQuestion').textContent = "";
             document.getElementById('vqphuLeft').innerHTML = "";
             document.getElementById('vqphuRight').innerHTML = "";
             vqphuRevealed = false;
             vqphuTimer = 20;
+            vqphuDuration = 20;
+            vqphuStartTime = 0;
+            vqphuIsRunning = false;
             document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
             syncFullStateToServer();
         }
 
         function vqphuNext() {
             if (vqphuData.length > 0) vqphuIndex = (vqphuIndex + 1) % vqphuData.length;
+            vqphuAnswers = [];
             vqphuCloseQuestion();
         }
 
@@ -2225,7 +2686,7 @@
                 <label style="display:block;text-align:center;font-weight:bold;margin-bottom:6px;">
                   Nhập số lượng người chơi (2-16):
                 </label>
-                <input id="vqphuNumPlayers" type="number" min="2" max="16" value="4" style="width:100%;text-align:center;">
+                <input id="vqphuNumPlayers" type="number" min="2" max="16" value="${Math.max(4, vqphuAnswers.length)}" style="width:100%;text-align:center;">
                 <div id="vqphuInputs" style="margin-top:8px;"></div>
             `;
             document.getElementById('vqphuNumPlayers').onchange = () => buildVQPhuInputs();
@@ -2237,11 +2698,12 @@
             const box = document.getElementById('vqphuInputs');
             box.innerHTML = "";
             for (let i = 0; i < n; i++) {
+                const existing = vqphuAnswers[i] || {};
                 box.innerHTML += `
                   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:6px;">
-                    <input placeholder="Tên người chơi ${i + 1}" value="${playerNames[i] || 'Thí sinh ' + (i+1)}">
-                    <input placeholder="Đáp án">
-                    <input placeholder="Thời gian (s)">
+                    <input placeholder="Tên người chơi ${i + 1}" value="${existing.name || playerNames[i] || 'Thí sinh ' + (i+1)}">
+                    <input placeholder="Đáp án" value="${existing.ans || ''}">
+                    <input placeholder="Thời gian (s)" value="${existing.time || ''}">
                   </div>`;
             }
         }
@@ -2253,10 +2715,12 @@
                 return {
                     name: inputs[0].value || `Thí sinh ${idx + 1}`,
                     ans: inputs[1].value || "",
-                    time: inputs[2].value || ""
+                    time: inputs[2].value || "",
+                    playerIndex: idx
                 };
             });
             document.getElementById('modalVQPhuInput').style.display = 'none';
+            if (currentView === 'vqphu_answers') renderVQPhuAnswersPreview();
             syncFullStateToServer();
         }
 
@@ -2271,13 +2735,13 @@
             area.innerHTML = '';
             vqphuAnswers.forEach(item => {
                 const div = document.createElement('div');
-                div.style.cssText = 'background:blue; color:white; border-radius:8px; padding:12px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;';
+                div.className = 'vqphu-item-viewer';
                 div.innerHTML = `
-                    <div>
-                        <div style="color:aqua; font-size:1.1rem; font-weight:bold;">${item.name}</div>
-                        <div style="font-size:1.2rem; margin-top:4px;">${item.ans || ''}</div>
+                    <div class="vqphu-top-row">
+                        <div class="vqphu-name-col">${item.name}</div>
+                        <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
                     </div>
-                    <div style="background:#ff00cc; padding:6px 12px; border-radius:6px;">${item.time ? item.time + 's' : '--'}</div>
+                    <div class="vqphu-ans-row">${item.ans || ''}</div>
                 `;
                 area.appendChild(div);
             });
@@ -2440,6 +2904,92 @@
         // Init on Socket Connect
         socket.on('connect', () => {
             console.log('[Controller] Connected to server.');
+            syncTimeWithServer();
+            syncFullStateToServer();
+        });
+
+        // Player Interaction Socket Listeners
+        socket.on('playerAnswerReceived', (data) => {
+            console.log('[Controller] Player answer received:', data);
+            if (data.round === 'v2') {
+                v2Answers[data.playerIndex] = data.text;
+                const inp = document.getElementById(`ansInp${data.playerIndex}`);
+                if (inp) inp.value = data.text;
+                if (currentView === 'v2_answers') renderV2AnswersPreview();
+            } else if (data.round === 'v3') {
+                v3Answers[data.playerIndex] = {
+                    name: playerNames[data.playerIndex] || `Người ${data.playerIndex + 1}`,
+                    ans: data.text,
+                    time: data.time
+                };
+                const ansInp = document.getElementById(`v3Ans${data.playerIndex}`);
+                if (ansInp) ansInp.value = data.text;
+                const timeInp = document.getElementById(`v3Time${data.playerIndex}`);
+                if (timeInp) timeInp.value = data.time;
+                if (currentView === 'v3_answers') renderV3AnswersPreview();
+            } else if (data.round === 'vqphu' || data.round === 'vqphu_answers') {
+                const pName = playerNames[data.playerIndex] || `Thí sinh ${data.playerIndex + 1}`;
+                const existingIdx = vqphuAnswers.findIndex(a => a.playerIndex === data.playerIndex || a.name === pName);
+                const ansObj = {
+                    name: pName,
+                    ans: data.text,
+                    time: data.time,
+                    playerIndex: data.playerIndex
+                };
+                if (existingIdx >= 0) {
+                    vqphuAnswers[existingIdx] = ansObj;
+                } else {
+                    vqphuAnswers.push(ansObj);
+                }
+                if (currentView === 'vqphu_answers') renderVQPhuAnswersPreview();
+            }
+            syncFullStateToServer();
+        });
+
+        socket.on('playerBellTriggered', (data) => {
+            console.log('[Controller] Player bell triggered:', data);
+            if (data.round === 'v2') {
+                v2BellRungList[data.playerIndex] = true;
+                setPlayerState(data.playerIndex, 'pink');
+                sendSound('Bell V2.mp3');
+                socket.emit('setPlayerInteraction', {
+                    bell: { open: true, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
+                });
+            } else if (data.round === 'v4') {
+                if (v4BellLocked) return;
+                v4BellRungList[data.playerIndex] = true;
+                v4BellWinner = data.playerIndex;
+                v4BellLocked = true;
+
+                // Tạm dừng đồng hồ
+                v4Paused = true;
+                const pauseBtn = document.getElementById("v4PauseBtn");
+                if (pauseBtn) pauseBtn.textContent = "Tiếp tục";
+                sendPauseSound('15s Về Đích.mp3');
+
+                // Chuyển ô người bấm sang màu hồng (#ff00cc)
+                v4SetPlayerState(data.playerIndex, 'pink');
+                sendSound('Bell V2.mp3');
+
+                // Khóa chuông 3 người còn lại
+                socket.emit('setPlayerInteraction', {
+                    bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: data.playerIndex, v4Locked: true }
+                });
+                syncFullStateToServer();
+            }
+        });
+
+        socket.on('playerStarTriggered', (data) => {
+            console.log('[Controller] Player star triggered:', data);
+            starChosenList[data.playerIndex] = true;
+            if (!starSoundPlayedThisTurn) {
+                sendSound('Star.mp3');
+                starSoundPlayedThisTurn = true;
+            }
+            v4SetPlayerState(data.playerIndex, 'yellow');
+            socket.emit('setPlayerInteraction', {
+                star: { open: true, chosen: starChosenList, soundPlayed: true }
+            });
             syncFullStateToServer();
         });
     </script>

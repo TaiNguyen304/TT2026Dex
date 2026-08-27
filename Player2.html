@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thử Thách 2026 - Thí sinh 2</title>
+    <style>
+        :root {
+            --blue: blue;
+            --aqua: aqua;
+            --yellow: yellow;
+            --green: green;
+            --red: red;
+            --pink: #ff00cc;
+            --purple: purple;
+            --lime: #39ff14;
+            --orange: orange;
+            --black: #000000;
+            --white: #ffffff;
+        }
+
+        @font-face {
+            font-family: 'Noto Sans Black';
+            src: url('NotoSans-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Noto Sans Black', sans-serif !important;
+            font-weight: bold !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            background: var(--black);
+            color: var(--white);
+        }
+
+        /* 80% Left Viewer Frame */
+        .viewer-container {
+            flex: 0 0 80%;
+            width: 80%;
+            height: 100vh;
+            position: relative;
+            background: var(--black);
+        }
+
+        .viewer-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* 20% Right Controls Panel */
+        .player-panel {
+            flex: 0 0 20%;
+            width: 20%;
+            height: 100vh;
+            background: #0d1322;
+            border-left: 3px solid var(--blue);
+            display: flex;
+            flex-direction: column;
+            padding: 14px;
+            gap: 12px;
+            overflow-y: auto;
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .player-header {
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            color: var(--white);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid var(--aqua);
+        }
+
+        .player-title {
+            font-size: 1.15rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--yellow);
+        }
+
+        .player-status-badge {
+            font-size: 0.85rem;
+            margin-top: 4px;
+            color: var(--white);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 3px 6px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .section-box {
+            background: #162036;
+            border: 2px solid #233559;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            color: var(--aqua);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timer-badge {
+            font-size: 0.85rem;
+            color: var(--yellow);
+            background: var(--black);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--yellow);
+        }
+
+        .ans-textarea {
+            width: 100%;
+            background: #090e1a;
+            border: 2px solid var(--aqua);
+            border-radius: 6px;
+            color: var(--white);
+            padding: 8px 10px;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            min-height: 70px;
+            text-transform: uppercase;
+            transition: border-color 0.2s;
+        }
+
+        .ans-textarea:focus {
+            border-color: var(--lime);
+            box-shadow: 0 0 8px var(--lime);
+        }
+
+        .ans-textarea:disabled {
+            background: #111827;
+            border-color: #374151;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-action:hover:not(:disabled) {
+            background: var(--orange) !important;
+            color: var(--white) !important;
+            font-weight: bold !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-action:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            filter: grayscale(0.6);
+        }
+
+        .btn-send {
+            background: var(--lime);
+            color: var(--black);
+        }
+
+        .btn-bell {
+            background: var(--pink);
+            color: var(--white);
+            padding: 16px 10px;
+            font-size: 1.15rem;
+            box-shadow: 0 4px 10px rgba(255, 0, 204, 0.3);
+        }
+
+        .btn-star {
+            background: var(--yellow);
+            color: var(--black);
+            padding: 16px 10px;
+            font-size: 1.15rem;
+            box-shadow: 0 4px 10px rgba(255, 255, 0, 0.3);
+        }
+
+        .info-subtext {
+            font-size: 0.8rem;
+            color: var(--white);
+            line-height: 1.3;
+            background: #090e1a;
+            padding: 6px 8px;
+            border-radius: 4px;
+            border-left: 3px solid var(--aqua);
+        }
+
+        .last-ans-text {
+            color: var(--lime);
+            word-break: break-word;
+        }
+
+        .status-pill {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .status-locked {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        .status-open {
+            background: var(--lime);
+            color: var(--black);
+        }
+    </style>
+</head>
+<body>
+    <!-- Left 80% Viewer -->
+    <div class="viewer-container">
+        <iframe id="viewerFrame" class="viewer-iframe" src="/Viewer.html"></iframe>
+    </div>
+
+    <!-- Right 20% Player Controls -->
+    <div class="player-panel">
+        <div class="player-header">
+            <div class="player-title" id="playerTitle">THÍ SINH 2</div>
+            <div class="player-status-badge" id="roundBadge">Đang chờ...</div>
+        </div>
+
+        <!-- 1. Section: Nhập câu trả lời -->
+        <div class="section-box">
+            <div class="section-title">
+                <span>CÂU TRẢ LỜI</span>
+                <span id="ansTimerBadge" class="timer-badge">ĐÃ KHÓA</span>
+            </div>
+            <textarea id="ansInput" class="ans-textarea" placeholder="Ô trả lời đang bị khóa..." disabled rows="3"></textarea>
+            <button id="btnSend" class="btn-action btn-send" disabled>
+                GỬI ĐÁP ÁN (ENTER)
+            </button>
+            <div class="info-subtext" id="ansHistory">
+                Đáp án gửi: <span class="last-ans-text" id="lastAnsVal">(chưa có)</span>
+            </div>
+        </div>
+
+        <!-- 2. Section: Nút bấm chuông -->
+        <div class="section-box">
+            <div class="section-title">
+                <span>CHUÔNG GIÀNH QUYỀN</span>
+                <span id="bellStatusBadge" class="status-pill status-locked">ĐANG KHÓA</span>
+            </div>
+            <button id="btnBell" class="btn-action btn-bell" disabled>
+                🔔 BẤM CHUÔNG
+            </button>
+            <div class="info-subtext" id="bellHistory">
+                Trạng thái chuông: <span id="bellStatusText">Đang khóa</span>
+            </div>
+        </div>
+
+        <!-- 3. Section: Nút Chọn Sao -->
+        <div class="section-box">
+            <div class="section-title">
+                <span>NGÔI SAO HY VỌNG</span>
+                <span id="starStatusBadge" class="status-pill status-locked">ĐANG KHÓA</span>
+            </div>
+            <button id="btnStar" class="btn-action btn-star" disabled>
+                ⭐ CHỌN SAO
+            </button>
+            <div class="info-subtext" id="starHistory">
+                Trạng thái sao: <span id="starStatusText">Đang khóa</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.IO Client -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const PLAYER_INDEX = 1; // Thí sinh 2
+        const socket = io();
+
+        // Server Time Synchronization
+        let serverTimeOffset = 0;
+
+        function syncTimeWithServer() {
+            const clientSendTime = Date.now();
+            socket.emit('syncTime', { clientTime: clientSendTime }, (response) => {
+                if (response && response.serverTime) {
+                    const clientRecvTime = Date.now();
+                    const roundTrip = clientRecvTime - clientSendTime;
+                    serverTimeOffset = (response.serverTime + (roundTrip / 2)) - clientRecvTime;
+                    console.log('[Player 2 Time Sync] Offset:', serverTimeOffset, 'ms, RoundTrip:', roundTrip, 'ms');
+                }
+            });
+        }
+
+        function getServerTime() {
+            return Date.now() + serverTimeOffset;
+        }
+
+        socket.on('connect', () => {
+            syncTimeWithServer();
+        });
+        setInterval(syncTimeWithServer, 30000);
+
+        // Local state
+        let playerName = "Người 2";
+        let currentView = "opening";
+        let ansOpen = false;
+        let ansRound = null;
+        let ansStartTime = 0;
+        let ansDuration = 15;
+        let ansInterval = null;
+
+        let bellOpen = false;
+        let bellRound = null;
+        let bellStartTime = 0;
+        let bellDuration = 15;
+        let hasRung = false;
+
+        let starOpen = false;
+        let hasChosenStar = false;
+
+        // DOM elements
+        const playerTitle = document.getElementById("playerTitle");
+        const roundBadge = document.getElementById("roundBadge");
+        const ansTimerBadge = document.getElementById("ansTimerBadge");
+        const ansInput = document.getElementById("ansInput");
+        const btnSend = document.getElementById("btnSend");
+        const lastAnsVal = document.getElementById("lastAnsVal");
+
+        const bellStatusBadge = document.getElementById("bellStatusBadge");
+        const btnBell = document.getElementById("btnBell");
+        const bellStatusText = document.getElementById("bellStatusText");
+
+        const starStatusBadge = document.getElementById("starStatusBadge");
+        const btnStar = document.getElementById("btnStar");
+        const starStatusText = document.getElementById("starStatusText");
+
+        // Sync with Game State
+        function applyGameState(state) {
+            if (!state) return;
+
+            if (state.playerNames && state.playerNames[PLAYER_INDEX]) {
+                playerName = state.playerNames[PLAYER_INDEX];
+                playerTitle.textContent = `${playerName} (TS ${PLAYER_INDEX + 1})`;
+            }
+
+            if (state.currentView) {
+                currentView = state.currentView;
+                updateRoundBadge(state.currentView);
+            }
+
+            if (state.playerInteraction) {
+                applyInteractionState(state.playerInteraction);
+            }
+        }
+
+        function updateRoundBadge(view) {
+            switch (view) {
+                case 'v1': roundBadge.textContent = "Vòng 1: Nhập cuộc"; break;
+                case 'v2':
+                case 'v2_answers':
+                case 'v2_board': roundBadge.textContent = "Vòng 2: Vượt lên"; break;
+                case 'v3':
+                case 'v3_answers': roundBadge.textContent = "Vòng 3: Đối đầu"; break;
+                case 'v4': roundBadge.textContent = "Vòng 4: Vinh quang"; break;
+                case 'vqphu':
+                case 'vqphu_answers': roundBadge.textContent = "Câu hỏi phụ"; break;
+                case 'scoreboard': roundBadge.textContent = "Tổng kết điểm"; break;
+                default: roundBadge.textContent = "Màn hình chờ"; break;
+            }
+        }
+
+        function applyInteractionState(pi) {
+            if (!pi) return;
+
+            // 1. Answer interaction
+            if (pi.answer) {
+                const a = pi.answer;
+                if (a.open && (!ansOpen || (a.startTime && a.startTime !== ansStartTime))) {
+                    // Open answer
+                    ansOpen = true;
+                    ansRound = a.round;
+                    ansStartTime = a.startTime || getServerTime();
+                    ansDuration = a.duration || (ansRound === 'v2' ? 15 : (ansRound === 'vqphu' ? 20 : 30));
+                    ansInput.disabled = false;
+                    btnSend.disabled = false;
+                    ansInput.value = "";
+                    ansInput.placeholder = "Nhập đáp án của bạn...";
+                    ansTimerBadge.textContent = `${ansDuration}.0s`;
+                    ansTimerBadge.style.color = "var(--yellow)";
+                    ansStatusText.textContent = "Sẵn sàng gửi câu trả lời";
+                    setTimeout(() => ansInput.focus(), 50);
+                    ansInput.focus();
+
+                    startAnsTimerLoop();
+                } else if (!a.open && ansOpen) {
+                    // Close answer
+                    ansOpen = false;
+                    ansInput.disabled = true;
+                    btnSend.disabled = true;
+                    ansInput.placeholder = "Ô trả lời đang bị khóa...";
+                    ansTimerBadge.textContent = "ĐÃ KHÓA";
+                    ansTimerBadge.style.color = "var(--red)";
+                    if (ansInterval) clearInterval(ansInterval);
+                }
+            }
+
+            // 2. Bell interaction
+            if (pi.bell) {
+                const b = pi.bell;
+                bellRound = b.round;
+                const rungList = b.round === 'v4' ? (b.v4Rung || []) : (b.v2Rung || []);
+                hasRung = !!rungList[PLAYER_INDEX];
+
+                if (b.open && !hasRung && (!b.v4Locked || b.v4Winner === PLAYER_INDEX)) {
+                    bellOpen = true;
+                    bellStartTime = b.startTime || Date.now();
+                    bellDuration = b.duration || 15;
+                    btnBell.disabled = false;
+                    bellStatusBadge.className = "status-pill status-open";
+                    bellStatusBadge.textContent = "ĐÃ MỞ";
+                    bellStatusText.textContent = "Chuông đang mở! Bấm ngay!";
+                } else {
+                    bellOpen = false;
+                    btnBell.disabled = true;
+                    bellStatusBadge.className = "status-pill status-locked";
+                    bellStatusBadge.textContent = "ĐANG KHÓA";
+
+                    if (hasRung) {
+                        bellStatusText.textContent = "Bạn đã bấm chuông!";
+                    } else if (b.v4Winner !== null && b.v4Winner !== undefined && b.v4Winner !== PLAYER_INDEX) {
+                        bellStatusText.textContent = `Thí sinh ${b.v4Winner + 1} đã bấm trước!`;
+                    } else {
+                        bellStatusText.textContent = "Đang khóa";
+                    }
+                }
+            }
+
+            // 3. Star interaction
+            if (pi.star) {
+                const s = pi.star;
+                const chosenList = s.chosen || [];
+                hasChosenStar = !!chosenList[PLAYER_INDEX];
+
+                if (s.open && !hasChosenStar) {
+                    starOpen = true;
+                    btnStar.disabled = false;
+                    starStatusBadge.className = "status-pill status-open";
+                    starStatusBadge.textContent = "ĐÃ MỞ";
+                    starStatusText.textContent = "Bạn có thể chọn ngôi sao!";
+                } else {
+                    starOpen = false;
+                    btnStar.disabled = true;
+                    starStatusBadge.className = "status-pill status-locked";
+                    starStatusBadge.textContent = "ĐANG KHÓA";
+
+                    if (hasChosenStar) {
+                        starStatusText.textContent = "Đã chọn Ngôi sao!";
+                    } else {
+                        starStatusText.textContent = "Đang khóa";
+                    }
+                }
+            }
+        }
+
+        function startAnsTimerLoop() {
+            if (ansInterval) clearInterval(ansInterval);
+            ansInterval = setInterval(() => {
+                if (!ansOpen) {
+                    clearInterval(ansInterval);
+                    return;
+                }
+                const now = getServerTime();
+                const elapsed = (now - ansStartTime) / 1000;
+                const remaining = Math.max(0, ansDuration - elapsed);
+                ansTimerBadge.textContent = `${remaining.toFixed(1)}s`;
+                ansTimerBadge.style.color = "var(--yellow)";
+                if (remaining <= 0) {
+                    ansOpen = false;
+                    ansInput.disabled = true;
+                    btnSend.disabled = true;
+                    ansTimerBadge.textContent = "HẾT GIỜ";
+                    ansTimerBadge.style.color = "var(--red)";
+                    clearInterval(ansInterval);
+                }
+            }, 100);
+        }
+
+        // Submit Answer Logic
+        function submitAnswer() {
+            if (!ansOpen && ansInput.disabled) return;
+            const text = ansInput.value.trim().toUpperCase();
+            if (!text) return;
+
+            const now = getServerTime();
+            const rawElapsed = (now - ansStartTime) / 1000;
+            const elapsed = Math.min(ansDuration, Math.max(0, rawElapsed)).toFixed(2);
+
+            const activeRound = ansRound || (currentView.startsWith('v3') ? 'v3' : 'v2');
+
+            socket.emit('playerSubmitAnswer', {
+                playerIndex: PLAYER_INDEX,
+                round: activeRound,
+                text: text,
+                time: elapsed
+            });
+
+            lastAnsVal.textContent = `"${text}" (${elapsed}s)`;
+            ansInput.value = "";
+            ansInput.focus();
+        }
+
+        btnSend.addEventListener('click', submitAnswer);
+
+        ansInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitAnswer();
+            }
+        });
+
+        // Ring Bell Logic
+        btnBell.addEventListener('click', () => {
+            if (btnBell.disabled) return;
+
+            const now = getServerTime();
+            const rawElapsed = (now - bellStartTime) / 1000;
+            const elapsed = Math.min(bellDuration, Math.max(0, rawElapsed)).toFixed(2);
+
+            const activeRound = bellRound || (currentView.startsWith('v4') ? 'v4' : 'v2');
+
+            socket.emit('playerRingBell', {
+                playerIndex: PLAYER_INDEX,
+                round: activeRound,
+                time: elapsed
+            });
+
+            btnBell.disabled = true;
+            hasRung = true;
+            bellStatusText.textContent = `Đã bấm lúc ${elapsed}s!`;
+        });
+
+        // Choose Star Logic
+        btnStar.addEventListener('click', () => {
+            if (btnStar.disabled) return;
+
+            socket.emit('playerChooseStar', {
+                playerIndex: PLAYER_INDEX
+            });
+
+            btnStar.disabled = true;
+            hasChosenStar = true;
+            starStatusText.textContent = "Đã chọn Ngôi sao hy vọng!";
+        });
+
+        // Socket listeners
+        socket.on('initState', applyGameState);
+        socket.on('stateUpdated', applyGameState);
+        socket.on('playerInteractionUpdated', applyInteractionState);
+        socket.on('viewChanged', updateRoundBadge);
+    </script>
+</body>
+</html>

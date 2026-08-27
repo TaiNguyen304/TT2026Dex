@@ -41,12 +41,41 @@ let gameState = {
   playerScores: [30, 30, 30, 30],
   scoreOption: "reset",
 
+  // Player interaction state
+  playerInteraction: {
+    answer: {
+      open: false,
+      round: null, // 'v2' | 'v3'
+      startTime: 0,
+      duration: 15
+    },
+    bell: {
+      open: false,
+      round: null, // 'v2' | 'v4'
+      startTime: 0,
+      duration: 15,
+      v2Rung: [false, false, false, false],
+      v4Rung: [false, false, false, false],
+      v4Winner: null,
+      v4Locked: false
+    },
+    star: {
+      open: false,
+      chosen: [false, false, false, false],
+      soundPlayed: false
+    }
+  },
+
   v1State: {
     currentPlayer: null,
     questionIndex: [0, 0, 0, 0],
     qText: "",
     qHint: "",
     time: 45,
+    startTime: 0,
+    duration: 45,
+    isRunning: false,
+    isEnded: false,
     isTimerRunning: false,
     timeColor: "blue"
   },
@@ -62,6 +91,9 @@ let gameState = {
     qText: "",
     qHint: "",
     time: 15,
+    startTime: 0,
+    duration: 15,
+    isRunning: false,
     isTimerRunning: false,
     percent: 0
   },
@@ -79,6 +111,9 @@ let gameState = {
       { name: 'Người 4', ans: '', time: '' }
     ],
     time: 30,
+    startTime: 0,
+    duration: 30,
+    isRunning: false,
     isTimerRunning: false,
     timerBg: "blue"
   },
@@ -89,10 +124,14 @@ let gameState = {
     qText: "",
     qHint: "",
     time: 15,
-    isTimerRunning: false,
+    startTime: 0,
+    duration: 15,
+    isRunning: false,
     isPaused: false,
+    isTimerRunning: false,
     playerColors: ['blue', 'blue', 'blue', 'blue'],
     bracketState: [0, 0, 0, 0], // 0: normal, 1: (name), 2: (name) + (score)
+    counters: [0, 0, 0, 0],
     percent: 0
   },
 
@@ -102,6 +141,9 @@ let gameState = {
     events: ["", "", "", "", "", "", "", ""],
     revealed: false,
     time: 20,
+    startTime: 0,
+    duration: 20,
+    isRunning: false,
     isTimerRunning: false,
     numPlayers: 4,
     answers: [],
@@ -124,12 +166,35 @@ app.get(['/Viewer.html', '/Viewer', '/viewer'], (req, res) => {
   res.sendFile(path.join(__dirname, 'Viewer.html'));
 });
 
+app.get(['/Player1.html', '/Player1', '/player1'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'Player1.html'));
+});
+
+app.get(['/Player2.html', '/Player2', '/player2'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'Player2.html'));
+});
+
+app.get(['/Player3.html', '/Player3', '/player3'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'Player3.html'));
+});
+
+app.get(['/Player4.html', '/Player4', '/player4'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'Player4.html'));
+});
+
 // Socket.IO Real-time Connection
 io.on('connection', (socket) => {
   console.log(`[Socket] Connected: ${socket.id}`);
 
   // Send current state to newly connected client
   socket.emit('initState', gameState);
+
+  // Time synchronization with Server
+  socket.on('syncTime', (clientSentTime, callback) => {
+    if (typeof callback === 'function') {
+      callback({ clientSentTime, serverTime: Date.now() });
+    }
+  });
 
   // Controller requests view change
   socket.on('changeView', (viewName) => {
@@ -152,6 +217,57 @@ io.on('connection', (socket) => {
   // Full state update from Controller
   socket.on('updateState', (partialState) => {
     gameState = { ...gameState, ...partialState };
+    io.emit('stateUpdated', gameState);
+  });
+
+  // Player interaction events
+  socket.on('playerSubmitAnswer', (data) => {
+    console.log(`[Player Answer] P${data.playerIndex + 1} (${data.round}): ${data.text} [${data.time}s]`);
+    if (data.round === 'v2') {
+      if (!gameState.v2State.answers) gameState.v2State.answers = ["", "", "", ""];
+      gameState.v2State.answers[data.playerIndex] = data.text;
+    } else if (data.round === 'v3') {
+      if (!gameState.v3State.answers) gameState.v3State.answers = [];
+      const pName = gameState.playerNames[data.playerIndex] || `Người ${data.playerIndex + 1}`;
+      gameState.v3State.answers[data.playerIndex] = {
+        name: pName,
+        ans: data.text,
+        time: data.time
+      };
+    } else if (data.round === 'vqphu' || data.round === 'vqphu_answers') {
+      if (!gameState.vqphuState.answers) gameState.vqphuState.answers = [];
+      const pName = gameState.playerNames[data.playerIndex] || `Thí sinh ${data.playerIndex + 1}`;
+      const existingIdx = gameState.vqphuState.answers.findIndex(a => a.playerIndex === data.playerIndex || a.name === pName);
+      const ansObj = {
+        name: pName,
+        ans: data.text,
+        time: data.time,
+        playerIndex: data.playerIndex
+      };
+      if (existingIdx >= 0) {
+        gameState.vqphuState.answers[existingIdx] = ansObj;
+      } else {
+        gameState.vqphuState.answers.push(ansObj);
+      }
+    }
+    io.emit('playerAnswerReceived', data);
+    io.emit('stateUpdated', gameState);
+  });
+
+  socket.on('playerRingBell', (data) => {
+    console.log(`[Player Bell] P${data.playerIndex + 1} (${data.round}) at ${data.time}s`);
+    io.emit('playerBellTriggered', data);
+  });
+
+  socket.on('playerChooseStar', (data) => {
+    console.log(`[Player Star] P${data.playerIndex + 1}`);
+    io.emit('playerStarTriggered', data);
+  });
+
+  // Controller interaction controls
+  socket.on('setPlayerInteraction', (interactionData) => {
+    gameState.playerInteraction = { ...gameState.playerInteraction, ...interactionData };
+    io.emit('playerInteractionUpdated', gameState.playerInteraction);
     io.emit('stateUpdated', gameState);
   });
 

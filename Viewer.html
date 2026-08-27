@@ -566,6 +566,19 @@
             margin-bottom: 35px;
         }
 
+        .v4-counter-box-viewer {
+            background: var(--blue);
+            color: var(--white);
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 6px;
+            padding: 4px 12px;
+            margin-top: 6px;
+            text-align: center;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
         .v4-question {
             color: white;
             margin: 25px auto 20px auto;
@@ -647,6 +660,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             margin-bottom: 16px;
             border: 2px solid var(--blue);
+            animation: slideInFromRight 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         .vqphu-top-row {
@@ -821,24 +835,28 @@
                         <div class="score-name" id="v4name0">Người 1</div>
                         <div class="score-value" id="v4score0">30</div>
                     </div>
+                    <div class="v4-counter-box-viewer" id="v4counterViewer0">0</div>
                 </div>
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v4box1">
                         <div class="score-name" id="v4name1">Người 2</div>
                         <div class="score-value" id="v4score1">30</div>
                     </div>
+                    <div class="v4-counter-box-viewer" id="v4counterViewer1">0</div>
                 </div>
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v4box2">
                         <div class="score-name" id="v4name2">Người 3</div>
                         <div class="score-value" id="v4score2">30</div>
                     </div>
+                    <div class="v4-counter-box-viewer" id="v4counterViewer2">0</div>
                 </div>
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v4box3">
                         <div class="score-name" id="v4name3">Người 4</div>
                         <div class="score-value" id="v4score3">30</div>
                     </div>
+                    <div class="v4-counter-box-viewer" id="v4counterViewer3">0</div>
                 </div>
             </div>
 
@@ -966,6 +984,7 @@
         document.addEventListener('keydown', unlockAudio, { once: false });
 
         function playSound(soundData, volume) {
+            if (window.top !== window.self) return; // Mute sound when inside Player iframe!
             try {
                 let name = soundData;
                 let vol = volume;
@@ -1091,9 +1110,13 @@
                 if (currentActiveView === 'v4' && view !== 'v4') {
                     stopSound('15s Về Đích.mp3');
                 }
-                if (view === 'v2_answers' || view === 'v3_answers') {
+                if (view === 'v2_answers' || view === 'v3_answers' || view === 'vqphu_answers') {
                     playSound('AnswersShowing.mp3');
                     // Reset containers on new view transition so entrance animation plays
+                    if (view === 'vqphu_answers') {
+                        const c = document.getElementById('vqphuAnswersListViewer');
+                        if (c) c.innerHTML = '';
+                    }
                     if (view === 'v2_answers') {
                         const c = document.getElementById('v2AnswersListViewer');
                         if (c) c.innerHTML = '';
@@ -1150,8 +1173,124 @@
             else if (state === 'black') { el.style.background = 'var(--black)'; el.style.color = 'var(--white)'; }
         }
 
+        let serverTimeOffset = 0;
+
+        function syncTimeWithServer() {
+            const clientSendTime = Date.now();
+            socket.emit('syncTime', { clientTime: clientSendTime }, (response) => {
+                if (response && response.serverTime) {
+                    const clientRecvTime = Date.now();
+                    const roundTrip = clientRecvTime - clientSendTime;
+                    serverTimeOffset = (response.serverTime + (roundTrip / 2)) - clientRecvTime;
+                    console.log('[Viewer Time Sync] Offset:', serverTimeOffset, 'ms, RoundTrip:', roundTrip, 'ms');
+                }
+            });
+        }
+
+        function getServerTime() {
+            return Date.now() + serverTimeOffset;
+        }
+
+        socket.on('connect', () => {
+            syncTimeWithServer();
+        });
+        setInterval(syncTimeWithServer, 30000);
+
+        let latestViewerState = null;
+
+        function getCalculatedTime(roundState, defaultDuration) {
+            if (!roundState) return defaultDuration;
+            if (roundState.startTime && roundState.isRunning && !roundState.isPaused) {
+                const elapsed = (getServerTime() - roundState.startTime) / 1000;
+                const dur = roundState.duration !== undefined ? roundState.duration : (roundState.time !== undefined ? roundState.time : defaultDuration);
+                return Math.max(0, Math.ceil(dur - elapsed));
+            }
+            return roundState.time !== undefined ? roundState.time : defaultDuration;
+        }
+
+        function renderV1Time(v1State) {
+            const timeBox = document.getElementById('timeBox');
+            if (!timeBox || !v1State) return;
+            const t = getCalculatedTime(v1State, 45);
+            timeBox.textContent = t;
+            if (v1State.isEnded || t <= 0) {
+                timeBox.style.background = '#000000';
+                timeBox.style.color = '#ffffff';
+            } else {
+                timeBox.style.background = 'var(--blue)';
+                timeBox.style.color = 'var(--white)';
+            }
+        }
+
+        function renderV2Time(v2State) {
+            const v2TimeBox = document.getElementById('v2TimeBox');
+            if (!v2TimeBox || !v2State) return;
+            const t = getCalculatedTime(v2State, 15);
+            v2TimeBox.textContent = t;
+            const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
+            v2TimeBox.style.background = `linear-gradient(to bottom, #ff00cc ${pct}%, var(--blue) ${pct}%)`;
+            v2TimeBox.style.color = 'var(--white)';
+        }
+
+        function renderV3Time(v3State) {
+            const v3Timer = document.getElementById('v3Timer');
+            if (!v3Timer || !v3State) return;
+            const t = getCalculatedTime(v3State, 30);
+            v3Timer.textContent = t;
+            if (t > 20) {
+                v3Timer.style.background = 'var(--blue)';
+                v3Timer.style.color = 'white';
+                v3Timer.style.fontWeight = 'bold';
+            } else if (t > 10) {
+                v3Timer.style.background = 'var(--yellow)';
+                v3Timer.style.color = 'black';
+                v3Timer.style.fontWeight = 'bold';
+            } else {
+                v3Timer.style.background = 'var(--red)';
+                v3Timer.style.color = 'white';
+                v3Timer.style.fontWeight = 'bold';
+            }
+        }
+
+        function renderV4Time(v4State) {
+            const v4TimeBox = document.getElementById('v4TimeBox');
+            if (!v4TimeBox || !v4State) return;
+            const t = getCalculatedTime(v4State, 15);
+            v4TimeBox.textContent = t;
+            const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
+            v4TimeBox.style.background = `linear-gradient(to bottom, #ff00cc ${pct}%, var(--blue) ${pct}%)`;
+            v4TimeBox.style.color = 'var(--white)';
+        }
+
+        function renderVQPhuTime(vqState) {
+            const el = document.getElementById('vqphuTimeBox');
+            if (!el || !vqState) return;
+            el.textContent = getCalculatedTime(vqState, 20);
+        }
+
+        // Millisecond-accurate local tick loop
+        setInterval(() => {
+            if (!latestViewerState) return;
+            if (latestViewerState.v1State && latestViewerState.v1State.isRunning) {
+                renderV1Time(latestViewerState.v1State);
+            }
+            if (latestViewerState.v2State && latestViewerState.v2State.isRunning) {
+                renderV2Time(latestViewerState.v2State);
+            }
+            if (latestViewerState.v3State && latestViewerState.v3State.isRunning) {
+                renderV3Time(latestViewerState.v3State);
+            }
+            if (latestViewerState.v4State && latestViewerState.v4State.isRunning && !latestViewerState.v4State.isPaused) {
+                renderV4Time(latestViewerState.v4State);
+            }
+            if (latestViewerState.vqphuState && latestViewerState.vqphuState.isRunning) {
+                renderVQPhuTime(latestViewerState.vqphuState);
+            }
+        }, 50);
+
         function applyStateToViewer(state) {
             if (!state) return;
+            latestViewerState = state;
 
             // View switch
             if (state.currentView) {
@@ -1210,17 +1349,7 @@
 
             // V1 State
             if (state.v1State) {
-                const timeBox = document.getElementById('timeBox');
-                if (timeBox) {
-                    timeBox.textContent = state.v1State.time;
-                    if (state.v1State.isEnded) {
-                        timeBox.style.background = '#000000';
-                        timeBox.style.color = '#ffffff';
-                    } else {
-                        timeBox.style.background = 'var(--blue)';
-                        timeBox.style.color = 'var(--white)';
-                    }
-                }
+                renderV1Time(state.v1State);
                 if (document.getElementById('qText')) document.getElementById('qText').textContent = state.v1State.qText || "";
                 if (document.getElementById('qHint')) document.getElementById('qHint').textContent = state.v1State.qHint || "";
 
@@ -1238,14 +1367,7 @@
 
             // V2 State
             if (state.v2State) {
-                const v2TimeBox = document.getElementById('v2TimeBox');
-                if (v2TimeBox) {
-                    const t = state.v2State.time !== undefined ? state.v2State.time : 15;
-                    v2TimeBox.textContent = t;
-                    const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
-                    v2TimeBox.style.background = `linear-gradient(to bottom, #ff00cc ${pct}%, var(--blue) ${pct}%)`;
-                    v2TimeBox.style.color = 'var(--white)';
-                }
+                renderV2Time(state.v2State);
                 if (document.getElementById('v2qText')) document.getElementById('v2qText').textContent = state.v2State.qText || "";
 
                 if (state.v2State.playerColors) {
@@ -1264,24 +1386,7 @@
 
             // V3 State
             if (state.v3State) {
-                const v3Timer = document.getElementById('v3Timer');
-                if (v3Timer) {
-                    const t = state.v3State.time !== undefined ? state.v3State.time : 30;
-                    v3Timer.textContent = t;
-                    if (t > 20) {
-                        v3Timer.style.background = 'var(--blue)';
-                        v3Timer.style.color = 'white';
-                        v3Timer.style.fontWeight = 'bold';
-                    } else if (t > 10) {
-                        v3Timer.style.background = 'var(--yellow)';
-                        v3Timer.style.color = 'black';
-                        v3Timer.style.fontWeight = 'bold';
-                    } else {
-                        v3Timer.style.background = 'var(--red)';
-                        v3Timer.style.color = 'white';
-                        v3Timer.style.fontWeight = 'bold';
-                    }
-                }
+                renderV3Time(state.v3State);
                 if (document.getElementById('v3QuestionBox')) document.getElementById('v3QuestionBox').textContent = state.v3State.qText || "";
                 if (state.v3State.hints) {
                     for (let h = 1; h <= 3; h++) {
@@ -1296,14 +1401,7 @@
 
             // V4 State
             if (state.v4State) {
-                const v4TimeBox = document.getElementById('v4TimeBox');
-                const t = state.v4State.time !== undefined ? state.v4State.time : 15;
-                if (v4TimeBox) {
-                    v4TimeBox.textContent = t;
-                    const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
-                    v4TimeBox.style.background = `linear-gradient(to bottom, #ff00cc ${pct}%, var(--blue) ${pct}%)`;
-                    v4TimeBox.style.color = 'var(--white)';
-                }
+                renderV4Time(state.v4State);
                 if (document.getElementById('v4qText')) document.getElementById('v4qText').textContent = state.v4State.qText || "";
 
                 if (state.v4State.playerColors) {
@@ -1313,6 +1411,14 @@
                     }
                 }
 
+                if (state.v4State.counters) {
+                    for (let i = 0; i < 4; i++) {
+                        const cEl = document.getElementById(`v4counterViewer${i}`);
+                        if (cEl) cEl.textContent = state.v4State.counters[i] !== undefined ? state.v4State.counters[i] : 0;
+                    }
+                }
+
+                const t = getCalculatedTime(state.v4State, 15);
                 // V4 Sound Sync:
                 const v4Audio = audioCache['15s Về Đích.mp3'];
                 if (state.v4State.isPaused) {
@@ -1334,7 +1440,7 @@
 
             // VQPhu State
             if (state.vqphuState) {
-                if (document.getElementById('vqphuTimeBox')) document.getElementById('vqphuTimeBox').textContent = state.vqphuState.time;
+                renderVQPhuTime(state.vqphuState);
                 if (document.getElementById('vqphuQuestion')) document.getElementById('vqphuQuestion').textContent = state.vqphuState.question || "";
 
                 renderVQPhuViewer(state.vqphuState);
@@ -1497,20 +1603,33 @@
             // Answers Separate View
             const ansContainer = document.getElementById('vqphuAnswersListViewer');
             if (ansContainer) {
-                ansContainer.innerHTML = '';
                 const answers = vqState.answers || [];
-                answers.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'vqphu-item-viewer';
-                    div.innerHTML = `
-                        <div class="vqphu-top-row">
-                            <div class="vqphu-name-col">${item.name}</div>
-                            <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
-                        </div>
-                        <div class="vqphu-ans-row">${item.ans || ''}</div>
-                    `;
-                    ansContainer.appendChild(div);
-                });
+                const existingItems = ansContainer.querySelectorAll('.vqphu-item-viewer');
+                if (existingItems.length === answers.length && answers.length > 0) {
+                    existingItems.forEach((div, i) => {
+                        const item = answers[i] || {};
+                        const nameEl = div.querySelector('.vqphu-name-col');
+                        const timeEl = div.querySelector('.vqphu-time-col');
+                        const ansEl = div.querySelector('.vqphu-ans-row');
+                        if (nameEl) nameEl.textContent = item.name || '';
+                        if (timeEl) timeEl.textContent = item.time ? item.time + 's' : '--';
+                        if (ansEl) ansEl.textContent = item.ans || '';
+                    });
+                } else {
+                    ansContainer.innerHTML = '';
+                    answers.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'vqphu-item-viewer';
+                        div.innerHTML = `
+                            <div class="vqphu-top-row">
+                                <div class="vqphu-name-col">${item.name}</div>
+                                <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
+                            </div>
+                            <div class="vqphu-ans-row">${item.ans || ''}</div>
+                        `;
+                        ansContainer.appendChild(div);
+                    });
+                }
             }
         }
 
