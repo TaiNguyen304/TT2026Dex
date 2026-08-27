@@ -618,6 +618,11 @@
             padding: 14px;
             font-size: 1.3rem;
             text-align: center;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -2744,7 +2749,7 @@
                         <div class="vqphu-name-col">${nameStr}</div>
                         <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
                     </div>
-                    <div class="vqphu-ans-row">${item.ans || ''}</div>
+                    <div class="vqphu-ans-row">${item.ans || '&nbsp;'}</div>
                 `;
                 area.appendChild(div);
             }

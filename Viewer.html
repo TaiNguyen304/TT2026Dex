@@ -690,6 +690,11 @@
             padding: 14px;
             font-size: 1.3rem;
             text-align: center;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -1617,7 +1622,7 @@
                         const ansEl = div.querySelector('.vqphu-ans-row');
                         if (nameEl) nameEl.textContent = nameStr;
                         if (timeEl) timeEl.textContent = item.time ? item.time + 's' : '--';
-                        if (ansEl) ansEl.textContent = item.ans || '';
+                        if (ansEl) ansEl.innerHTML = item.ans || '&nbsp;';
                     });
                 } else {
                     ansContainer.innerHTML = '';
@@ -1631,7 +1636,7 @@
                                 <div class="vqphu-name-col">${nameStr}</div>
                                 <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
                             </div>
-                            <div class="vqphu-ans-row">${item.ans || ''}</div>
+                            <div class="vqphu-ans-row">${item.ans || '&nbsp;'}</div>
                         `;
                         ansContainer.appendChild(div);
                     }

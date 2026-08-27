@@ -501,6 +501,9 @@
                 const remaining = Math.max(0, ansDuration - elapsed);
                 ansTimerBadge.textContent = `${remaining.toFixed(1)}s`;
                 ansTimerBadge.style.color = "var(--yellow)";
+                if (ansOpen && !ansInput.disabled && document.activeElement !== ansInput) {
+                    ansInput.focus();
+                }
                 if (remaining <= 0) {
                     ansOpen = false;
                     ansInput.disabled = true;
@@ -511,6 +514,27 @@
                 }
             }, 100);
         }
+
+        function enforceAnsFocus() {
+            if (ansOpen && !ansInput.disabled && document.activeElement !== ansInput) {
+                ansInput.focus();
+            }
+        }
+
+        ansInput.addEventListener('blur', () => {
+            if (ansOpen && !ansInput.disabled) {
+                setTimeout(enforceAnsFocus, 10);
+            }
+        });
+
+        window.addEventListener('focus', enforceAnsFocus);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                enforceAnsFocus();
+            }
+        });
+        document.addEventListener('click', enforceAnsFocus, true);
+        document.addEventListener('pointerdown', enforceAnsFocus, true);
 
         // Submit Answer Logic
         function submitAnswer() {
