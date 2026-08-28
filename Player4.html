@@ -388,6 +388,25 @@
                 updateRoundBadge(state.currentView);
             }
 
+            let curAns = null;
+            if (currentView.startsWith('v2') && state.v2State && state.v2State.answers) {
+                curAns = state.v2State.answers[PLAYER_INDEX];
+            } else if (currentView.startsWith('v3') && state.v3State && state.v3State.answers) {
+                curAns = state.v3State.answers[PLAYER_INDEX];
+            } else if (currentView.startsWith('vqphu') && state.vqphuState && state.vqphuState.answers) {
+                curAns = state.vqphuState.answers[PLAYER_INDEX];
+            }
+
+            if (curAns !== null && curAns !== undefined) {
+                const text = typeof curAns === 'object' ? (curAns.ans || '') : curAns;
+                const time = typeof curAns === 'object' ? (curAns.time || '') : '';
+                if (text) {
+                    lastAnsVal.textContent = `"${text}"${time ? ' (' + time + 's)' : ''}`;
+                } else {
+                    lastAnsVal.textContent = "(chưa có)";
+                }
+            }
+
             if (state.playerInteraction) {
                 applyInteractionState(state.playerInteraction);
             }
@@ -600,7 +619,7 @@
 
             btnBell.disabled = true;
             hasRung = true;
-            bellStatusText.textContent = `Đã bấm lúc ${elapsed}s!`;
+            bellStatusText.textContent = `Bạn đã bấm chuông! (${elapsed}s)`;
         });
 
         // Choose Star Logic
@@ -622,7 +641,19 @@
         socket.on('playerInteractionUpdated', applyInteractionState);
         socket.on('viewChanged', updateRoundBadge);
         socket.on('questionClosed', () => {
-            lastAnsVal.textContent = "Chưa gửi";
+            lastAnsVal.textContent = "(chưa có)";
+            ansInput.value = "";
+        });
+        socket.on('bellReset', () => {
+            hasRung = false;
+            bellStatusText.textContent = "Đang khóa";
+        });
+        socket.on('playerBellTriggered', (data) => {
+            if (data.playerIndex === PLAYER_INDEX) {
+                bellStatusText.textContent = `Bạn đã bấm chuông! (${data.time}s)`;
+            } else if (data.round && String(data.round).startsWith('v4')) {
+                bellStatusText.textContent = `Thí sinh ${data.playerIndex + 1} đã bấm trước! (${data.time}s)`;
+            }
         });
     </script>
 </body>

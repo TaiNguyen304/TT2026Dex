@@ -1386,13 +1386,20 @@
         let v2Revealed = new Array(30).fill(false);
         let v2RedCells = [];
         let v2SelectedQuestionIndex = null;
-        let v2Answers = ["", "", "", ""];
+        let v2Answers = [
+            { name: 'Người 1', ans: '', time: '' },
+            { name: 'Người 2', ans: '', time: '' },
+            { name: 'Người 3', ans: '', time: '' },
+            { name: 'Người 4', ans: '', time: '' }
+        ];
         let v2PlayerColors = ['blue', 'blue', 'blue', 'blue'];
         let v2Timer = 15;
         let v2StartTime = 0;
         let v2Duration = 15;
         let v2IsRunning = false;
         let v2TimerInterval = null;
+        let v2BellLog = [];
+        let v4BellLog = [];
 
         // V3 State
         let v3Data = [];
@@ -1604,6 +1611,8 @@
                 playerNames,
                 playerScores,
                 playerVisibility,
+                v2BellLog,
+                v4BellLog,
                 v1State: {
                     currentPlayer,
                     questionIndex,
@@ -2076,11 +2085,14 @@
                 const isBlack = v2PlayerColors && v2PlayerColors[i] === 'black';
                 const nameStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
                 const ansStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
+                const item = v2Answers[i];
+                const ansText = (typeof item === 'object') ? (item.ans || '') : (item || '');
+                const timeText = (typeof item === 'object' && item.time !== undefined && item.time !== null && item.time !== '') ? item.time + 's' : '';
                 const wrapper = document.createElement('div');
                 wrapper.className = 'v2-answer-item';
                 wrapper.innerHTML = `
                     <div class="v2-answer-name" style="${nameStyle}">${playerNames[i]}</div>
-                    <div class="v2-answer-text" style="${ansStyle}">${v2Answers[i] || ''}</div>
+                    <div class="v2-answer-text" style="${ansStyle}">${ansText} ${timeText ? '(' + timeText + ')' : ''}</div>
                 `;
                 area.appendChild(wrapper);
             }
@@ -2104,6 +2116,7 @@
 
         function v2ResetBell() {
             v2BellRungList = [false, false, false, false];
+            v2BellLog = [];
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
             });
@@ -2462,6 +2475,7 @@
             v4BellRungList = [false, false, false, false];
             v4BellWinner = null;
             v4BellLocked = false;
+            v4BellLog = [];
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
@@ -2955,7 +2969,11 @@
         socket.on('playerAnswerReceived', (data) => {
             console.log('[Controller] Player answer received:', data);
             if (data.round === 'v2') {
-                v2Answers[data.playerIndex] = data.text;
+                v2Answers[data.playerIndex] = {
+                    name: playerNames[data.playerIndex] || `Người ${data.playerIndex + 1}`,
+                    ans: data.text,
+                    time: data.time
+                };
                 const inp = document.getElementById(`ansInp${data.playerIndex}`);
                 if (inp) inp.value = data.text;
                 if (currentView === 'v2_answers') renderV2AnswersPreview();
@@ -2985,15 +3003,27 @@
 
         socket.on('playerBellTriggered', (data) => {
             console.log('[Controller] Player bell triggered:', data);
-            if (data.round === 'v2') {
+            const pName = playerNames[data.playerIndex] || `Thí sinh ${data.playerIndex + 1}`;
+            const logItem = { playerIndex: data.playerIndex, name: pName, time: data.time };
+            const isV4 = data.round && String(data.round).startsWith('v4');
+            if (!isV4) {
+                if (!v2BellLog.some(b => b.playerIndex === data.playerIndex)) {
+                    v2BellLog.push(logItem);
+                }
                 v2BellRungList[data.playerIndex] = true;
                 setPlayerState(data.playerIndex, 'pink');
                 sendSound('Bell V2.mp3');
                 socket.emit('setPlayerInteraction', {
                     bell: { open: true, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
                 });
-            } else if (data.round === 'v4') {
-                if (v4BellLocked) return;
+            } else {
+                if (!v4BellLog.some(b => b.playerIndex === data.playerIndex)) {
+                    v4BellLog.push(logItem);
+                }
+                if (v4BellLocked) {
+                    syncFullStateToServer();
+                    return;
+                }
                 v4BellRungList[data.playerIndex] = true;
                 v4BellWinner = data.playerIndex;
                 v4BellLocked = true;
@@ -3012,8 +3042,8 @@
                 socket.emit('setPlayerInteraction', {
                     bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: data.playerIndex, v4Locked: true }
                 });
-                syncFullStateToServer();
             }
+            syncFullStateToServer();
         });
 
         socket.on('playerStarTriggered', (data) => {

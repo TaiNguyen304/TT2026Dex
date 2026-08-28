@@ -483,7 +483,7 @@
                 if (item) {
                     if (typeof item === 'object') {
                         ansStr = item.ans || '--';
-                        timeStr = item.time ? parseFloat(item.time).toFixed(2) + 's' : '--';
+                        timeStr = (item.time !== undefined && item.time !== null && item.time !== '') ? parseFloat(item.time).toFixed(2) + 's' : '--';
                     } else if (typeof item === 'string') {
                         ansStr = item || '--';
                     }
@@ -512,7 +512,7 @@
             } else {
                 v2BellLog.forEach((item, idx) => {
                     const pName = item.name || pNames[item.playerIndex] || `Thí sinh ${item.playerIndex + 1}`;
-                    const timeStr = item.time ? parseFloat(item.time).toFixed(3) + 's' : '--';
+                    const timeStr = (item.time !== undefined && item.time !== null && item.time !== '') ? parseFloat(item.time).toFixed(3) + 's' : '--';
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td><span class="order-badge">${idx + 1}</span></td>
@@ -536,7 +536,7 @@
                 const pName = pNames[i] || `Thí sinh ${i + 1}`;
                 const item = v3Ans[i] || {};
                 const ansStr = item.ans || '--';
-                const timeStr = item.time ? parseFloat(item.time).toFixed(2) + 's' : '--';
+                const timeStr = (item.time !== undefined && item.time !== null && item.time !== '') ? parseFloat(item.time).toFixed(2) + 's' : '--';
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -561,7 +561,7 @@
             } else {
                 v4BellLog.forEach((item, idx) => {
                     const pName = item.name || pNames[item.playerIndex] || `Thí sinh ${item.playerIndex + 1}`;
-                    const timeStr = item.time ? parseFloat(item.time).toFixed(3) + 's' : '--';
+                    const timeStr = (item.time !== undefined && item.time !== null && item.time !== '') ? parseFloat(item.time).toFixed(3) + 's' : '--';
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td><span class="order-badge">${idx + 1}</span></td>

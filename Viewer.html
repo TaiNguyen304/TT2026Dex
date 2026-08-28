@@ -16,19 +16,6 @@
             }
         });
     </script>
-    <script>
-        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
-            const key = e.key ? e.key.toLowerCase() : '';
-            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
-                e.preventDefault(); return false;
-            }
-            if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
-                e.preventDefault(); return false;
-            }
-        });
-    </script>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Thử Thách 2026 - Viewer</title>
     <style>

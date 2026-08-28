@@ -40,6 +40,8 @@ let gameState = {
   playerNames: ["Người 1", "Người 2", "Người 3", "Người 4"],
   playerScores: [30, 30, 30, 30],
   scoreOption: "reset",
+  v2BellLog: [],
+  v4BellLog: [],
 
   // Player interaction state
   playerInteraction: {
@@ -182,6 +184,10 @@ app.get(['/Player4.html', '/Player4', '/player4'], (req, res) => {
   res.sendFile(path.join(__dirname, 'Player4.html'));
 });
 
+app.get(['/Host.html', '/Host', '/host'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'Host.html'));
+});
+
 // Socket.IO Real-time Connection
 io.on('connection', (socket) => {
   console.log(`[Socket] Connected: ${socket.id}`);
@@ -223,12 +229,18 @@ io.on('connection', (socket) => {
   // Player interaction events
   socket.on('playerSubmitAnswer', (data) => {
     console.log(`[Player Answer] P${data.playerIndex + 1} (${data.round}): ${data.text} [${data.time}s]`);
+    const pName = gameState.playerNames[data.playerIndex] || `Thí sinh ${data.playerIndex + 1}`;
     if (data.round === 'v2') {
-      if (!gameState.v2State.answers) gameState.v2State.answers = ["", "", "", ""];
-      gameState.v2State.answers[data.playerIndex] = data.text;
+      if (!gameState.v2State.answers || !Array.isArray(gameState.v2State.answers)) {
+        gameState.v2State.answers = [];
+      }
+      gameState.v2State.answers[data.playerIndex] = {
+        name: pName,
+        ans: data.text,
+        time: data.time
+      };
     } else if (data.round === 'v3') {
       if (!gameState.v3State.answers) gameState.v3State.answers = [];
-      const pName = gameState.playerNames[data.playerIndex] || `Người ${data.playerIndex + 1}`;
       gameState.v3State.answers[data.playerIndex] = {
         name: pName,
         ans: data.text,
@@ -236,7 +248,6 @@ io.on('connection', (socket) => {
       };
     } else if (data.round === 'vqphu' || data.round === 'vqphu_answers') {
       if (!gameState.vqphuState.answers) gameState.vqphuState.answers = [];
-      const pName = gameState.playerNames[data.playerIndex] || `Thí sinh ${data.playerIndex + 1}`;
       gameState.vqphuState.answers[data.playerIndex] = {
         name: pName,
         ans: data.text,
@@ -250,12 +261,64 @@ io.on('connection', (socket) => {
 
   socket.on('playerRingBell', (data) => {
     console.log(`[Player Bell] P${data.playerIndex + 1} (${data.round}) at ${data.time}s`);
+    const pName = gameState.playerNames[data.playerIndex] || `Thí sinh ${data.playerIndex + 1}`;
+    const logItem = {
+      playerIndex: data.playerIndex,
+      name: pName,
+      time: data.time
+    };
+
+    const isV4 = data.round && String(data.round).startsWith('v4');
+    if (!isV4) {
+      if (!gameState.v2BellLog) gameState.v2BellLog = [];
+      if (!gameState.v2BellLog.some(b => b.playerIndex === data.playerIndex)) {
+        gameState.v2BellLog.push(logItem);
+      }
+    } else {
+      if (!gameState.v4BellLog) gameState.v4BellLog = [];
+      if (!gameState.v4BellLog.some(b => b.playerIndex === data.playerIndex)) {
+        gameState.v4BellLog.push(logItem);
+      }
+    }
     io.emit('playerBellTriggered', data);
+    io.emit('stateUpdated', gameState);
   });
 
   socket.on('playerChooseStar', (data) => {
     console.log(`[Player Star] P${data.playerIndex + 1}`);
+    if (gameState.playerInteraction && gameState.playerInteraction.star) {
+      if (!gameState.playerInteraction.star.chosen) {
+        gameState.playerInteraction.star.chosen = [false, false, false, false];
+      }
+      gameState.playerInteraction.star.chosen[data.playerIndex] = true;
+    }
     io.emit('playerStarTriggered', data);
+    io.emit('stateUpdated', gameState);
+  });
+
+  socket.on('closeQuestion', (data) => {
+    console.log(`[Close Question] Round: ${data ? data.round : 'all'}`);
+    io.emit('questionClosed', data);
+    io.emit('stateUpdated', gameState);
+  });
+
+  socket.on('resetBell', (data) => {
+    const round = data ? data.round : 'v2';
+    if (round === 'v2') {
+      gameState.v2BellLog = [];
+    } else if (round === 'v4') {
+      gameState.v4BellLog = [];
+    }
+    io.emit('bellReset', data);
+    io.emit('stateUpdated', gameState);
+  });
+
+  socket.on('resetStar', () => {
+    if (gameState.playerInteraction && gameState.playerInteraction.star) {
+      gameState.playerInteraction.star.chosen = [false, false, false, false];
+    }
+    io.emit('starReset');
+    io.emit('stateUpdated', gameState);
   });
 
   // Controller interaction controls
