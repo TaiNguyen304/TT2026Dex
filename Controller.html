@@ -1398,6 +1398,7 @@
         let v2Duration = 15;
         let v2IsRunning = false;
         let v2TimerInterval = null;
+        let v2BellStartTime = 0;
         let v2BellLog = [];
         let v4BellLog = [];
 
@@ -2087,12 +2088,11 @@
                 const ansStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
                 const item = v2Answers[i];
                 const ansText = (typeof item === 'object') ? (item.ans || '') : (item || '');
-                const timeText = (typeof item === 'object' && item.time !== undefined && item.time !== null && item.time !== '') ? item.time + 's' : '';
                 const wrapper = document.createElement('div');
                 wrapper.className = 'v2-answer-item';
                 wrapper.innerHTML = `
                     <div class="v2-answer-name" style="${nameStyle}">${playerNames[i]}</div>
-                    <div class="v2-answer-text" style="${ansStyle}">${ansText} ${timeText ? '(' + timeText + ')' : ''}</div>
+                    <div class="v2-answer-text" style="${ansStyle}">${ansText}</div>
                 `;
                 area.appendChild(wrapper);
             }
@@ -2103,8 +2103,9 @@
         }
 
         function v2OpenBell() {
+            v2BellStartTime = getServerTime();
             socket.emit('setPlayerInteraction', {
-                bell: { open: true, round: 'v2', startTime: getServerTime(), duration: 15, v2Rung: v2BellRungList }
+                bell: { open: true, round: 'v2', startTime: v2BellStartTime, duration: 999999, v2Rung: v2BellRungList }
             });
         }
 
@@ -2459,15 +2460,32 @@
         function v4OpenBell() {
             v4BellWinner = null;
             v4BellLocked = false;
+            let accumulated = 0;
+            if (v4BellLog && v4BellLog.length > 0) {
+                accumulated = parseFloat(v4BellLog[v4BellLog.length - 1].time) || 0;
+            }
             socket.emit('setPlayerInteraction', {
-                bell: { open: true, round: 'v4', startTime: getServerTime() - Math.max(0, 15 - v4Time) * 1000, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+                bell: {
+                    open: true,
+                    round: 'v4',
+                    startTime: getServerTime(),
+                    duration: 15,
+                    accumulatedTime: accumulated,
+                    v4Rung: v4BellRungList,
+                    v4Winner: null,
+                    v4Locked: false
+                }
             });
         }
 
         function v4LockBell() {
             v4BellLocked = true;
+            let accumulated = 0;
+            if (v4BellLog && v4BellLog.length > 0) {
+                accumulated = parseFloat(v4BellLog[v4BellLog.length - 1].time) || 0;
+            }
             socket.emit('setPlayerInteraction', {
-                bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
+                bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
             });
         }
 
@@ -2477,7 +2495,7 @@
             v4BellLocked = false;
             v4BellLog = [];
             socket.emit('setPlayerInteraction', {
-                bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+                bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
             socket.emit('resetBell', { round: 'v4' });
             syncFullStateToServer();
@@ -2526,8 +2544,10 @@
             // Mở chuông 4 người chơi
             v4BellWinner = null;
             v4BellLocked = false;
+            v4BellRungList = [false, false, false, false];
+            v4BellLog = [];
             socket.emit('setPlayerInteraction', {
-                bell: { open: true, round: 'v4', startTime: v4StartTime, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+                bell: { open: true, round: 'v4', startTime: v4StartTime, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
 
             v4Interval = setInterval(() => {
@@ -2572,8 +2592,11 @@
             if (pauseBtn) pauseBtn.textContent = "Tạm dừng";
             document.getElementById('v4TimeBox').textContent = v4Time;
             v4BellLocked = true;
+            v4BellLog = [];
+            v4BellRungList = [false, false, false, false];
+            v4BellWinner = null;
             socket.emit('setPlayerInteraction', {
-                bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
+                bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
             });
             socket.emit('closeQuestion', { round: 'v4' });
             syncFullStateToServer();
@@ -2606,8 +2629,12 @@
             if (v4Paused) {
                 // Nếu đồng hồ dừng, nhạc bên Viewer cũng phải dừng
                 sendPauseSound('15s Về Đích.mp3');
+                let accumulated = 0;
+                if (v4BellLog && v4BellLog.length > 0) {
+                    accumulated = parseFloat(v4BellLog[v4BellLog.length - 1].time) || 0;
+                }
                 socket.emit('setPlayerInteraction', {
-                    bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
+                    bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
                 });
             } else {
                 // Khi bấm tiếp tục: Cập nhật lại startTime và duration cho thời gian còn lại
@@ -2617,8 +2644,12 @@
                 sendSound({ name: '15s Về Đích.mp3', seekTime: elapsed });
                 v4BellWinner = null;
                 v4BellLocked = false;
+                let accumulated = 0;
+                if (v4BellLog && v4BellLog.length > 0) {
+                    accumulated = parseFloat(v4BellLog[v4BellLog.length - 1].time) || 0;
+                }
                 socket.emit('setPlayerInteraction', {
-                    bell: { open: true, round: 'v4', startTime: v4StartTime, duration: v4Duration, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+                    bell: { open: true, round: 'v4', startTime: v4StartTime, duration: v4Duration, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
                 });
             }
             syncFullStateToServer();
@@ -3014,7 +3045,7 @@
                 setPlayerState(data.playerIndex, 'pink');
                 sendSound('Bell V2.mp3');
                 socket.emit('setPlayerInteraction', {
-                    bell: { open: true, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
+                    bell: { open: true, round: 'v2', startTime: v2BellStartTime || getServerTime(), duration: 999999, v2Rung: v2BellRungList }
                 });
             } else {
                 if (!v4BellLog.some(b => b.playerIndex === data.playerIndex)) {
@@ -3040,7 +3071,7 @@
 
                 // Khóa chuông 3 người còn lại
                 socket.emit('setPlayerInteraction', {
-                    bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: data.playerIndex, v4Locked: true }
+                    bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: parseFloat(data.time) || 0, v4Rung: v4BellRungList, v4Winner: data.playerIndex, v4Locked: true }
                 });
             }
             syncFullStateToServer();

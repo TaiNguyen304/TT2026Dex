@@ -1481,13 +1481,15 @@
                     const isBlack = colors[i] === 'black';
                     const nameEl = item.querySelector('.v2-answer-name');
                     const textEl = item.querySelector('.v2-answer-text');
+                    const val = ansArr[i];
+                    const ansText = (typeof val === 'object') ? (val.ans || '') : (val || '');
                     if (nameEl) {
                         nameEl.textContent = names[i];
                         nameEl.style.background = isBlack ? '#000000' : 'var(--blue)';
                         nameEl.style.color = isBlack ? '#ffffff' : 'var(--white)';
                     }
                     if (textEl) {
-                        textEl.textContent = ansArr[i] || '';
+                        textEl.textContent = ansText;
                         textEl.style.background = isBlack ? '#000000' : 'var(--aqua)';
                         textEl.style.color = isBlack ? '#ffffff' : 'var(--black)';
                     }
@@ -1498,11 +1500,13 @@
                     const isBlack = colors[i] === 'black';
                     const nameStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
                     const textStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
+                    const val = ansArr[i];
+                    const ansText = (typeof val === 'object') ? (val.ans || '') : (val || '');
                     const item = document.createElement('div');
                     item.className = 'v2-answer-item';
                     item.innerHTML = `
                         <div class="v2-answer-name" style="${nameStyle}">${names[i]}</div>
-                        <div class="v2-answer-text" style="${textStyle}">${ansArr[i] || ''}</div>
+                        <div class="v2-answer-text" style="${textStyle}">${ansText}</div>
                     `;
                     container.appendChild(item);
                 }

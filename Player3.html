@@ -352,6 +352,7 @@
         let bellOpen = false;
         let bellRound = null;
         let bellStartTime = 0;
+        let bellAccumulatedTime = 0;
         let bellDuration = 15;
         let hasRung = false;
 
@@ -472,8 +473,9 @@
 
                 if (b.open && !hasRung && (!b.v4Locked || b.v4Winner === PLAYER_INDEX)) {
                     bellOpen = true;
-                    bellStartTime = b.startTime || Date.now();
-                    bellDuration = b.duration || 15;
+                    bellStartTime = b.startTime || getServerTime();
+                    bellAccumulatedTime = b.accumulatedTime || 0;
+                    bellDuration = (b.round === 'v2') ? 999999 : (b.duration || 15);
                     btnBell.disabled = false;
                     bellStatusBadge.className = "status-pill status-open";
                     bellStatusBadge.textContent = "ĐÃ MỞ";
@@ -607,9 +609,15 @@
 
             const now = getServerTime();
             const rawElapsed = (now - bellStartTime) / 1000;
-            const elapsed = Math.min(bellDuration, Math.max(0, rawElapsed)).toFixed(3);
-
             const activeRound = bellRound || (currentView.startsWith('v4') ? 'v4' : 'v2');
+
+            let elapsed;
+            if (activeRound === 'v2') {
+                elapsed = Math.max(0, rawElapsed).toFixed(3);
+            } else {
+                const currentElapsed = Math.min(bellDuration, Math.max(0, rawElapsed));
+                elapsed = (bellAccumulatedTime + currentElapsed).toFixed(3);
+            }
 
             socket.emit('playerRingBell', {
                 playerIndex: PLAYER_INDEX,
@@ -646,6 +654,7 @@
         });
         socket.on('bellReset', () => {
             hasRung = false;
+            bellAccumulatedTime = 0;
             bellStatusText.textContent = "Đang khóa";
         });
         socket.on('playerBellTriggered', (data) => {
