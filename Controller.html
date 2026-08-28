@@ -3,6 +3,19 @@
 
 <head>
     <meta charset="utf-8" />
+    <script>
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
+            const key = e.key ? e.key.toLowerCase() : '';
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault(); return false;
+            }
+            if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
+                e.preventDefault(); return false;
+            }
+        });
+    </script>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Thử Thách 2026 - Controller</title>
     <style>
@@ -2094,6 +2107,8 @@
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
             });
+            socket.emit('resetBell', { round: 'v2' });
+            syncFullStateToServer();
             showPopup("Đã reset chuông Vòng 2 cho cả 4 người chơi!");
         }
 
@@ -2148,7 +2163,12 @@
                     v2Questions[v2SelectedQuestionIndex].used = true;
                 }
             }
-            v2Answers = ["", "", "", ""];
+            v2Answers = [
+                { name: playerNames[0], ans: '', time: '' },
+                { name: playerNames[1], ans: '', time: '' },
+                { name: playerNames[2], ans: '', time: '' },
+                { name: playerNames[3], ans: '', time: '' }
+            ];
             for (let i = 0; i < 4; i++) {
                 const inp = document.getElementById(`ansInp${i}`);
                 if (inp) inp.value = "";
@@ -2157,6 +2177,7 @@
                 renderV2AnswersPreview();
             }
             renderV2QuestionsAndBoard();
+            socket.emit('closeQuestion', { round: 'v2' });
             syncFullStateToServer();
         }
 
@@ -2340,6 +2361,7 @@
             if (currentView === 'v3_answers') {
                 renderV3AnswersPreview();
             }
+            socket.emit('closeQuestion', { round: 'v3' });
             syncFullStateToServer();
         }
 
@@ -2443,6 +2465,8 @@
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
+            socket.emit('resetBell', { round: 'v4' });
+            syncFullStateToServer();
             showPopup("Đã reset chuông Vòng 4 cho cả 4 người chơi!");
         }
 
@@ -2465,6 +2489,8 @@
             socket.emit('setPlayerInteraction', {
                 star: { open: false, chosen: starChosenList, soundPlayed: false }
             });
+            socket.emit('resetStar');
+            syncFullStateToServer();
             showPopup("Đã reset Chọn Sao cho cả 4 người chơi!");
         }
 
@@ -2535,6 +2561,7 @@
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
             });
+            socket.emit('closeQuestion', { round: 'v4' });
             syncFullStateToServer();
         }
 
@@ -2651,6 +2678,14 @@
             vqphuStartTime = 0;
             vqphuIsRunning = false;
             document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
+            vqphuAnswers = [
+                { name: playerNames[0], ans: '', time: '', playerIndex: 0 },
+                { name: playerNames[1], ans: '', time: '', playerIndex: 1 },
+                { name: playerNames[2], ans: '', time: '', playerIndex: 2 },
+                { name: playerNames[3], ans: '', time: '', playerIndex: 3 }
+            ];
+            if (currentView === 'vqphu_answers') renderVQPhuAnswersPreview();
+            socket.emit('closeQuestion', { round: 'vqphu' });
             syncFullStateToServer();
         }
 

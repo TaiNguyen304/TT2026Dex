@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
+            const key = e.key ? e.key.toLowerCase() : '';
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault(); return false;
+            }
+            if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
+                e.preventDefault(); return false;
+            }
+        });
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MÀN HÌNH MÁY HOST (MC)</title>
+    <style>
+        :root {
+            --bg-dark: violet;
+            --card-bg: #131b2e;
+            --card-border: #1e2942;
+            --blue: #0000ff;
+            --aqua: #00f0ff;
+            --pink: #ff00cc;
+            --lime: #00ff00;
+            --yellow: #ffff00;
+            --white: #ffffff;
+            --text-dim: #8a99ad;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-weight: bold !important;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header & Navigation Bar */
+        .host-header {
+            background: #0d1526;
+            border-bottom: 2px solid var(--card-border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .host-title-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .host-badge {
+            background: var(--yellow);
+            color: #000;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .host-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .match-name {
+            font-size: 0.95rem;
+            color: var(--aqua);
+            font-weight: 600;
+        }
+
+        /* View Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #19253d;
+            color: var(--text-dim);
+            border: 1px solid var(--card-border);
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background: #233454;
+            color: var(--white);
+        }
+
+        .tab-btn.active {
+            background: var(--blue);
+            color: var(--white);
+            border-color: var(--aqua);
+            box-shadow: 0 0 12px rgba(0, 112, 243, 0.4);
+        }
+
+        /* Main Content Container */
+        .host-content {
+            padding: 24px;
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .host-panel {
+            display: none;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .host-panel.active {
+            display: flex;
+        }
+
+        /* Section Card */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--aqua);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Table Styling */
+        .host-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .host-table th {
+            background: #1a253b;
+            color: var(--text-dim);
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--card-border);
+        }
+
+        .host-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--card-border);
+            font-size: 1.05rem;
+            color: var(--white);
+        }
+
+        .host-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .host-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Pills & Badges */
+        .player-name-cell {
+            font-weight: 700;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-pos-tag {
+            background: #202d47;
+            color: var(--aqua);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .time-badge {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--aqua);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 1.05rem;
+            display: inline-block;
+        }
+
+        .bell-time-badge {
+            background: rgba(255, 0, 204, 0.15);
+            color: var(--pink);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-family: monospace;
+            font-size: 1.05rem;
+            display: inline-block;
+        }
+
+        .star-pill-yes {
+            background: var(--yellow);
+            color: #000;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.4);
+        }
+
+        .star-pill-no {
+            background: #1a253b;
+            color: var(--text-dim);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .order-badge {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--pink);
+            color: var(--white);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .empty-row {
+            color: var(--text-dim);
+            font-style: italic;
+            text-align: center;
+            padding: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <div class="host-header">
+        <div class="host-title-box">
+            <span class="host-badge">HOST / MC</span>
+            <div class="host-title">BẢNG MÀN HÌNH MÁY HOST</div>
+            <div class="match-name" id="matchNameDisplay">---</div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchHostTab('v2_host')">View Đáp Án & Chuông Vòng 2</button>
+            <button class="tab-btn" onclick="switchHostTab('v3_host')">View Đáp Án Vòng 3</button>
+            <button class="tab-btn" onclick="switchHostTab('v4_host')">View Chuông & Sao Vòng 4</button>
+            <button class="tab-btn" onclick="switchHostTab('vqphu_host')">View Đáp Án Câu Hỏi Phụ</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="host-content">
+        <!-- View 1: Vòng 2 (Answers & Bell) -->
+        <div class="host-panel active" id="panel-v2_host">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📝 BẢNG ĐÁP ÁN 4 THÍ SINH (VÒNG 2)</div>
+                </div>
+                <table class="host-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Tên người chơi</th>
+                            <th style="width: 50%;">Đáp án</th>
+                            <th style="width: 25%;">Thời gian trả lời (s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="v2AnswersTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔔 TÍN HIỆU CHUÔNG THÍ SINH (VÒNG 2)</div>
+                </div>
+                <table class="host-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Thứ tự</th>
+                            <th style="width: 50%;">Tên người chơi</th>
+                            <th style="width: 35%;">Thời gian bấm chuông (s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="v2BellTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- View 2: Vòng 3 (Answers) -->
+        <div class="host-panel" id="panel-v3_host">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📝 BẢNG ĐÁP ÁN 4 THÍ SINH (VÒNG 3)</div>
+                </div>
+                <table class="host-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Tên người chơi</th>
+                            <th style="width: 50%;">Đáp án</th>
+                            <th style="width: 25%;">Thời gian trả lời (s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="v3AnswersTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- View 3: Vòng 4 (Bell & Star) -->
+        <div class="host-panel" id="panel-v4_host">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔔 TÍN HIỆU CHUÔNG THÍ SINH (VÒNG 4)</div>
+                </div>
+                <table class="host-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Thứ tự</th>
+                            <th style="width: 50%;">Tên người chơi</th>
+                            <th style="width: 35%;">Thời gian bấm chuông (s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="v4BellTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">⭐ BẢNG CHỌN NGÔI SAO HY VỌNG (VÒNG 4)</div>
+                </div>
+                <table class="host-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60%;">Tên người chơi</th>
+                            <th style="width: 40%;">Ngôi sao</th>
+                        </tr>
+                    </thead>
+                    <tbody id="v4StarTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- View 4: Câu hỏi phụ (Answers) -->
+        <div class="host-panel" id="panel-vqphu_host">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">📝 BẢNG ĐÁP ÁN CÂU HỎI PHỤ</div>
+                </div>
+                <table class="host-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Tên người chơi</th>
+                            <th style="width: 50%;">Đáp án</th>
+                            <th style="width: 25%;">Thời gian trả lời (s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vqphuAnswersTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let currentHostTab = 'v2_host';
+        let latestState = null;
+
+        function switchHostTab(tabId) {
+            currentHostTab = tabId;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            document.querySelectorAll('.host-panel').forEach(panel => {
+                if (panel.id === `panel-${tabId}`) {
+                    panel.classList.add('active');
+                } else {
+                    panel.classList.remove('active');
+                }
+            });
+            if (latestState) renderHostViews(latestState);
+        }
+
+        socket.on('initState', (state) => {
+            latestState = state;
+            renderHostViews(state);
+        });
+
+        socket.on('stateUpdated', (state) => {
+            latestState = state;
+            renderHostViews(state);
+        });
+
+        socket.on('playerAnswerReceived', () => {
+            // Updated via stateUpdated
+        });
+
+        socket.on('playerBellTriggered', () => {
+            // Updated via stateUpdated
+        });
+
+        socket.on('playerInteractionUpdated', () => {
+            // Updated via stateUpdated
+        });
+
+        function renderHostViews(state) {
+            if (!state) return;
+
+            // Match Name
+            document.getElementById('matchNameDisplay').textContent = state.matchName || "Trận đấu";
+
+            const pNames = state.playerNames || ["Người 1", "Người 2", "Người 3", "Người 4"];
+
+            // 1. Render V2 Answers Table (4 players in standing order 0..3)
+            const v2AnsBody = document.getElementById('v2AnswersTableBody');
+            v2AnsBody.innerHTML = '';
+            const v2Ans = (state.v2State && state.v2State.answers) ? state.v2State.answers : [];
+            for (let i = 0; i < 4; i++) {
+                const pName = pNames[i] || `Thí sinh ${i + 1}`;
+                const item = v2Ans[i];
+                let ansStr = '--';
+                let timeStr = '--';
+
+                if (item) {
+                    if (typeof item === 'object') {
+                        ansStr = item.ans || '--';
+                        timeStr = item.time ? parseFloat(item.time).toFixed(2) + 's' : '--';
+                    } else if (typeof item === 'string') {
+                        ansStr = item || '--';
+                    }
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="player-name-cell">
+                            <span class="player-pos-tag">TS ${i + 1}</span>
+                            <span>${pName}</span>
+                        </div>
+                    </td>
+                    <td style="font-weight: 600; color: ${ansStr !== '--' ? 'var(--lime)' : 'var(--text-dim)'};">${ansStr}</td>
+                    <td><span class="time-badge">${timeStr}</span></td>
+                `;
+                v2AnsBody.appendChild(tr);
+            }
+
+            // 2. Render V2 Bell Log Table (Ordered by ring order)
+            const v2BellBody = document.getElementById('v2BellTableBody');
+            v2BellBody.innerHTML = '';
+            const v2BellLog = state.v2BellLog || [];
+            if (v2BellLog.length === 0) {
+                v2BellBody.innerHTML = `<tr><td colspan="3" class="empty-row">Chưa có thí sinh bấm chuông</td></tr>`;
+            } else {
+                v2BellLog.forEach((item, idx) => {
+                    const pName = item.name || pNames[item.playerIndex] || `Thí sinh ${item.playerIndex + 1}`;
+                    const timeStr = item.time ? parseFloat(item.time).toFixed(3) + 's' : '--';
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><span class="order-badge">${idx + 1}</span></td>
+                        <td>
+                            <div class="player-name-cell">
+                                <span class="player-pos-tag">TS ${item.playerIndex + 1}</span>
+                                <span>${pName}</span>
+                            </div>
+                        </td>
+                        <td><span class="bell-time-badge">${timeStr}</span></td>
+                    `;
+                    v2BellBody.appendChild(tr);
+                });
+            }
+
+            // 3. Render V3 Answers Table (4 players in standing order 0..3)
+            const v3AnsBody = document.getElementById('v3AnswersTableBody');
+            v3AnsBody.innerHTML = '';
+            const v3Ans = (state.v3State && state.v3State.answers) ? state.v3State.answers : [];
+            for (let i = 0; i < 4; i++) {
+                const pName = pNames[i] || `Thí sinh ${i + 1}`;
+                const item = v3Ans[i] || {};
+                const ansStr = item.ans || '--';
+                const timeStr = item.time ? parseFloat(item.time).toFixed(2) + 's' : '--';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="player-name-cell">
+                            <span class="player-pos-tag">TS ${i + 1}</span>
+                            <span>${pName}</span>
+                        </div>
+                    </td>
+                    <td style="font-weight: 600; color: ${ansStr !== '--' ? 'var(--lime)' : 'var(--text-dim)'};">${ansStr}</td>
+                    <td><span class="time-badge">${timeStr}</span></td>
+                `;
+                v3AnsBody.appendChild(tr);
+            }
+
+            // 4. Render V4 Bell Log Table (Ordered by ring order)
+            const v4BellBody = document.getElementById('v4BellTableBody');
+            v4BellBody.innerHTML = '';
+            const v4BellLog = state.v4BellLog || [];
+            if (v4BellLog.length === 0) {
+                v4BellBody.innerHTML = `<tr><td colspan="3" class="empty-row">Chưa có thí sinh bấm chuông</td></tr>`;
+            } else {
+                v4BellLog.forEach((item, idx) => {
+                    const pName = item.name || pNames[item.playerIndex] || `Thí sinh ${item.playerIndex + 1}`;
+                    const timeStr = item.time ? parseFloat(item.time).toFixed(3) + 's' : '--';
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><span class="order-badge">${idx + 1}</span></td>
+                        <td>
+                            <div class="player-name-cell">
+                                <span class="player-pos-tag">TS ${item.playerIndex + 1}</span>
+                                <span>${pName}</span>
+                            </div>
+                        </td>
+                        <td><span class="bell-time-badge">${timeStr}</span></td>
+                    `;
+                    v4BellBody.appendChild(tr);
+                });
+            }
+
+            // 5. Render V4 Star Selection Table
+            const v4StarBody = document.getElementById('v4StarTableBody');
+            v4StarBody.innerHTML = '';
+            const starChosenList = (state.playerInteraction && state.playerInteraction.star && state.playerInteraction.star.chosen) 
+                ? state.playerInteraction.star.chosen 
+                : [false, false, false, false];
+
+            for (let i = 0; i < 4; i++) {
+                const pName = pNames[i] || `Thí sinh ${i + 1}`;
+                const hasStar = !!starChosenList[i];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="player-name-cell">
+                            <span class="player-pos-tag">TS ${i + 1}</span>
+                            <span>${pName}</span>
+                        </div>
+                    </td>
+                    <td>
+                        ${hasStar ? '<span class="star-pill-yes">⭐ CÓ</span>' : '<span class="star-pill-no">KHÔNG</span>'}
+                    </td>
+                `;
+                v4StarBody.appendChild(tr);
+            }
+
+            // 6. Render VQPhu Answers Table (4 players in standing order 0..3)
+            const vqphuAnsBody = document.getElementById('vqphuAnswersTableBody');
+            vqphuAnsBody.innerHTML = '';
+            const vqphuAns = (state.vqphuState && state.vqphuState.answers) ? state.vqphuState.answers : [];
+            const count = Math.max(4, vqphuAns.length);
+
+            for (let i = 0; i < count; i++) {
+                const item = vqphuAns[i] || {};
+                const pName = item.name || pNames[i] || `Thí sinh ${i + 1}`;
+                const ansStr = item.ans || '--';
+                const timeStr = item.time ? parseFloat(item.time).toFixed(2) + 's' : '--';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="player-name-cell">
+                            <span class="player-pos-tag">TS ${i + 1}</span>
+                            <span>${pName}</span>
+                        </div>
+                    </td>
+                    <td style="font-weight: 600; color: ${ansStr !== '--' ? 'var(--lime)' : 'var(--text-dim)'};">${ansStr}</td>
+                    <td><span class="time-badge">${timeStr}</span></td>
+                `;
+                vqphuAnsBody.appendChild(tr);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -2,6 +2,19 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <script>
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
+            const key = e.key ? e.key.toLowerCase() : '';
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault(); return false;
+            }
+            if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
+                e.preventDefault(); return false;
+            }
+        });
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thử Thách 2026 - Thí sinh 2</title>
     <style>
@@ -575,7 +588,7 @@
 
             const now = getServerTime();
             const rawElapsed = (now - bellStartTime) / 1000;
-            const elapsed = Math.min(bellDuration, Math.max(0, rawElapsed)).toFixed(2);
+            const elapsed = Math.min(bellDuration, Math.max(0, rawElapsed)).toFixed(3);
 
             const activeRound = bellRound || (currentView.startsWith('v4') ? 'v4' : 'v2');
 
@@ -608,6 +621,9 @@
         socket.on('stateUpdated', applyGameState);
         socket.on('playerInteractionUpdated', applyInteractionState);
         socket.on('viewChanged', updateRoundBadge);
+        socket.on('questionClosed', () => {
+            lastAnsVal.textContent = "Chưa gửi";
+        });
     </script>
 </body>
 </html>
