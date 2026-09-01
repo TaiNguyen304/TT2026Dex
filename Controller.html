@@ -64,7 +64,7 @@
 
         button:not(.v2-color-btn):hover {
             background: var(--orange) !important;
-            color: var(--white) !important;
+            color: var(--black) !important;
         }
 
         .v2-color-btn {
@@ -327,7 +327,8 @@
             border: 2px solid rgba(0,0,0,0.05);
         }
 
-        .v2-questions-top, .v2-questions-bottom { display: flex; gap: 6px; justify-content: center; margin: 10px 0; }
+        .v2-questions-top { display: flex; gap: 6px; justify-content: center; margin: 10px 0 20px 0; }
+        .v2-questions-bottom { display: flex; gap: 6px; justify-content: center; margin: 20px 0 0 0; }
         .v2-questions-middle { display: flex; align-items: center; gap: 12px; justify-content: center; }
         .v2-question-cell {
             width: 110px;
@@ -641,6 +642,20 @@
 </head>
 
 <body>
+    <!-- Room Management & Authentication Section -->
+    <div style="background: #111; color: var(--white); border: 2px solid var(--aqua); border-radius: 10px; padding: 12px; margin-bottom: 12px; text-align: center;">
+        <div style="font-size: 1.1rem; color: var(--yellow); margin-bottom: 8px; font-weight: bold;">CẤU HÌNH PHÒNG & MẬT KHẨU ĐĂNG NHẬP THÍ SINH</div>
+        <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
+            <div>Mã phòng (6 số): <input type="text" id="controllerRoomId" style="width: 100px; padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid var(--aqua); background: #000; color: var(--lime);" maxlength="6" value="123456"></div>
+            <div>Mật khẩu TS1: <input type="text" id="controllerPass1" style="width: 70px; padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid var(--aqua); background: #000; color: var(--white);" maxlength="4" value="1111"></div>
+            <div>Mật khẩu TS2: <input type="text" id="controllerPass2" style="width: 70px; padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid var(--aqua); background: #000; color: var(--white);" maxlength="4" value="2222"></div>
+            <div>Mật khẩu TS3: <input type="text" id="controllerPass3" style="width: 70px; padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid var(--aqua); background: #000; color: var(--white);" maxlength="4" value="3333"></div>
+            <div>Mật khẩu TS4: <input type="text" id="controllerPass4" style="width: 70px; padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid var(--aqua); background: #000; color: var(--white);" maxlength="4" value="4444"></div>
+            <button id="btnCreateRoom" style="background: var(--blue); color: var(--white); border: 2px solid var(--white); border-radius: 6px; padding: 8px 14px; font-weight: bold; cursor: pointer;">TẠO MÃ PHÒNG VÀ MẬT KHẨU MỚI</button>
+        </div>
+        <div id="roomInfoText" style="margin-top: 8px; font-size: 0.95rem; color: var(--lime); font-weight: bold;"></div>
+    </div>
+
     <!-- Top Action Row -->
     <div class="top-row">
         <button id="openMatchNameBtn" class="btn-match-name">Nhập tên trận</button>
@@ -927,7 +942,7 @@
                 </div>
                 <div class="v2-questions-bottom" id="v2QBottom"></div>
             </div>
-            <div style="display:flex; gap:10px; justify-content:center; margin-top:15px;">
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:60px;">
                 <button style="background:yellow; color:black;" onclick="v2ResetBoard()">Reset bảng</button>
                 <button style="background:green; color:white;" onclick="v2RevealAll()">Hiện tất cả ô chữ</button>
                 <button style="background:blue; color:white;" onclick="switchView('v2')">Quay lại Vượt Lên Main</button>
@@ -2526,13 +2541,16 @@
             showPopup("Đã reset Chọn Sao cho cả 4 người chơi!");
         }
 
+        let v4ExactRemaining = 15;
+
         function v4StartTimer() {
             if (v4Interval) {
                 clearInterval(v4Interval);
                 v4Interval = null;
             }
+            v4ExactRemaining = 15.0;
+            v4Duration = 15.0;
             v4Time = 15;
-            v4Duration = 15;
             v4StartTime = getServerTime();
             v4Paused = false;
             const pauseBtn = document.getElementById("v4PauseBtn");
@@ -2553,15 +2571,16 @@
             v4Interval = setInterval(() => {
                 if (!v4Paused) {
                     const elapsed = (getServerTime() - v4StartTime) / 1000;
-                    const rem = Math.max(0, v4Duration - elapsed);
-                    const nextSec = Math.ceil(rem);
+                    v4ExactRemaining = Math.max(0, v4Duration - elapsed);
+                    const nextSec = Math.ceil(v4ExactRemaining);
                     if (nextSec !== v4Time) {
                         v4Time = nextSec;
                         document.getElementById('v4TimeBox').textContent = v4Time;
                         syncFullStateToServer();
                     }
-                    if (rem <= 0) {
+                    if (v4ExactRemaining <= 0) {
                         v4Time = 0;
+                        v4ExactRemaining = 0;
                         clearInterval(v4Interval);
                         v4Interval = null;
                         // Tự động khóa chuông khi hết giờ
@@ -2584,6 +2603,7 @@
             }
             stopSound('15s Về Đích.mp3');
             document.getElementById('v4qText').textContent = "";
+            v4ExactRemaining = 15;
             v4Time = 15;
             v4Duration = 15;
             v4StartTime = 0;
@@ -2618,7 +2638,7 @@
         }
 
         function toggleV4Pause() {
-            if (v4Time <= 0) return;
+            if (v4ExactRemaining <= 0) return;
 
             v4Paused = !v4Paused;
             const pauseBtn = document.getElementById("v4PauseBtn");
@@ -2627,7 +2647,12 @@
             }
 
             if (v4Paused) {
-                // Nếu đồng hồ dừng, nhạc bên Viewer cũng phải dừng
+                // Tạm dừng đồng hồ
+                if (v4StartTime > 0) {
+                    const elapsed = (getServerTime() - v4StartTime) / 1000;
+                    v4ExactRemaining = Math.max(0, v4Duration - elapsed);
+                    v4Time = Math.ceil(v4ExactRemaining);
+                }
                 sendPauseSound('15s Về Đích.mp3');
                 let accumulated = 0;
                 if (v4BellLog && v4BellLog.length > 0) {
@@ -2637,11 +2662,11 @@
                     bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
                 });
             } else {
-                // Khi bấm tiếp tục: Cập nhật lại startTime và duration cho thời gian còn lại
-                v4Duration = v4Time;
+                // Tiếp tục đồng hồ với thời gian còn lại chính xác
+                v4Duration = v4ExactRemaining;
                 v4StartTime = getServerTime();
-                const elapsed = Math.max(0, 15 - v4Time);
-                sendSound({ name: '15s Về Đích.mp3', seekTime: elapsed });
+                const seekTime = Math.max(0, 15 - v4ExactRemaining);
+                sendSound({ name: '15s Về Đích.mp3', seekTime: seekTime });
                 v4BellWinner = null;
                 v4BellLocked = false;
                 let accumulated = 0;
@@ -2989,10 +3014,80 @@
             syncFullStateToServer();
         };
 
+        // Room Management & Authentication Handling
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentRoomId = urlParams.get('roomid');
+
+        if (!currentRoomId) {
+            currentRoomId = Math.floor(100000 + Math.random() * 900000).toString();
+            window.history.replaceState(null, '', `?roomid=${currentRoomId}`);
+        }
+
+        const roomIdInp = document.getElementById('controllerRoomId');
+        const pass1Inp = document.getElementById('controllerPass1');
+        const pass2Inp = document.getElementById('controllerPass2');
+        const pass3Inp = document.getElementById('controllerPass3');
+        const pass4Inp = document.getElementById('controllerPass4');
+        const btnCreateRoom = document.getElementById('btnCreateRoom');
+        const roomInfoText = document.getElementById('roomInfoText');
+
+        if (roomIdInp) roomIdInp.value = currentRoomId;
+
+        function handleCreateRoom(isAuto = false) {
+            let rId = roomIdInp ? roomIdInp.value.trim() : '';
+            if (!rId || rId.length !== 6 || isNaN(rId)) {
+                rId = Math.floor(100000 + Math.random() * 900000).toString();
+                if (roomIdInp) roomIdInp.value = rId;
+            }
+
+            let p1 = pass1Inp ? pass1Inp.value.trim() : '1111';
+            let p2 = pass2Inp ? pass2Inp.value.trim() : '2222';
+            let p3 = pass3Inp ? pass3Inp.value.trim() : '3333';
+            let p4 = pass4Inp ? pass4Inp.value.trim() : '4444';
+
+            if (!isAuto) {
+                // Generate new random room code & 4 passwords
+                rId = Math.floor(100000 + Math.random() * 900000).toString();
+                if (roomIdInp) roomIdInp.value = rId;
+
+                p1 = Math.floor(1000 + Math.random() * 9000).toString();
+                p2 = Math.floor(1000 + Math.random() * 9000).toString();
+                p3 = Math.floor(1000 + Math.random() * 9000).toString();
+                p4 = Math.floor(1000 + Math.random() * 9000).toString();
+
+                if (pass1Inp) pass1Inp.value = p1;
+                if (pass2Inp) pass2Inp.value = p2;
+                if (pass3Inp) pass3Inp.value = p3;
+                if (pass4Inp) pass4Inp.value = p4;
+            }
+
+            currentRoomId = rId;
+            window.history.replaceState(null, '', `?roomid=${currentRoomId}`);
+
+            const viewerLink = document.getElementById('viewerLink');
+            if (viewerLink) {
+                viewerLink.href = `/Viewer.html?roomid=${currentRoomId}`;
+            }
+
+            const passwords = [p1, p2, p3, p4];
+            socket.emit('createRoom', { roomId: currentRoomId, passwords }, (res) => {
+                if (res && res.success) {
+                    if (roomInfoText) {
+                        roomInfoText.textContent = `✅ Sẵn sàng! Mã phòng: ${currentRoomId} | Mật khẩu TS1: ${p1} | TS2: ${p2} | TS3: ${p3} | TS4: ${p4}`;
+                    }
+                }
+            });
+        }
+
+        if (btnCreateRoom) {
+            btnCreateRoom.addEventListener('click', () => handleCreateRoom(false));
+        }
+
         // Init on Socket Connect
         socket.on('connect', () => {
             console.log('[Controller] Connected to server.');
             syncTimeWithServer();
+            handleCreateRoom(true);
             syncFullStateToServer();
         });
 
@@ -3059,8 +3154,13 @@
                 v4BellWinner = data.playerIndex;
                 v4BellLocked = true;
 
-                // Tạm dừng đồng hồ
+                // Tạm dừng đồng hồ không bị cộng 1s
                 v4Paused = true;
+                if (v4StartTime > 0) {
+                    const elapsed = (getServerTime() - v4StartTime) / 1000;
+                    v4ExactRemaining = Math.max(0, v4Duration - elapsed);
+                    v4Time = Math.ceil(v4ExactRemaining);
+                }
                 const pauseBtn = document.getElementById("v4PauseBtn");
                 if (pauseBtn) pauseBtn.textContent = "Tiếp tục";
                 sendPauseSound('15s Về Đích.mp3');

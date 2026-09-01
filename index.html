@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐĂNG NHẬP THÍ SINH</title>
+    <style>
+        :root {
+            --blue: blue;
+            --aqua: aqua;
+            --yellow: yellow;
+            --green: green;
+            --red: red;
+            --pink: #ff00cc;
+            --purple: purple;
+            --lime: #39ff14;
+            --orange: orange;
+            --black: #000000;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-weight: bold !important;
+        }
+
+        body {
+            background-color: var(--purple);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background-color: var(--black);
+            border: 4px solid var(--aqua);
+            border-radius: 16px;
+            padding: 32px;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 24px;
+            color: var(--yellow);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 16px;
+            color: var(--white);
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 2px solid var(--aqua);
+            border-radius: 8px;
+            background-color: var(--black);
+            color: var(--white);
+            outline: none;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            border-color: var(--yellow);
+        }
+
+        .btn-submit {
+            margin-top: 10px;
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            background-color: var(--blue);
+            color: var(--white);
+            border: 2px solid var(--white);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover, button:hover {
+            background-color: var(--orange) !important;
+            color: var(--black) !important;
+            border-color: var(--black);
+        }
+
+        .error-msg {
+            color: var(--red);
+            background-color: var(--black);
+            border: 2px solid var(--red);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h1 class="login-title">ĐĂNG NHẬP THÍ SINH</h1>
+        
+        <div class="form-group">
+            <label for="posSelect">1. Chọn vị trí đứng (1 - 4):</label>
+            <select id="posSelect">
+                <option value="1">Vị trí 1 (Thí sinh 1)</option>
+                <option value="2">Vị trí 2 (Thí sinh 2)</option>
+                <option value="3">Vị trí 3 (Thí sinh 3)</option>
+                <option value="4">Vị trí 4 (Thí sinh 4)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="roomIdInput">2. Nhập mã phòng:</label>
+            <input type="text" id="roomIdInput" placeholder="Nhập mã phòng (6 chữ số)" maxlength="6">
+        </div>
+
+        <div class="form-group">
+            <label for="authPassInput">3. Nhập mật khẩu:</label>
+            <input type="password" id="authPassInput" placeholder="Nhập mật khẩu (4 chữ số)" maxlength="4">
+        </div>
+
+        <div id="errorMsg" class="error-msg"></div>
+
+        <button id="btnLogin" class="btn-submit">Xác nhận</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        function disableDevTools() {
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+                return false;
+            }, false);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'S' || e.key === 's' || e.keyCode === 83)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, true);
+
+            document.addEventListener('dragstart', function (e) {
+                e.preventDefault();
+            });
+
+            if (window.DisableDevtool) {
+                try {
+                    window.DisableDevtool();
+                } catch (err) {}
+            }
+        }
+        disableDevTools();
+
+        const socket = io();
+
+        const posSelect = document.getElementById('posSelect');
+        const roomIdInput = document.getElementById('roomIdInput');
+        const authPassInput = document.getElementById('authPassInput');
+        const btnLogin = document.getElementById('btnLogin');
+        const errorMsg = document.getElementById('errorMsg');
+
+        btnLogin.addEventListener('click', handleLogin);
+
+        authPassInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        function handleLogin() {
+            const pos = posSelect.value;
+            const roomId = roomIdInput.value.trim();
+            const auth = authPassInput.value.trim();
+
+            errorMsg.style.display = 'none';
+
+            if (!roomId || roomId.length !== 6) {
+                showError('Mã phòng phải gồm 6 chữ số!');
+                return;
+            }
+
+            if (!auth || auth.length !== 4) {
+                showError('Mật khẩu phải gồm 4 chữ số!');
+                return;
+            }
+
+            btnLogin.disabled = true;
+            btnLogin.textContent = 'Đang xác thực...';
+
+            socket.emit('verifyLogin', { roomId, auth, playerPos: parseInt(pos) }, (res) => {
+                btnLogin.disabled = false;
+                btnLogin.textContent = 'Xác nhận';
+
+                if (res && res.success) {
+                    window.location.href = `Player${pos}.html?roomid=${encodeURIComponent(roomId)}&auth=${encodeURIComponent(auth)}`;
+                } else {
+                    showError(res ? res.message : 'Đăng nhập thất bại. Vui lòng kiểm tra lại!');
+                }
+            });
+        }
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

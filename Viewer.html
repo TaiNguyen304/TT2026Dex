@@ -47,6 +47,11 @@
             user-select: none;
         }
 
+        button:hover {
+            background: var(--orange) !important;
+            color: var(--black) !important;
+        }
+
         body {
             margin: 0;
             padding: 20px;
@@ -423,7 +428,7 @@
             border: 2px solid rgba(0, 0, 0, 0.05);
         }
 
-        .v2-questions-top, .v2-questions-bottom { display: flex; gap: 10px; justify-content: center; margin: 10px 0; }
+        .v2-questions-top, .v2-questions-bottom { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
         .v2-questions-middle { display: flex; align-items: center; gap: 16px; justify-content: center; }
         .v2-question-cell {
             width: 120px;
@@ -967,10 +972,26 @@
         }
         disableDevTools();
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('roomid');
+
+        if (!roomId) {
+            document.body.innerHTML = `
+                <div style="background-color: var(--black, #000); color: var(--red, red); width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; text-align: center; padding: 20px;">
+                    Vui lòng nhập tham số ?roomid=Mãphòng trên URL
+                </div>
+            `;
+            throw new Error("Missing roomid parameter");
+        }
+
         const socketHost = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.includes('file://'))
           ? window.location.origin
           : 'https://tt2026dex.onrender.com';
         const socket = io(socketHost, { transports: ['websocket', 'polling'] });
+
+        socket.on('connect', () => {
+            socket.emit('joinRoom', { roomId, role: 'viewer' });
+        });
 
         // Audio Objects Cache
         const audioCache = {};

@@ -19,15 +19,20 @@
     <title>MÀN HÌNH MÁY HOST (MC)</title>
     <style>
         :root {
+            --blue: blue;
+            --aqua: aqua;
+            --yellow: yellow;
+            --green: green;
+            --red: red;
+            --pink: #ff00cc;
+            --purple: purple;
+            --lime: #39ff14;
+            --orange: orange;
+            --black: #000000;
+            --white: #ffffff;
             --bg-dark: violet;
             --card-bg: #131b2e;
             --card-border: #1e2942;
-            --blue: #0000ff;
-            --aqua: #00f0ff;
-            --pink: #ff00cc;
-            --lime: #00ff00;
-            --yellow: #ffff00;
-            --white: #ffffff;
             --text-dim: #8a99ad;
         }
 
@@ -37,6 +42,11 @@
             padding: 0;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             font-weight: bold !important;
+        }
+
+        button:hover, .tab-btn:hover {
+            background: var(--orange) !important;
+            color: var(--black) !important;
         }
 
         body {
@@ -415,9 +425,77 @@
     </div>
 
     <!-- Socket.IO -->
+    <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        function disableDevTools() {
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+                return false;
+            }, false);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'S' || e.key === 's' || e.keyCode === 83)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, true);
+
+            document.addEventListener('dragstart', function (e) {
+                e.preventDefault();
+            });
+
+            if (window.DisableDevtool) {
+                try {
+                    window.DisableDevtool();
+                } catch (err) {}
+            }
+        }
+        disableDevTools();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('roomid');
+
+        if (!roomId) {
+            document.body.innerHTML = `
+                <div style="background-color: var(--black, #000); color: var(--red, red); width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; text-align: center; padding: 20px;">
+                    Vui lòng nhập tham số ?roomid=Mãphòng trên URL
+                </div>
+            `;
+            throw new Error("Missing roomid parameter");
+        }
+
         const socket = io();
+        socket.on('connect', () => {
+            socket.emit('joinRoom', { roomId, role: 'host' });
+        });
+
         let currentHostTab = 'v2_host';
         let latestState = null;
 

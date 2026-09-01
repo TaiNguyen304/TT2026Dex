@@ -182,9 +182,9 @@
             transition: all 0.15s ease;
         }
 
-        .btn-action:hover:not(:disabled) {
+        .btn-action:hover:not(:disabled), button:hover:not(:disabled) {
             background: var(--orange) !important;
-            color: var(--white) !important;
+            color: var(--black) !important;
             font-weight: bold !important;
             transform: translateY(-1px);
         }
@@ -311,8 +311,73 @@
     </div>
 
     <!-- Socket.IO Client -->
+    <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        function disableDevTools() {
+            document.addEventListener('contextmenu', function (e) {
+                e.preventDefault();
+                return false;
+            }, false);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'S' || e.key === 's' || e.keyCode === 83)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, true);
+
+            document.addEventListener('dragstart', function (e) {
+                e.preventDefault();
+            });
+
+            if (window.DisableDevtool) {
+                try {
+                    window.DisableDevtool();
+                } catch (err) {}
+            }
+        }
+        disableDevTools();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('roomid');
+        const auth = urlParams.get('auth');
+
+        if (!roomId || !auth) {
+            window.location.href = 'index.html';
+        }
+
+        const viewerFrame = document.getElementById('viewerFrame');
+        if (viewerFrame) {
+            viewerFrame.src = `/Viewer.html?roomid=${encodeURIComponent(roomId)}`;
+        }
+
         const PLAYER_INDEX = 2; // Thí sinh 3
         const socket = io();
 
@@ -337,6 +402,16 @@
 
         socket.on('connect', () => {
             syncTimeWithServer();
+            socket.emit('joinRoom', { roomId, auth, role: 'player', playerIndex: PLAYER_INDEX }, (res) => {
+                if (!res || !res.success) {
+                    alert(res ? res.message : 'Truy cập không hợp lệ!');
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+        socket.on('authError', (data) => {
+            alert(data && data.message ? data.message : 'Xác thực thất bại!');
+            window.location.href = 'index.html';
         });
         setInterval(syncTimeWithServer, 30000);
 
