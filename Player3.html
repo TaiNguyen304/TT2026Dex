@@ -24,7 +24,7 @@
             --yellow: yellow;
             --green: green;
             --red: red;
-            --pink: #ff00cc;
+            --pink: #ff69b4;
             --purple: purple;
             --lime: #39ff14;
             --orange: orange;
@@ -206,7 +206,7 @@
 
         .btn-bell {
             background: var(--pink);
-            color: var(--white);
+            color: #000000;
             padding: 16px 10px;
             font-size: 1.15rem;
             box-shadow: 0 4px 10px rgba(255, 0, 204, 0.3);
@@ -313,6 +313,7 @@
     <!-- Socket.IO Client -->
     <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/crypto-helper.js"></script>
     <script>
         function disableDevTools() {
             document.addEventListener('contextmenu', function (e) {
@@ -381,6 +382,10 @@
         const PLAYER_INDEX = 2; // Thí sinh 3
         const socket = io();
 
+        if (window.AsymCrypto) {
+            window.AsymCrypto.setupSecureSocket(socket);
+        }
+
         // Server Time Synchronization
         let serverTimeOffset = 0;
 
@@ -400,9 +405,10 @@
             return Date.now() + serverTimeOffset;
         }
 
-        socket.on('connect', () => {
+        socket.on('connect', async () => {
             syncTimeWithServer();
-            socket.emit('joinRoom', { roomId, auth, role: 'player', playerIndex: PLAYER_INDEX }, (res) => {
+            const pubKey = window.AsymCrypto ? await window.AsymCrypto.getPublicKey() : null;
+            socket.emit('joinRoom', { roomId, auth, role: 'player', playerIndex: PLAYER_INDEX, publicKey: pubKey }, (res) => {
                 if (!res || !res.success) {
                     alert(res ? res.message : 'Truy cập không hợp lệ!');
                     window.location.href = 'index.html';

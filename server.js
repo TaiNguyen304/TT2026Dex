@@ -3,6 +3,7 @@ import http from 'http';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Server } from 'socket.io';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -152,6 +153,122 @@ function getOrCreateRoom(roomId, passwords) {
   return rooms[roomId];
 }
 
+// ==========================================
+// Asymmetric & Hybrid Encryption Utilities
+// Protects question & answer data from being
+// read via F12 -> Network -> Socket -> Messages
+// ==========================================
+
+function spkiToPem(spkiBase64) {
+  if (spkiBase64.includes('-----BEGIN PUBLIC KEY-----')) {
+    return spkiBase64;
+  }
+  const clean = spkiBase64.replace(/\s+/g, '');
+  const formatted = clean.match(/.{1,64}/g).join('\n');
+  return `-----BEGIN PUBLIC KEY-----\n${formatted}\n-----END PUBLIC KEY-----`;
+}
+
+function encryptPayloadForClient(payload, clientPublicKeySpki) {
+  if (!clientPublicKeySpki) return payload;
+  try {
+    const pemKey = spkiToPem(clientPublicKeySpki);
+    const jsonStr = JSON.stringify(payload);
+
+    const aesKey = crypto.randomBytes(32);
+    const iv = crypto.randomBytes(12);
+
+    const cipher = crypto.createCipheriv('aes-256-gcm', aesKey, iv);
+    let encrypted = cipher.update(jsonStr, 'utf8', 'base64');
+    encrypted += cipher.final('base64');
+    const authTag = cipher.getAuthTag().toString('base64');
+
+    const encryptedAesKey = crypto.publicEncrypt(
+      {
+        key: pemKey,
+        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: 'sha256'
+      },
+      aesKey
+    ).toString('base64');
+
+    return {
+      __asymEnc: true,
+      encKey: encryptedAesKey,
+      iv: iv.toString('base64'),
+      tag: authTag,
+      data: encrypted
+    };
+  } catch (err) {
+    console.error('[Crypto] Encryption error:', err.message);
+    return payload;
+  }
+}
+
+/**
+ * Strips unrevealed upcoming questions and answers so they are never leaked to Player/Viewer
+ */
+function sanitizeGameStateForClient(state, role, playerIndex) {
+  if (!state) return state;
+  try {
+    const clean = JSON.parse(JSON.stringify(state));
+
+    // V2: strip question text, answer, and boardRaw from questions array
+    if (clean.v2State && Array.isArray(clean.v2State.questions)) {
+      clean.v2State.questions = clean.v2State.questions.map(q => ({
+        used: !!q.used
+      }));
+    }
+
+    // V3: strip questionsData array
+    if (clean.v3State) {
+      clean.v3State.questionsData = [];
+    }
+
+    // V4: strip questions array
+    if (clean.v4State) {
+      clean.v4State.questions = [];
+    }
+
+    return clean;
+  } catch (e) {
+    return state;
+  }
+}
+
+/**
+ * Emits event to a specific socket, applying sanitization and asymmetric encryption for Player and Viewer
+ */
+function emitToSocket(socket, eventName, data) {
+  let payload = data;
+  if (socket.role === 'player' || socket.role === 'viewer') {
+    if (eventName === 'initState' || eventName === 'stateUpdated') {
+      payload = sanitizeGameStateForClient(data, socket.role, socket.playerIndex);
+    }
+    if (socket.publicKey) {
+      payload = encryptPayloadForClient(payload, socket.publicKey);
+    }
+  }
+  socket.emit(eventName, payload);
+}
+
+/**
+ * Emits event to all sockets in a room with per-socket encryption
+ */
+function emitToRoom(roomId, eventName, data) {
+  if (!roomId) return;
+  const roomSockets = io.sockets.adapter.rooms.get(roomId);
+  if (!roomSockets) {
+    io.to(roomId).emit(eventName, data);
+    return;
+  }
+
+  for (const socketId of roomSockets) {
+    const s = io.sockets.sockets.get(socketId);
+    if (!s) continue;
+    emitToSocket(s, eventName, data);
+  }
+}
+
 // Middleware & Static Files
 app.use(express.static(__dirname));
 
@@ -204,12 +321,13 @@ io.on('connection', (socket) => {
     }
     const room = getOrCreateRoom(roomId, passwords);
     socket.roomId = roomId;
+    socket.role = 'controller';
     socket.join(roomId);
     console.log(`[Room Created] Room: ${roomId}, Passwords:`, room.passwords);
     if (typeof callback === 'function') {
       callback({ success: true, roomId, passwords: room.passwords, gameState: room.gameState });
     }
-    io.to(roomId).emit('initState', room.gameState);
+    emitToRoom(roomId, 'initState', room.gameState);
   });
 
   // Verify login credentials from index.html
@@ -229,9 +347,9 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Join room
+  // Join room (supports asymmetric public key exchange)
   socket.on('joinRoom', (data, callback) => {
-    const { roomId, auth, role, playerIndex } = data || {};
+    const { roomId, auth, role, playerIndex, publicKey } = data || {};
     if (!roomId) {
       if (typeof callback === 'function') callback({ success: false, message: 'Thiếu mã phòng trên URL' });
       return;
@@ -248,13 +366,30 @@ io.on('connection', (socket) => {
     }
 
     socket.roomId = roomId;
+    socket.role = role || 'guest';
+    socket.playerIndex = typeof playerIndex === 'number' ? playerIndex : 0;
+    if (publicKey) {
+      socket.publicKey = publicKey;
+    }
     socket.join(roomId);
-    console.log(`[Socket Joined] ${socket.id} -> Room: ${roomId} (Role: ${role || 'guest'})`);
+    console.log(`[Socket Joined] ${socket.id} -> Room: ${roomId} (Role: ${socket.role}, AsymKey: ${!!socket.publicKey})`);
 
     if (typeof callback === 'function') {
-      callback({ success: true, gameState: room.gameState, passwords: room.passwords });
+      let cbState = room.gameState;
+      if (socket.role === 'player' || socket.role === 'viewer') {
+        cbState = sanitizeGameStateForClient(cbState, socket.role, socket.playerIndex);
+        if (socket.publicKey) {
+          cbState = encryptPayloadForClient(cbState, socket.publicKey);
+        }
+      }
+      callback({
+        success: true,
+        gameState: cbState,
+        passwords: (socket.role === 'controller' || socket.role === 'host' ? room.passwords : undefined)
+      });
     }
-    socket.emit('initState', room.gameState);
+
+    emitToSocket(socket, 'initState', room.gameState);
   });
 
   // Time synchronization
@@ -270,8 +405,8 @@ io.on('connection', (socket) => {
     if (!roomId || !rooms[roomId]) return;
     const room = rooms[roomId];
     room.gameState.currentView = viewName;
-    io.to(roomId).emit('viewChanged', viewName);
-    io.to(roomId).emit('stateUpdated', room.gameState);
+    emitToRoom(roomId, 'viewChanged', viewName);
+    emitToRoom(roomId, 'stateUpdated', room.gameState);
   });
 
   // Toggle graphic visibility
@@ -284,8 +419,8 @@ io.on('connection', (socket) => {
     } else if (data && data.view) {
       room.gameState.viewGraphics[data.view] = data.visible;
     }
-    io.to(roomId).emit('graphicToggled', room.gameState.viewGraphics);
-    io.to(roomId).emit('stateUpdated', room.gameState);
+    emitToRoom(roomId, 'graphicToggled', room.gameState.viewGraphics);
+    emitToRoom(roomId, 'stateUpdated', room.gameState);
   });
 
   // Full state update from Controller
@@ -294,7 +429,7 @@ io.on('connection', (socket) => {
     if (!roomId || !rooms[roomId]) return;
     const room = rooms[roomId];
     room.gameState = { ...room.gameState, ...partialState };
-    io.to(roomId).emit('stateUpdated', room.gameState);
+    emitToRoom(roomId, 'stateUpdated', room.gameState);
   });
 
   // Player interaction events
@@ -317,8 +452,8 @@ io.on('connection', (socket) => {
       if (!gs.vqphuState.answers) gs.vqphuState.answers = [];
       gs.vqphuState.answers[data.playerIndex] = { name: pName, ans: data.text, time: data.time, playerIndex: data.playerIndex };
     }
-    io.to(roomId).emit('playerAnswerReceived', data);
-    io.to(roomId).emit('stateUpdated', gs);
+    emitToRoom(roomId, 'playerAnswerReceived', data);
+    emitToRoom(roomId, 'stateUpdated', gs);
   });
 
   socket.on('playerRingBell', (data) => {
@@ -342,8 +477,8 @@ io.on('connection', (socket) => {
         gs.v4BellLog.push(logItem);
       }
     }
-    io.to(roomId).emit('playerBellTriggered', data);
-    io.to(roomId).emit('stateUpdated', gs);
+    emitToRoom(roomId, 'playerBellTriggered', data);
+    emitToRoom(roomId, 'stateUpdated', gs);
   });
 
   socket.on('playerChooseStar', (data) => {
@@ -357,16 +492,16 @@ io.on('connection', (socket) => {
       }
       gs.playerInteraction.star.chosen[data.playerIndex] = true;
     }
-    io.to(roomId).emit('playerStarTriggered', data);
-    io.to(roomId).emit('stateUpdated', gs);
+    emitToRoom(roomId, 'playerStarTriggered', data);
+    emitToRoom(roomId, 'stateUpdated', gs);
   });
 
   socket.on('closeQuestion', (data) => {
     const roomId = socket.roomId;
     if (!roomId || !rooms[roomId]) return;
     const room = rooms[roomId];
-    io.to(roomId).emit('questionClosed', data);
-    io.to(roomId).emit('stateUpdated', room.gameState);
+    emitToRoom(roomId, 'questionClosed', data);
+    emitToRoom(roomId, 'stateUpdated', room.gameState);
   });
 
   socket.on('resetBell', (data) => {
@@ -380,8 +515,8 @@ io.on('connection', (socket) => {
     } else if (round === 'v4') {
       gs.v4BellLog = [];
     }
-    io.to(roomId).emit('bellReset', data);
-    io.to(roomId).emit('stateUpdated', gs);
+    emitToRoom(roomId, 'bellReset', data);
+    emitToRoom(roomId, 'stateUpdated', gs);
   });
 
   socket.on('resetStar', () => {
@@ -392,8 +527,8 @@ io.on('connection', (socket) => {
     if (gs.playerInteraction && gs.playerInteraction.star) {
       gs.playerInteraction.star.chosen = [false, false, false, false];
     }
-    io.to(roomId).emit('starReset');
-    io.to(roomId).emit('stateUpdated', gs);
+    emitToRoom(roomId, 'starReset');
+    emitToRoom(roomId, 'stateUpdated', gs);
   });
 
   // Controller interaction controls
@@ -402,8 +537,8 @@ io.on('connection', (socket) => {
     if (!roomId || !rooms[roomId]) return;
     const room = rooms[roomId];
     room.gameState.playerInteraction = { ...room.gameState.playerInteraction, ...interactionData };
-    io.to(roomId).emit('playerInteractionUpdated', room.gameState.playerInteraction);
-    io.to(roomId).emit('stateUpdated', room.gameState);
+    emitToRoom(roomId, 'playerInteractionUpdated', room.gameState.playerInteraction);
+    emitToRoom(roomId, 'stateUpdated', room.gameState);
   });
 
   // Sound triggers

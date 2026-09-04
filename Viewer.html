@@ -25,7 +25,7 @@
             --yellow: yellow;
             --green: green;
             --red: red;
-            --pink: #ff00cc;
+            --pink: #ff69b4;
             --purple: purple;
             --lime: #39ff14;
             --orange: orange;
@@ -198,9 +198,31 @@
             align-items: center;
             justify-content: center;
         }
-        .player-box.active { background: var(--pink); color: var(--white); }
+        .player-box.active { background: var(--pink); color: #000000; }
         .score-name { font-size: 1.1rem; margin-bottom: 4px; }
         .score-value { font-size: 1.8rem; }
+
+        .v1-hint-box {
+            width: 100%;
+            height: 38px;
+            background: #000000;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.2s, color 0.2s;
+        }
+        .v1-hint-box.active {
+            background: #39ff14 !important;
+            color: #000000 !important;
+            border-color: #000000;
+        }
 
         .time-box {
             width: 100px;
@@ -215,35 +237,59 @@
             justify-content: center;
         }
 
+        .v1-boxes-container {
+            width: 80%;
+            margin: 16px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-sizing: border-box;
+        }
+
         .question-box {
             background: #39ff14;
             color: black;
             border: 3px solid black;
             border-radius: 12px;
-            padding: 24px;
-            margin: 20px auto;
-            width: 80%;
-            min-height: 240px;
+            padding: 16px 24px;
+            margin: 0 auto;
+            width: 100%;
+            min-height: 90px;
+            height: auto;
             font-size: 22px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
             overflow-wrap: break-word;
-            white-space: pre-wrap;
+            word-break: break-word;
+            white-space: normal;
             transform-origin: center;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+            box-sizing: border-box;
         }
 
+        .graphics-off .question-box,
         .graphics-off #questionBox,
-        #questionBox.v1-graphic-hidden {
+        .graphics-off #hintBox,
+        #questionBox.v1-graphic-hidden,
+        #hintBox.v1-graphic-hidden {
             transform: scaleX(0);
             opacity: 0;
             pointer-events: none;
         }
 
-        #qText, #qHint, #v2qText {
+        #qText, #qHint {
+            display: block;
+            text-align: center;
+            width: 100%;
+            line-height: 1.45;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        #v2qText {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -291,8 +337,8 @@
             width: 110px;
             height: 110px;
             border: 4px solid white;
-            background: var(--blue);
-            color: var(--white);
+            background: #39ff14;
+            color: #000000;
             font-size: 2.6rem;
             border-radius: 50%;
             display: flex;
@@ -571,7 +617,7 @@
         .v3-answer-time {
             width: 120px;
             background: var(--pink);
-            color: var(--white);
+            color: #000000;
             font-size: 1.3rem;
             display: flex;
             align-items: center;
@@ -665,7 +711,7 @@
         .score-card-value {
             font-size: 3.5rem;
             background: var(--pink);
-            color: var(--white);
+            color: #000000;
             border-radius: 12px;
             padding: 12px;
         }
@@ -698,6 +744,7 @@
         .vqphu-time-col {
             width: 140px;
             background: var(--pink);
+            color: #000000;
             text-align: center;
             padding: 10px;
         }
@@ -746,32 +793,40 @@
                         <div class="score-name" id="name0">Người 1</div>
                         <div class="score-value" id="score0">30</div>
                     </div>
+                    <div class="v1-hint-box" id="v1HintBox0">Gợi ý</div>
                 </div>
                 <div class="score-slot">
                     <div class="player-box" id="box1">
                         <div class="score-name" id="name1">Người 2</div>
                         <div class="score-value" id="score1">30</div>
                     </div>
+                    <div class="v1-hint-box" id="v1HintBox1">Gợi ý</div>
                 </div>
                 <div class="score-slot">
                     <div class="player-box" id="box2">
                         <div class="score-name" id="name2">Người 3</div>
                         <div class="score-value" id="score2">30</div>
                     </div>
+                    <div class="v1-hint-box" id="v1HintBox2">Gợi ý</div>
                 </div>
                 <div class="score-slot">
                     <div class="player-box" id="box3">
                         <div class="score-name" id="name3">Người 4</div>
                         <div class="score-value" id="score3">30</div>
                     </div>
+                    <div class="v1-hint-box" id="v1HintBox3">Gợi ý</div>
                 </div>
             </div>
 
             <div class="time-box" id="timeBox">45</div>
 
-            <div class="question-box" id="questionBox">
-                <div id="qText"></div>
-                <div id="qHint" style="margin-top:12px; color:#000000;"></div>
+            <div class="v1-boxes-container" id="v1BoxesContainer">
+                <div class="question-box" id="questionBox">
+                    <div id="qText"></div>
+                </div>
+                <div class="question-box" id="hintBox">
+                    <div id="qHint"></div>
+                </div>
             </div>
         </div>
 
@@ -891,7 +946,7 @@
 
         <!-- VIEW 10: VQPHU (CÂU HỎI PHỤ MAIN) -->
         <div id="view-vqphu" class="view-panel hidden">
-            <div id="vqphuQuestion" style="background:var(--pink);color:white;text-align:center;font-size:1.4rem;min-height:70px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:12px;"></div>
+            <div id="vqphuQuestion" style="background:var(--pink);color:#000000;text-align:center;font-size:1.4rem;min-height:70px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:12px;"></div>
 
             <div id="vqphuDataArea" style="display:flex;justify-content:space-between;margin-top:16px;gap:16px;">
                 <div id="vqphuLeft" style="width:48%;display:flex;flex-direction:column;gap:10px;"></div>
@@ -919,6 +974,7 @@
     <!-- SOCKET.IO CLIENT & AUDIO PLAYER LOGIC -->
     <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/crypto-helper.js"></script>
 
     <script>
         function disableDevTools() {
@@ -989,8 +1045,13 @@
           : 'https://tt2026dex.onrender.com';
         const socket = io(socketHost, { transports: ['websocket', 'polling'] });
 
-        socket.on('connect', () => {
-            socket.emit('joinRoom', { roomId, role: 'viewer' });
+        if (window.AsymCrypto) {
+            window.AsymCrypto.setupSecureSocket(socket);
+        }
+
+        socket.on('connect', async () => {
+            const pubKey = window.AsymCrypto ? await window.AsymCrypto.getPublicKey() : null;
+            socket.emit('joinRoom', { roomId, role: 'viewer', publicKey: pubKey });
         });
 
         // Audio Objects Cache
@@ -1206,7 +1267,7 @@
         function applyPlayerBoxColor(el, state) {
             if (!el) return;
             if (state === 'blue') { el.style.background = 'var(--blue)'; el.style.color = 'var(--white)'; }
-            else if (state === 'pink') { el.style.background = '#ff00cc'; el.style.color = 'var(--white)'; }
+            else if (state === 'pink') { el.style.background = '#ff69b4'; el.style.color = '#000000'; }
             else if (state === 'aqua') { el.style.background = 'var(--aqua)'; el.style.color = 'var(--black)'; }
             else if (state === 'yellow') { el.style.background = 'var(--yellow)'; el.style.color = 'var(--black)'; }
             else if (state === 'black') { el.style.background = 'var(--black)'; el.style.color = 'var(--white)'; }
@@ -1267,8 +1328,8 @@
             const t = getCalculatedTime(v2State, 15);
             v2TimeBox.textContent = t;
             const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
-            v2TimeBox.style.background = `linear-gradient(to bottom, #ff00cc ${pct}%, var(--blue) ${pct}%)`;
-            v2TimeBox.style.color = 'var(--white)';
+            v2TimeBox.style.background = `linear-gradient(to bottom, #ffff00 ${pct}%, #39ff14 ${pct}%)`;
+            v2TimeBox.style.color = '#000000';
         }
 
         function renderV3Time(v3State) {
@@ -1297,8 +1358,8 @@
             const t = getCalculatedTime(v4State, 15);
             v4TimeBox.textContent = t;
             const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
-            v4TimeBox.style.background = `linear-gradient(to bottom, #ff00cc ${pct}%, var(--blue) ${pct}%)`;
-            v4TimeBox.style.color = 'var(--white)';
+            v4TimeBox.style.background = `linear-gradient(to bottom, #ffff00 ${pct}%, #39ff14 ${pct}%)`;
+            v4TimeBox.style.color = '#000000';
         }
 
         function renderVQPhuTime(vqState) {
@@ -1399,6 +1460,14 @@
                             box.classList.add('active');
                         } else {
                             box.classList.remove('active');
+                        }
+                    }
+                    const hintBoxEl = document.getElementById(`v1HintBox${j}`);
+                    if (hintBoxEl) {
+                        if (state.v1State.hintUsed && state.v1State.currentPlayer === j) {
+                            hintBoxEl.classList.add('active');
+                        } else {
+                            hintBoxEl.classList.remove('active');
                         }
                     }
                 }

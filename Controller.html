@@ -25,7 +25,7 @@
             --yellow: yellow;
             --green: green;
             --red: red;
-            --pink: #ff00cc;
+            --pink: #ff69b4;
             --purple: purple;
             --lime: #39ff14;
             --orange: orange;
@@ -189,7 +189,7 @@
         .players-list .player-card:nth-child(4) { background-image: url('Player4.png'); }
 
         .v1-top { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; }
-        .score-slot { width: 150px; }
+        .score-slot { width: 150px; display: flex; flex-direction: column; align-items: center; }
         .player-box {
             background: var(--blue);
             color: var(--white);
@@ -200,12 +200,35 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            width: 100%;
         }
-        .player-box.active { background: var(--pink); color: var(--white); }
+        .player-box.active { background: var(--pink); color: #000000; }
         .score-value { font-size: 1.4rem; }
 
-        .turn-controls { display: flex; gap: 8px; justify-content: center; margin-top: 8px; }
-        .btn-turn-on { background: var(--pink); color: var(--white); }
+        .v1-hint-box {
+            width: 100%;
+            height: 36px;
+            background: #000000;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin-top: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.2s, color 0.2s;
+        }
+        .v1-hint-box.active {
+            background: #39ff14 !important;
+            color: #000000 !important;
+            border-color: #000000;
+        }
+
+        .turn-controls { display: flex; gap: 8px; justify-content: center; margin-top: 8px; width: 100%; }
+        .btn-turn-on { background: var(--pink); color: #000000; }
         .btn-turn-off { background: var(--blue); color: var(--white); }
 
         .time-box {
@@ -221,26 +244,47 @@
             justify-content: center;
         }
 
+        .v1-boxes-container {
+            width: 75%;
+            margin: 12px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+
         .question-box {
             background: #39ff14;
             color: black;
             border: 3px solid black;
             border-radius: 10px;
-            padding: 20px;
-            margin: 12px auto;
-            width: 75%;
-            min-height: 180px;
+            padding: 12px 20px;
+            margin: 0 auto;
+            width: 100%;
+            min-height: 70px;
+            height: auto;
             font-size: 18px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
             overflow-wrap: break-word;
-            white-space: pre-wrap;
+            word-break: break-word;
+            white-space: normal;
+            box-sizing: border-box;
         }
 
-        #qText, #qHint, #v2qText, #v4qText {
+        #qText, #qHint {
+            display: block;
+            text-align: center;
+            width: 100%;
+            line-height: 1.4;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+        }
+
+        #v2qText, #v4qText {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -367,8 +411,8 @@
             width: 90px;
             height: 90px;
             border: 3px solid white;
-            background: var(--blue);
-            color: var(--white);
+            background: #39ff14;
+            color: #000000;
             font-size: 2rem;
             border-radius: 50%;
             display: flex;
@@ -531,7 +575,7 @@
 
         .v3-answer-time {
             background: var(--pink);
-            color: var(--white);
+            color: #000000;
             width: 100px;
             display: flex;
             align-items: center;
@@ -591,8 +635,8 @@
             border-radius: 12px;
             font-size: 0.85rem;
             margin-left: 10px;
-            background: #ff00cc;
-            color: white;
+            background: #ff69b4;
+            color: #000000;
         }
 
         /* VIEW: VQPHU ANSWERS SEPARATE */
@@ -622,6 +666,7 @@
         .vqphu-time-col {
             width: 140px;
             background: var(--pink);
+            color: #000000;
             text-align: center;
             padding: 10px;
         }
@@ -662,7 +707,7 @@
         <button id="importBtn" class="btn-import">Nhập đề Excel</button>
         <button id="openPlayersBtn" class="btn-player">Nhập tên người chơi</button>
         <button id="openScoreBtn" class="btn-score">Bảng điểm (Popup Controller)</button>
-        <button id="showViewerScoreBtn" class="btn-score" style="background:#ff00cc;" onclick="switchView('scoreboard')">Hiện Bảng Điểm (Viewer)</button>
+        <button id="showViewerScoreBtn" class="btn-score" style="background:#ff69b4; color:#000000;" onclick="switchView('scoreboard')">Hiện Bảng Điểm (Viewer)</button>
         <button class="btn-option" id="btnOption">Tùy chọn điểm số</button>
     </div>
 
@@ -739,6 +784,7 @@
                         <div class="score-name" id="name0">Người 1</div>
                         <div class="score-value" id="score0">30</div>
                     </div>
+                    <div class="v1-hint-box" id="v1HintBox0">Gợi ý</div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(0)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(0)">Không</button>
@@ -749,6 +795,7 @@
                         <div class="score-name" id="name1">Người 2</div>
                         <div class="score-value" id="score1">30</div>
                     </div>
+                    <div class="v1-hint-box" id="v1HintBox1">Gợi ý</div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(1)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(1)">Không</button>
@@ -759,6 +806,7 @@
                         <div class="score-name" id="name2">Người 3</div>
                         <div class="score-value" id="score2">30</div>
                     </div>
+                    <div class="v1-hint-box" id="v1HintBox2">Gợi ý</div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(2)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(2)">Không</button>
@@ -769,6 +817,7 @@
                         <div class="score-name" id="name3">Người 4</div>
                         <div class="score-value" id="score3">30</div>
                     </div>
+                    <div class="v1-hint-box" id="v1HintBox3">Gợi ý</div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(3)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(3)">Không</button>
@@ -778,9 +827,13 @@
 
             <div class="time-box" id="timeBox">45</div>
 
-            <div class="question-box" id="questionBox">
-                <div id="qText"></div>
-                <div id="qHint" style="margin-top:10px; color:#000000;"></div>
+            <div class="v1-boxes-container">
+                <div class="question-box" id="questionBox">
+                    <div id="qText"></div>
+                </div>
+                <div class="question-box" id="hintBox">
+                    <div id="qHint"></div>
+                </div>
             </div>
 
             <div class="controls">
@@ -806,7 +859,7 @@
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(0,'blue')"></button>
                         <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(0,'aqua')"></button>
-                        <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(0,'pink')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="setPlayerState(0,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="setPlayerState(0,'black')"></button>
                     </div>
                     <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
@@ -830,7 +883,7 @@
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(1,'blue')"></button>
                         <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(1,'aqua')"></button>
-                        <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(1,'pink')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="setPlayerState(1,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="setPlayerState(1,'black')"></button>
                     </div>
                     <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
@@ -854,7 +907,7 @@
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(2,'blue')"></button>
                         <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(2,'aqua')"></button>
-                        <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(2,'pink')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="setPlayerState(2,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="setPlayerState(2,'black')"></button>
                     </div>
                     <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
@@ -878,7 +931,7 @@
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(3,'blue')"></button>
                         <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(3,'aqua')"></button>
-                        <button class="v2-color-btn" style="background:#ff00cc" onclick="setPlayerState(3,'pink')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="setPlayerState(3,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="setPlayerState(3,'black')"></button>
                     </div>
                     <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
@@ -992,7 +1045,7 @@
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(0,'blue')"></button>
                         <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(0,'yellow')"></button>
-                        <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(0,'pink')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="v4SetPlayerState(0,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(0,'black')"></button>
                     </div>
                     <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:6px;">
@@ -1019,7 +1072,7 @@
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(1,'blue')"></button>
                         <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(1,'yellow')"></button>
-                        <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(1,'pink')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="v4SetPlayerState(1,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(1,'black')"></button>
                     </div>
                     <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:6px;">
@@ -1046,7 +1099,7 @@
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(2,'blue')"></button>
                         <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(2,'yellow')"></button>
-                        <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(2,'pink')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="v4SetPlayerState(2,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(2,'black')"></button>
                     </div>
                     <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:6px;">
@@ -1073,7 +1126,7 @@
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(3,'blue')"></button>
                         <button class="v2-color-btn" style="background:yellow" onclick="v4SetPlayerState(3,'yellow')"></button>
-                        <button class="v2-color-btn" style="background:#ff00cc" onclick="v4SetPlayerState(3,'pink')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="v4SetPlayerState(3,'pink')"></button>
                         <button class="v2-color-btn" style="background:black" onclick="v4SetPlayerState(3,'black')"></button>
                     </div>
                     <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:6px;">
@@ -1121,7 +1174,7 @@
 
         <!-- VIEW 10: VQPHU (CÂU HỎI PHỤ) -->
         <div id="view-vqphu" class="view-panel hidden">
-            <div id="vqphuQuestion" style="background:var(--pink);color:white;text-align:center;font-size:1.2rem;min-height:60px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:10px;"></div>
+            <div id="vqphuQuestion" style="background:var(--pink);color:#000000;text-align:center;font-size:1.2rem;min-height:60px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:10px;"></div>
 
             <div id="vqphuDataArea" style="display:flex;justify-content:space-between;margin-top:10px;gap:10px;">
                 <div id="vqphuLeft" style="width:48%;display:flex;flex-direction:column;gap:8px;"></div>
@@ -1529,9 +1582,11 @@
                     if (playerVisibility[i]) {
                         btn.textContent = `Ẩn Player ${i + 1}`;
                         btn.style.background = 'var(--pink)';
+                        btn.style.color = '#000000';
                     } else {
                         btn.textContent = `Hiện Player ${i + 1}`;
                         btn.style.background = 'var(--blue)';
+                        btn.style.color = 'white';
                     }
                 }
             }
@@ -1634,6 +1689,7 @@
                     questionIndex,
                     qText: document.getElementById('qText')?.textContent || "",
                     qHint: document.getElementById('qHint')?.textContent || "",
+                    hintUsed: hintUsedForCurrent,
                     time: timer,
                     startTime: v1StartTime,
                     duration: v1Duration,
@@ -1833,7 +1889,7 @@
                 card.style.cssText = 'background:blue; color:white; border-radius:12px; padding:20px; width:200px; text-align:center; box-shadow:0 8px 20px rgba(0,0,0,0.2);';
                 card.innerHTML = `
                     <div style="font-size:1.4rem; margin-bottom:10px; color:white;">${playerNames[i]}</div>
-                    <div style="font-size:3rem; font-weight:bold; background:#ff00cc; border-radius:8px; padding:10px;">${playerScores[i]}</div>
+                    <div style="font-size:3rem; font-weight:bold; background:#ff69b4; color:#000000; border-radius:8px; padding:10px;">${playerScores[i]}</div>
                 `;
                 container.appendChild(card);
             }
@@ -1881,6 +1937,7 @@
             }
             document.getElementById(`box${i}`).classList.add('active');
             hintUsedForCurrent = false;
+            updateV1HintBoxes();
             updateV1ClockDisplay();
             syncFullStateToServer();
         }
@@ -1888,6 +1945,8 @@
         function unsetTurn(i) {
             if (currentPlayer === i) currentPlayer = null;
             document.getElementById(`box${i}`).classList.remove('active');
+            hintUsedForCurrent = false;
+            updateV1HintBoxes();
             syncFullStateToServer();
         }
 
@@ -1898,6 +1957,8 @@
             v1Duration = 45;
             v1StartTime = getServerTime();
             v1IsRunning = true;
+            hintUsedForCurrent = false;
+            updateV1HintBoxes();
             updateV1ClockDisplay();
             questionIndex[currentPlayer] = 0;
             showV1Question();
@@ -1943,6 +2004,7 @@
         function v1Hint() {
             if (currentPlayer === null) return showPopup("Chưa chọn người chơi!");
             hintUsedForCurrent = true;
+            updateV1HintBoxes();
             const idx = Math.min(questionIndex[currentPlayer] || 0, 7);
             const q = round1Data[currentPlayer] ? round1Data[currentPlayer][idx] : null;
             const hintText = q && q.hint ? q.hint : "";
@@ -1959,6 +2021,7 @@
             updateDisplayedScores();
             sendSound('Dung V1.mp3');
             hintUsedForCurrent = false;
+            updateV1HintBoxes();
 
             if (checkAndTriggerV1End()) {
                 syncFullStateToServer();
@@ -1985,6 +2048,7 @@
                 updateDisplayedScores();
                 sendSound('Sai V1.mp3');
                 hintUsedForCurrent = false;
+                updateV1HintBoxes();
                 syncFullStateToServer();
                 return;
             }
@@ -1994,6 +2058,7 @@
             updateDisplayedScores();
             sendSound('Sai V1.mp3');
             hintUsedForCurrent = false;
+            updateV1HintBoxes();
 
             if (checkAndTriggerV1End()) {
                 syncFullStateToServer();
@@ -2005,6 +2070,7 @@
         function nextV1Question() {
             questionIndex[currentPlayer]++;
             hintUsedForCurrent = false;
+            updateV1HintBoxes();
             document.getElementById('qHint').textContent = "";
             if (questionIndex[currentPlayer] >= 8) {
                 checkAndTriggerV1End();
@@ -2034,16 +2100,30 @@
         function applyPlayerBoxColor(el, state) {
             if (!el) return;
             if (state === 'blue') { el.style.background = 'var(--blue)'; el.style.color = 'var(--white)'; }
-            else if (state === 'pink') { el.style.background = '#ff00cc'; el.style.color = 'var(--white)'; }
+            else if (state === 'pink') { el.style.background = '#ff69b4'; el.style.color = '#000000'; }
             else if (state === 'aqua') { el.style.background = 'var(--aqua)'; el.style.color = 'var(--black)'; }
             else if (state === 'yellow') { el.style.background = 'var(--yellow)'; el.style.color = 'var(--black)'; }
             else if (state === 'black') { el.style.background = 'var(--black)'; el.style.color = 'var(--white)'; }
+        }
+
+        function updateV1HintBoxes() {
+            for (let i = 0; i < 4; i++) {
+                const hb = document.getElementById(`v1HintBox${i}`);
+                if (!hb) continue;
+                if (hintUsedForCurrent && currentPlayer === i) {
+                    hb.classList.add('active');
+                } else {
+                    hb.classList.remove('active');
+                }
+            }
         }
 
         function v1Reset() {
             clearInterval(timerInterval);
             timer = 45;
             currentPlayer = null;
+            hintUsedForCurrent = false;
+            updateV1HintBoxes();
             for (let j = 0; j < 4; j++) {
                 document.getElementById(`box${j}`)?.classList.remove('active');
             }
@@ -2133,6 +2213,12 @@
         function v2ResetBell() {
             v2BellRungList = [false, false, false, false];
             v2BellLog = [];
+            v2PlayerColors = ['blue', 'blue', 'blue', 'blue'];
+            for (let i = 0; i < 4; i++) {
+                const el = document.getElementById(`v2box${i}`);
+                applyPlayerBoxColor(el, 'blue');
+            }
+            renderV2AnswersPreview();
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
             });
@@ -2148,7 +2234,12 @@
             v2Duration = 15;
             v2StartTime = getServerTime();
             v2IsRunning = true;
-            document.getElementById('v2TimeBox').textContent = v2Timer;
+            const tBox = document.getElementById('v2TimeBox');
+            if (tBox) {
+                tBox.textContent = v2Timer;
+                tBox.style.background = '#39ff14';
+                tBox.style.color = '#000000';
+            }
             socket.emit('setPlayerInteraction', {
                 answer: { open: true, round: 'v2', startTime: v2StartTime, duration: 15 }
             });
@@ -2156,9 +2247,15 @@
                 const elapsed = (getServerTime() - v2StartTime) / 1000;
                 const rem = Math.max(0, v2Duration - elapsed);
                 const nextSec = Math.ceil(rem);
+                const pct = Math.min(100, Math.max(0, ((15 - rem) / 15) * 100));
+                const box = document.getElementById('v2TimeBox');
+                if (box) {
+                    box.style.background = `linear-gradient(to bottom, #ffff00 ${pct}%, #39ff14 ${pct}%)`;
+                    box.style.color = '#000000';
+                }
                 if (nextSec !== v2Timer) {
                     v2Timer = nextSec;
-                    document.getElementById('v2TimeBox').textContent = v2Timer;
+                    if (box) box.textContent = v2Timer;
                     syncFullStateToServer();
                 }
                 if (rem <= 0) {
@@ -2168,7 +2265,11 @@
                     socket.emit('setPlayerInteraction', {
                         answer: { open: false, round: 'v2', startTime: 0, duration: 15 }
                     });
-                    document.getElementById('v2TimeBox').textContent = 0;
+                    if (box) {
+                        box.textContent = 0;
+                        box.style.background = '#ffff00';
+                        box.style.color = '#000000';
+                    }
                     syncFullStateToServer();
                 }
             }, 100);
@@ -2183,7 +2284,12 @@
             v2Duration = 15;
             v2StartTime = 0;
             v2IsRunning = false;
-            document.getElementById('v2TimeBox').textContent = v2Timer;
+            const tBox = document.getElementById('v2TimeBox');
+            if (tBox) {
+                tBox.textContent = v2Timer;
+                tBox.style.background = '#39ff14';
+                tBox.style.color = '#000000';
+            }
             socket.emit('setPlayerInteraction', {
                 answer: { open: false, round: 'v2', startTime: 0, duration: 15 }
             });
@@ -2509,6 +2615,13 @@
             v4BellWinner = null;
             v4BellLocked = false;
             v4BellLog = [];
+            for (let i = 0; i < 4; i++) {
+                if (v4PlayerColors[i] === 'yellow' || v4PlayerColors[i] === 'pink') {
+                    v4PlayerColors[i] = 'blue';
+                    const el = document.getElementById(`v4box${i}`);
+                    applyPlayerBoxColor(el, 'blue');
+                }
+            }
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
@@ -2533,6 +2646,13 @@
         function v4ResetStar() {
             starChosenList = [false, false, false, false];
             starSoundPlayedThisTurn = false;
+            for (let i = 0; i < 4; i++) {
+                if (v4PlayerColors[i] === 'yellow' || v4PlayerColors[i] === 'pink') {
+                    v4PlayerColors[i] = 'blue';
+                    const el = document.getElementById(`v4box${i}`);
+                    applyPlayerBoxColor(el, 'blue');
+                }
+            }
             socket.emit('setPlayerInteraction', {
                 star: { open: false, chosen: starChosenList, soundPlayed: false }
             });
@@ -2564,6 +2684,12 @@
             v4BellLocked = false;
             v4BellRungList = [false, false, false, false];
             v4BellLog = [];
+            const tBox = document.getElementById('v4TimeBox');
+            if (tBox) {
+                tBox.textContent = v4Time;
+                tBox.style.background = '#39ff14';
+                tBox.style.color = '#000000';
+            }
             socket.emit('setPlayerInteraction', {
                 bell: { open: true, round: 'v4', startTime: v4StartTime, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
@@ -2573,9 +2699,15 @@
                     const elapsed = (getServerTime() - v4StartTime) / 1000;
                     v4ExactRemaining = Math.max(0, v4Duration - elapsed);
                     const nextSec = Math.ceil(v4ExactRemaining);
+                    const pct = Math.min(100, Math.max(0, ((15 - v4ExactRemaining) / 15) * 100));
+                    const box = document.getElementById('v4TimeBox');
+                    if (box) {
+                        box.style.background = `linear-gradient(to bottom, #ffff00 ${pct}%, #39ff14 ${pct}%)`;
+                        box.style.color = '#000000';
+                    }
                     if (nextSec !== v4Time) {
                         v4Time = nextSec;
-                        document.getElementById('v4TimeBox').textContent = v4Time;
+                        if (box) box.textContent = v4Time;
                         syncFullStateToServer();
                     }
                     if (v4ExactRemaining <= 0) {
@@ -2588,7 +2720,11 @@
                         socket.emit('setPlayerInteraction', {
                             bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
                         });
-                        document.getElementById('v4TimeBox').textContent = 0;
+                        if (box) {
+                            box.textContent = 0;
+                            box.style.background = '#ffff00';
+                            box.style.color = '#000000';
+                        }
                         syncFullStateToServer();
                     }
                 }
@@ -2610,7 +2746,12 @@
             v4Paused = false;
             const pauseBtn = document.getElementById("v4PauseBtn");
             if (pauseBtn) pauseBtn.textContent = "Tạm dừng";
-            document.getElementById('v4TimeBox').textContent = v4Time;
+            const tBox = document.getElementById('v4TimeBox');
+            if (tBox) {
+                tBox.textContent = v4Time;
+                tBox.style.background = '#39ff14';
+                tBox.style.color = '#000000';
+            }
             v4BellLocked = true;
             v4BellLog = [];
             v4BellRungList = [false, false, false, false];
@@ -3165,7 +3306,7 @@
                 if (pauseBtn) pauseBtn.textContent = "Tiếp tục";
                 sendPauseSound('15s Về Đích.mp3');
 
-                // Chuyển ô người bấm sang màu hồng (#ff00cc)
+                // Chuyển ô người bấm sang màu hồng (#9a1c42)
                 v4SetPlayerState(data.playerIndex, 'pink');
                 sendSound('Bell V2.mp3');
 

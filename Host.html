@@ -283,6 +283,71 @@
             text-align: center;
             padding: 20px !important;
         }
+
+        /* Total Score Bars (View Điểm Tổng) */
+        .total-score-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 10px 0;
+        }
+
+        .total-score-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 28px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            min-height: 76px;
+            box-sizing: border-box;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .total-score-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        .total-score-bar-1 {
+            background-color: #ff0000;
+            color: #ffffff;
+        }
+
+        .total-score-bar-2 {
+            background-color: #008000;
+            color: #ffffff;
+        }
+
+        .total-score-bar-3 {
+            background-color: #0000ff;
+            color: #ffffff;
+        }
+
+        .total-score-bar-4 {
+            background-color: #ffff00;
+            color: #000000;
+        }
+
+        .total-score-player-name {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .total-score-player-val {
+            font-size: 2.2rem;
+            font-weight: 900;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin-left: 20px;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -299,6 +364,7 @@
             <button class="tab-btn" onclick="switchHostTab('v3_host')">View Đáp Án Vòng 3</button>
             <button class="tab-btn" onclick="switchHostTab('v4_host')">View Chuông & Sao Vòng 4</button>
             <button class="tab-btn" onclick="switchHostTab('vqphu_host')">View Đáp Án Câu Hỏi Phụ</button>
+            <button class="tab-btn" onclick="switchHostTab('diem_tong')">View Điểm Tổng</button>
         </div>
     </div>
 
@@ -420,6 +486,33 @@
                         <!-- Populated by JS -->
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- View 5: Điểm Tổng -->
+        <div class="host-panel" id="panel-diem_tong">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🏆 BẢNG ĐIỂM TỔNG 4 THÍ SINH</div>
+                </div>
+                <div class="total-score-container">
+                    <div class="total-score-bar total-score-bar-1" id="totalScoreBar0">
+                        <span class="total-score-player-name" id="totalScoreName0">Người 1</span>
+                        <span class="total-score-player-val" id="totalScoreVal0">0</span>
+                    </div>
+                    <div class="total-score-bar total-score-bar-2" id="totalScoreBar1">
+                        <span class="total-score-player-name" id="totalScoreName1">Người 2</span>
+                        <span class="total-score-player-val" id="totalScoreVal1">0</span>
+                    </div>
+                    <div class="total-score-bar total-score-bar-3" id="totalScoreBar2">
+                        <span class="total-score-player-name" id="totalScoreName2">Người 3</span>
+                        <span class="total-score-player-val" id="totalScoreVal2">0</span>
+                    </div>
+                    <div class="total-score-bar total-score-bar-4" id="totalScoreBar3">
+                        <span class="total-score-player-name" id="totalScoreName3">Người 4</span>
+                        <span class="total-score-player-val" id="totalScoreVal3">0</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -704,6 +797,15 @@
                     <td><span class="time-badge">${timeStr}</span></td>
                 `;
                 vqphuAnsBody.appendChild(tr);
+            }
+
+            // 7. Render Total Scores View (4 bars)
+            const scores = (state.playerScores || [0, 0, 0, 0]).map(s => Math.max(0, s));
+            for (let i = 0; i < 4; i++) {
+                const nameEl = document.getElementById(`totalScoreName${i}`);
+                const valEl = document.getElementById(`totalScoreVal${i}`);
+                if (nameEl) nameEl.textContent = pNames[i] || `Người ${i + 1}`;
+                if (valEl) valEl.textContent = scores[i] !== undefined ? scores[i] : 0;
             }
         }
     </script>
