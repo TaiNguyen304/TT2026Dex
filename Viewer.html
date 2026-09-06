@@ -63,6 +63,7 @@
             justify-content: center;
             align-items: center;
             overflow-x: hidden;
+            scale:0.9;
         }
 
         #main {
@@ -78,8 +79,10 @@
 
         /* Graphic Off State - ONLY hides specified elements:
            - View Players: 4 player cards (.player-card)
-           - View V1: Question box (#questionBox)
+           - View V1: Question box (#questionBox) & hint box (#hintBox)
+           - View V2: Question box (#v2QuestionBox)
            - View V3: Question box & 3 hint boxes (.v3-box)
+           - View V4: Question box (#v4QuestionBox)
            All other elements (timers, scores, views, etc.) NEVER hide. */
         #view-players.graphics-off .player-card {
             opacity: 0 !important;
@@ -88,18 +91,48 @@
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
         }
 
-        #view-v1.graphics-off #questionBox {
+        #view-v1.graphics-off #questionBox,
+        #view-v1.graphics-off #hintBox,
+        #view-v1.graphics-off .question-box {
             transform: scaleX(0) !important;
             opacity: 0 !important;
             pointer-events: none;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
         }
 
-        #view-v3.graphics-off .v3-box {
+        #view-v2.graphics-off #v2QuestionBox,
+        #view-v2.graphics-off .v2-question,
+        .graphics-off .v2-question,
+        .graphics-off #v2QuestionBox {
             transform: scaleX(0) !important;
             opacity: 0 !important;
             pointer-events: none;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+        }
+
+        #view-v3.graphics-off .v3-box,
+        .graphics-off .v3-box {
+            transform: scaleX(0) !important;
+            opacity: 0 !important;
+            pointer-events: none;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+        }
+
+        #view-v4.graphics-off #v4QuestionBox,
+        #view-v4.graphics-off .v4-question,
+        .graphics-off .v4-question,
+        .graphics-off #v4QuestionBox {
+            transform: scaleX(0) !important;
+            opacity: 0 !important;
+            pointer-events: none;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+        }
+
+        .timer-hidden,
+        .v2-time-box.timer-hidden {
+            display: none !important;
+            transition: none !important;
+            animation: none !important;
         }
 
         .hidden { display: none !important; }
@@ -202,21 +235,29 @@
         .score-name { font-size: 1.1rem; margin-bottom: 4px; }
         .score-value { font-size: 1.8rem; }
 
+        .v1-timer-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px auto;
+        }
+
         .v1-hint-box {
-            width: 100%;
-            height: 38px;
+            width: 120px;
+            height: 60px;
             background: #000000;
             color: #ffffff;
-            font-size: 1rem;
+            font-size: 1.4rem;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            margin-top: 6px;
             border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            box-sizing: border-box;
         }
         .v1-hint-box.active {
             background: #39ff14 !important;
@@ -230,8 +271,9 @@
             background: var(--blue);
             color: var(--white);
             font-size: 2.2rem;
+            font-weight: bold;
             border-radius: 10px;
-            margin: 20px auto;
+            margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -251,22 +293,31 @@
             color: black;
             border: 3px solid black;
             border-radius: 12px;
-            padding: 16px 24px;
+            padding: 8px 18px;
             margin: 0 auto;
             width: 100%;
-            min-height: 90px;
-            height: auto;
-            font-size: 22px;
+            height: 205px;
+            min-height: 205px;
+            max-height: 205px;
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
+            overflow: hidden;
             overflow-wrap: break-word;
             word-break: break-word;
             white-space: normal;
             transform-origin: center;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
             box-sizing: border-box;
+        }
+
+        #hintBox {
+            height: 150px;
+            min-height: 150px;
+            max-height: 150px;
+            padding: 6px 16px;
         }
 
         .graphics-off .question-box,
@@ -283,18 +334,27 @@
             display: block;
             text-align: center;
             width: 100%;
-            line-height: 1.45;
+            font-size: 20px;
+            line-height: 1.35;
             word-break: break-word;
             overflow-wrap: break-word;
             white-space: normal;
+            overflow: hidden;
         }
 
-        #v2qText {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        #v2qText, #v4qText {
+            display: block;
             text-align: center;
             width: 100%;
+            max-height: 195px;
+            font-size: 22px;
+            line-height: 1.35;
+            color: #ffffff;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            overflow: hidden;
+            box-sizing: border-box;
         }
 
         /* VIEW: V2 (VƯỢT LÊN MAIN) */
@@ -312,43 +372,94 @@
             justify-content: center;
         }
 
-        .v2-question {
+        .v2-question, .v4-question {
             position: relative;
-            color: white;
-            padding: 70px 40px 10px 40px;
-            margin: 40px auto 20px auto;
+            margin: 35px auto 20px auto;
             width: 80%;
-            height: 280px;
-            font-size: 22px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            background-image: url('v2questionbox.png');
-            background-size: 100% 100%;
-            background-position: center;
-            background-repeat: no-repeat;
+            justify-content: flex-start;
             transform-origin: center;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .v2-top-shape, .v4-top-shape {
+            width: 38%;
+            max-width: 340px;
+            min-width: 200px;
+            height: 48px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .v2-top-shape-svg, .v4-top-shape-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            overflow: visible;
+        }
+
+        .v2-main-shape {
+            width: 100%;
+            min-height: 215px;
+            background: #c00000;
+            color: #ffffff;
+            border: 6px solid #000000;
+            border-radius: 14px;
+            margin-top: -6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 16px 36px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .v4-main-shape {
+            width: 100%;
+            min-height: 215px;
+            background: #0070c0;
+            color: #ffffff;
+            border: 6px solid #000000;
+            border-radius: 14px;
+            margin-top: -6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 16px 36px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .v2-time-box {
-            width: 110px;
-            height: 110px;
+            width: 105px;
+            height: 105px;
             border: 4px solid white;
             background: #39ff14;
             color: #000000;
-            font-size: 2.6rem;
+            font-size: 2.5rem;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: absolute;
-            top:-23px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         /* Keyframe animations for V2 & V3 Answers views */
@@ -495,34 +606,42 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 14px;
+            gap: 10px;
         }
 
         .v3-timer {
             background: var(--blue);
             color: var(--white);
-            width: 110px;
-            height: 60px;
+            width: 100px;
+            height: 48px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.2rem;
+            font-size: 1.9rem;
         }
 
         .v3-box {
             width: 85%;
-            min-height: 90px;
+            height: 95px;
+            min-height: 95px;
+            max-height: 95px;
             background: var(--purple);
             color: var(--white);
-            font-size: 1.3rem;
+            font-size: 16px;
+            line-height: 1.25;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            border-radius: 12px;
-            padding: 14px;
+            border-radius: 10px;
+            padding: 6px 14px;
             border: 3px solid black;
+            overflow: hidden;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            box-sizing: border-box;
             transform-origin: center;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
         }
@@ -643,39 +762,6 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
 
-        .v4-question {
-            color: white;
-            margin: 25px auto 20px auto;
-            width: 80%;
-            height: 260px;
-            background-image: url('v4questionbox.png');
-            background-size: 100% 100%;
-            background-position: center;
-            background-repeat: no-repeat;
-            position: relative;
-            transform-origin: center;
-            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        #v4qText {
-            position: absolute;
-            top: 22%;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 12px 50px 16px 50px;
-            font-size: 15px;
-            line-height: 1.45;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            overflow-wrap: break-word;
-            white-space: pre-wrap;
-            box-sizing: border-box;
-        }
-
         /* VIEW: SCOREBOARD FULL SCREEN LEADERBOARD */
         .scoreboard-view-title {
             text-align: center;
@@ -793,32 +879,31 @@
                         <div class="score-name" id="name0">Người 1</div>
                         <div class="score-value" id="score0">30</div>
                     </div>
-                    <div class="v1-hint-box" id="v1HintBox0">Gợi ý</div>
                 </div>
                 <div class="score-slot">
                     <div class="player-box" id="box1">
                         <div class="score-name" id="name1">Người 2</div>
                         <div class="score-value" id="score1">30</div>
                     </div>
-                    <div class="v1-hint-box" id="v1HintBox1">Gợi ý</div>
                 </div>
                 <div class="score-slot">
                     <div class="player-box" id="box2">
                         <div class="score-name" id="name2">Người 3</div>
                         <div class="score-value" id="score2">30</div>
                     </div>
-                    <div class="v1-hint-box" id="v1HintBox2">Gợi ý</div>
                 </div>
                 <div class="score-slot">
                     <div class="player-box" id="box3">
                         <div class="score-name" id="name3">Người 4</div>
                         <div class="score-value" id="score3">30</div>
                     </div>
-                    <div class="v1-hint-box" id="v1HintBox3">Gợi ý</div>
                 </div>
             </div>
 
-            <div class="time-box" id="timeBox">45</div>
+            <div class="v1-timer-row">
+                <div class="time-box" id="timeBox">45</div>
+                <div class="v1-hint-box" id="v1HintBox">Gợi ý</div>
+            </div>
 
             <div class="v1-boxes-container" id="v1BoxesContainer">
                 <div class="question-box" id="questionBox">
@@ -860,8 +945,22 @@
             </div>
 
             <div class="v2-question" id="v2QuestionBox">
-                <div class="v2-time-box" id="v2TimeBox">15</div>
-                <div id="v2qText"></div>
+                <div class="v2-top-shape">
+                    <svg class="v2-top-shape-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="v2TopGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#ffa548" />
+                                <stop offset="50%" stop-color="#fd8e22" />
+                                <stop offset="100%" stop-color="#e26304" />
+                            </linearGradient>
+                        </defs>
+                        <polygon points="8,8 992,8 916,122 84,122" fill="url(#v2TopGrad)" stroke="#000000" stroke-width="16" stroke-linejoin="round" />
+                    </svg>
+                    <div class="v2-time-box" id="v2TimeBox">15</div>
+                </div>
+                <div class="v2-main-shape">
+                    <div id="v2qText"></div>
+                </div>
             </div>
         </div>
 
@@ -939,8 +1038,22 @@
             </div>
 
             <div class="v4-question" id="v4QuestionBox">
-                <div class="v2-time-box" id="v4TimeBox" style="margin:0;">15</div>
-                <div id="v4qText"></div>
+                <div class="v4-top-shape">
+                    <svg class="v4-top-shape-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="v4TopGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#ffa548" />
+                                <stop offset="50%" stop-color="#fd8e22" />
+                                <stop offset="100%" stop-color="#e26304" />
+                            </linearGradient>
+                        </defs>
+                        <polygon points="8,8 992,8 916,122 84,122" fill="url(#v4TopGrad)" stroke="#000000" stroke-width="16" stroke-linejoin="round" />
+                    </svg>
+                    <div class="v2-time-box" id="v4TimeBox" style="margin:0;">15</div>
+                </div>
+                <div class="v4-main-shape">
+                    <div id="v4qText"></div>
+                </div>
             </div>
         </div>
 
@@ -1244,6 +1357,7 @@
                 if (target) target.classList.remove('hidden');
 
                 applyGraphicVisibility(currentViewGraphics);
+                requestAnimationFrame(fitAllQuestionAndHintBoxes);
             }
         }
 
@@ -1262,6 +1376,7 @@
                     panel.classList.remove('graphics-off');
                 }
             });
+            requestAnimationFrame(fitAllQuestionAndHintBoxes);
         }
 
         function applyPlayerBoxColor(el, state) {
@@ -1272,6 +1387,64 @@
             else if (state === 'yellow') { el.style.background = 'var(--yellow)'; el.style.color = 'var(--black)'; }
             else if (state === 'black') { el.style.background = 'var(--black)'; el.style.color = 'var(--white)'; }
         }
+
+        // Auto font-size scaling helper (fits without expanding box and constraints max lines)
+        function autoFitText(targetEl, containerEl = null, maxFontSize = 20, minFontSize = 7, maxLines = null) {
+            if (!targetEl) return;
+            const container = containerEl || targetEl;
+            targetEl.style.fontSize = maxFontSize + 'px';
+            if (!targetEl.textContent || !targetEl.textContent.trim()) {
+                return;
+            }
+            if (container.clientHeight === 0 || container.offsetHeight === 0) {
+                return;
+            }
+            let size = maxFontSize;
+
+            const checkExceeds = () => {
+                // 1. Container bounds check
+                if (container.scrollHeight > container.clientHeight + 1 || container.scrollWidth > container.clientWidth + 1) {
+                    return true;
+                }
+                if (targetEl !== container && (targetEl.scrollHeight > targetEl.clientHeight + 1 || targetEl.scrollWidth > targetEl.clientWidth + 1)) {
+                    return true;
+                }
+                // 2. Max lines check
+                if (maxLines !== null && maxLines > 0) {
+                    const style = window.getComputedStyle(targetEl);
+                    let lh = parseFloat(style.lineHeight);
+                    if (!lh || isNaN(lh)) {
+                        lh = size * 1.35;
+                    }
+                    const paddingTop = parseFloat(style.paddingTop) || 0;
+                    const paddingBottom = parseFloat(style.paddingBottom) || 0;
+                    const textHeight = Math.max(0, targetEl.scrollHeight - paddingTop - paddingBottom);
+                    const lines = Math.round((textHeight - 2) / lh);
+                    if (lines > maxLines) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            while (size > minFontSize && checkExceeds()) {
+                size -= 0.5;
+                targetEl.style.fontSize = size + 'px';
+            }
+        }
+
+        function fitAllQuestionAndHintBoxes() {
+            autoFitText(document.getElementById('qText'), document.getElementById('questionBox'), 20, 8, 5);
+            autoFitText(document.getElementById('qHint'), document.getElementById('hintBox'), 20, 8);
+            autoFitText(document.getElementById('v2qText'), document.querySelector('#v2QuestionBox .v2-main-shape') || document.getElementById('v2QuestionBox'), 22, 8, 5);
+            autoFitText(document.getElementById('v3QuestionBox'), null, 16, 7);
+            autoFitText(document.getElementById('v3Hint1'), null, 16, 7);
+            autoFitText(document.getElementById('v3Hint2'), null, 16, 7);
+            autoFitText(document.getElementById('v3Hint3'), null, 16, 7);
+            autoFitText(document.getElementById('v4qText'), document.querySelector('#v4QuestionBox .v4-main-shape') || document.getElementById('v4QuestionBox'), 22, 8, 5);
+        }
+
+        window.addEventListener('resize', fitAllQuestionAndHintBoxes);
 
         let serverTimeOffset = 0;
 
@@ -1350,6 +1523,28 @@
                 v3Timer.style.color = 'white';
                 v3Timer.style.fontWeight = 'bold';
             }
+
+            // Zero-latency real-time hint reveal synchronized with millisecond countdown
+            if (v3State.isRunning && v3State.startTime > 0 && v3State.allHints && v3State.allHints.length >= 3) {
+                const now = getServerTime();
+                const elapsed = (now - v3State.startTime) / 1000;
+
+                const h1 = document.getElementById('v3Hint1');
+                if (h1 && elapsed >= 0 && h1.textContent !== v3State.allHints[0]) {
+                    h1.textContent = v3State.allHints[0] || "";
+                    autoFitText(h1, null, 16, 7);
+                }
+                const h2 = document.getElementById('v3Hint2');
+                if (h2 && elapsed >= 10.0 && h2.textContent !== v3State.allHints[1]) {
+                    h2.textContent = v3State.allHints[1] || "";
+                    autoFitText(h2, null, 16, 7);
+                }
+                const h3 = document.getElementById('v3Hint3');
+                if (h3 && elapsed >= 20.0 && h3.textContent !== v3State.allHints[2]) {
+                    h3.textContent = v3State.allHints[2] || "";
+                    autoFitText(h3, null, 16, 7);
+                }
+            }
         }
 
         function renderV4Time(v4State) {
@@ -1386,7 +1581,7 @@
             if (latestViewerState.vqphuState && latestViewerState.vqphuState.isRunning) {
                 renderVQPhuTime(latestViewerState.vqphuState);
             }
-        }, 50);
+        }, 20);
 
         function applyStateToViewer(state) {
             if (!state) return;
@@ -1462,19 +1657,27 @@
                             box.classList.remove('active');
                         }
                     }
-                    const hintBoxEl = document.getElementById(`v1HintBox${j}`);
-                    if (hintBoxEl) {
-                        if (state.v1State.hintUsed && state.v1State.currentPlayer === j) {
-                            hintBoxEl.classList.add('active');
-                        } else {
-                            hintBoxEl.classList.remove('active');
-                        }
+                }
+                const hintBoxEl = document.getElementById('v1HintBox');
+                if (hintBoxEl) {
+                    if (state.v1State.hintUsed) {
+                        hintBoxEl.classList.add('active');
+                    } else {
+                        hintBoxEl.classList.remove('active');
                     }
                 }
             }
 
             // V2 State
             if (state.v2State) {
+                const v2TimerEl = document.getElementById('v2TimeBox');
+                if (v2TimerEl) {
+                    if (state.v2State.showTimer === false || (state.viewTimers && state.viewTimers.v2 === false)) {
+                        v2TimerEl.classList.add('timer-hidden');
+                    } else {
+                        v2TimerEl.classList.remove('timer-hidden');
+                    }
+                }
                 renderV2Time(state.v2State);
                 if (document.getElementById('v2qText')) document.getElementById('v2qText').textContent = state.v2State.qText || "";
 
@@ -1509,6 +1712,14 @@
 
             // V4 State
             if (state.v4State) {
+                const v4TimerEl = document.getElementById('v4TimeBox');
+                if (v4TimerEl) {
+                    if (state.v4State.showTimer === false || (state.viewTimers && state.viewTimers.v4 === false)) {
+                        v4TimerEl.classList.add('timer-hidden');
+                    } else {
+                        v4TimerEl.classList.remove('timer-hidden');
+                    }
+                }
                 renderV4Time(state.v4State);
                 if (document.getElementById('v4qText')) document.getElementById('v4qText').textContent = state.v4State.qText || "";
 
@@ -1556,6 +1767,9 @@
 
             // Full Scoreboard View
             renderFullScoreboardViewer(names, scores);
+
+            // Auto fit V1 and V3 questions and hints
+            fitAllQuestionAndHintBoxes();
         }
 
         function renderV2AnswersViewer(names, answers, playerColors) {

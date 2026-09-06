@@ -205,21 +205,29 @@
         .player-box.active { background: var(--pink); color: #000000; }
         .score-value { font-size: 1.4rem; }
 
+        .v1-timer-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin: 12px auto;
+        }
+
         .v1-hint-box {
-            width: 100%;
-            height: 36px;
+            width: 100px;
+            height: 50px;
             background: #000000;
             color: #ffffff;
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            margin-top: 6px;
             border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            box-sizing: border-box;
         }
         .v1-hint-box.active {
             background: #39ff14 !important;
@@ -237,8 +245,9 @@
             background: var(--blue);
             color: var(--white);
             font-size: 1.6rem;
+            font-weight: bold;
             border-radius: 8px;
-            margin: 12px auto;
+            margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -258,38 +267,56 @@
             color: black;
             border: 3px solid black;
             border-radius: 10px;
-            padding: 12px 20px;
+            padding: 8px 18px;
             margin: 0 auto;
             width: 100%;
-            min-height: 70px;
-            height: auto;
-            font-size: 18px;
+            height: 205px;
+            min-height: 205px;
+            max-height: 205px;
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
+            overflow: hidden;
             overflow-wrap: break-word;
             word-break: break-word;
             white-space: normal;
             box-sizing: border-box;
         }
 
+        #hintBox {
+            height: 150px;
+            min-height: 150px;
+            max-height: 150px;
+            padding: 6px 16px;
+        }
+
         #qText, #qHint {
             display: block;
             text-align: center;
             width: 100%;
-            line-height: 1.4;
+            font-size: 20px;
+            line-height: 1.35;
             word-break: break-word;
             overflow-wrap: break-word;
             white-space: normal;
+            overflow: hidden;
         }
 
         #v2qText, #v4qText {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: block;
             text-align: center;
             width: 100%;
+            max-height: 175px;
+            font-size: 18px;
+            line-height: 1.35;
+            color: #ffffff;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            overflow: hidden;
+            box-sizing: border-box;
         }
 
         .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
@@ -388,57 +415,126 @@
         .v2-question-cell.selected { background: var(--aqua); color: var(--black); }
         .v2-question-cell.used { background: var(--black) !important; color: var(--white) !important; }
 
-        .v2-question {
+        .v2-question, .v4-question {
             position: relative;
-            color: white;
-            padding: 65px 30px 10px 30px;
-            margin: 30px auto 12px auto;
+            margin: 25px auto 12px auto;
             width: 75%;
-            height: 250px;
-            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            box-sizing: border-box;
+        }
+
+        .v2-top-shape, .v4-top-shape {
+            width: 38%;
+            max-width: 300px;
+            min-width: 180px;
+            height: 40px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .v2-top-shape-svg, .v4-top-shape-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            overflow: visible;
+        }
+
+        .v2-main-shape {
+            width: 100%;
+            min-height: 180px;
+            background: #c00000;
+            color: #ffffff;
+            border: 5px solid #000000;
+            border-radius: 12px;
+            margin-top: -5px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            background-image: url('v2questionbox.png');
-            background-size: 100% 100%;
-            background-position: center;
-            background-repeat: no-repeat;
+            padding: 12px 24px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .v4-main-shape {
+            width: 100%;
+            min-height: 180px;
+            background: #0070c0;
+            color: #ffffff;
+            border: 5px solid #000000;
+            border-radius: 12px;
+            margin-top: -5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 12px 24px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
         .v2-time-box {
-            width: 90px;
-            height: 90px;
+            width: 85px;
+            height: 85px;
             border: 3px solid white;
             background: #39ff14;
             color: #000000;
-            font-size: 2rem;
+            font-size: 1.9rem;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: absolute;
-            top: -20px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .timer-hidden,
+        .v2-time-box.timer-hidden {
+            display: none !important;
+            transition: none !important;
+            animation: none !important;
         }
 
         .v3-box {
             width: 80%;
-            min-height: 80px;
+            height: 85px;
+            min-height: 85px;
+            max-height: 85px;
             background: var(--purple);
             color: var(--white);
+            font-size: 15px;
+            line-height: 1.25;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             border-radius: 10px;
             cursor: pointer;
-            margin: 6px auto;
+            margin: 4px auto;
             border: 3px solid black;
-            padding: 10px;
+            padding: 6px 12px;
+            overflow: hidden;
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            box-sizing: border-box;
         }
         .v3-box.question { background: var(--red); }
         .v3-box.revealed { background: var(--blue); }
@@ -454,23 +550,6 @@
             justify-content: center;
             font-size: 1.6rem;
             margin: 0 auto;
-        }
-
-        .v4-question {
-            color: white;
-            padding: 50px 40px 10px 40px;
-            margin: 12px auto;
-            width: 75%;
-            height: 220px;
-            font-size: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background-image: url('v4questionbox.png');
-            background-size: 100% 100%;
-            position: relative;
         }
 
         .hidden { display: none !important; }
@@ -784,7 +863,6 @@
                         <div class="score-name" id="name0">Người 1</div>
                         <div class="score-value" id="score0">30</div>
                     </div>
-                    <div class="v1-hint-box" id="v1HintBox0">Gợi ý</div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(0)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(0)">Không</button>
@@ -795,7 +873,6 @@
                         <div class="score-name" id="name1">Người 2</div>
                         <div class="score-value" id="score1">30</div>
                     </div>
-                    <div class="v1-hint-box" id="v1HintBox1">Gợi ý</div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(1)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(1)">Không</button>
@@ -806,7 +883,6 @@
                         <div class="score-name" id="name2">Người 3</div>
                         <div class="score-value" id="score2">30</div>
                     </div>
-                    <div class="v1-hint-box" id="v1HintBox2">Gợi ý</div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(2)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(2)">Không</button>
@@ -817,7 +893,6 @@
                         <div class="score-name" id="name3">Người 4</div>
                         <div class="score-value" id="score3">30</div>
                     </div>
-                    <div class="v1-hint-box" id="v1HintBox3">Gợi ý</div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(3)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(3)">Không</button>
@@ -825,7 +900,10 @@
                 </div>
             </div>
 
-            <div class="time-box" id="timeBox">45</div>
+            <div class="v1-timer-row">
+                <div class="time-box" id="timeBox">45</div>
+                <div class="v1-hint-box" id="v1HintBox">Gợi ý</div>
+            </div>
 
             <div class="v1-boxes-container">
                 <div class="question-box" id="questionBox">
@@ -950,9 +1028,23 @@
             </div>
 
             <div class="v2-question" id="v2QuestionBox">
-                <div class="v2-time-box" id="v2TimeBox">15</div>
-                <div id="v2qText"></div>
-                <div id="v2qHint" style="margin-top:8px;"></div>
+                <div class="v2-top-shape">
+                    <svg class="v2-top-shape-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="ctrlV2TopGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#ffa548" />
+                                <stop offset="50%" stop-color="#fd8e22" />
+                                <stop offset="100%" stop-color="#e26304" />
+                            </linearGradient>
+                        </defs>
+                        <polygon points="8,8 992,8 916,122 84,122" fill="url(#ctrlV2TopGrad)" stroke="#000000" stroke-width="16" stroke-linejoin="round" />
+                    </svg>
+                    <div class="v2-time-box" id="v2TimeBox">15</div>
+                </div>
+                <div class="v2-main-shape">
+                    <div id="v2qText"></div>
+                    <div id="v2qHint" style="margin-top:8px;"></div>
+                </div>
             </div>
 
             <div class="controls">
@@ -965,6 +1057,9 @@
                 <button style="background: var(--red); color: var(--white);" onclick="sendSound('Sai V2.mp3')">Âm Sai V2</button>
             </div>
             <div class="controls" style="margin-top: 10px;">
+                <button style="background: var(--purple); color: var(--white);" onclick="setV2Graphic(true)">Hiện graphic câu hỏi</button>
+                <button style="background: var(--black); color: var(--white);" onclick="setV2Graphic(false)">Ẩn graphic câu hỏi</button>
+                <button id="v2TimerToggleBtn" style="background: var(--black); color: var(--white);" onclick="toggleV2Timer()">Ẩn đồng hồ</button>
                 <button style="background: var(--lime); color: var(--black);" onclick="v2OpenBell()">Mở chuông</button>
                 <button style="background: var(--red); color: var(--white);" onclick="v2LockBell()">Khóa chuông</button>
                 <button style="background: var(--aqua); color: var(--black);" onclick="v2ResetBell()">Reset chuông</button>
@@ -1148,8 +1243,22 @@
             </div>
 
             <div class="v4-question" id="v4QuestionBox">
-                <div class="v2-time-box" id="v4TimeBox" style="margin:0;">15</div>
-                <div id="v4qText"></div>
+                <div class="v4-top-shape">
+                    <svg class="v4-top-shape-svg" viewBox="0 0 1000 130" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="ctrlV4TopGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#ffa548" />
+                                <stop offset="50%" stop-color="#fd8e22" />
+                                <stop offset="100%" stop-color="#e26304" />
+                            </linearGradient>
+                        </defs>
+                        <polygon points="8,8 992,8 916,122 84,122" fill="url(#ctrlV4TopGrad)" stroke="#000000" stroke-width="16" stroke-linejoin="round" />
+                    </svg>
+                    <div class="v2-time-box" id="v4TimeBox" style="margin:0;">15</div>
+                </div>
+                <div class="v4-main-shape">
+                    <div id="v4qText"></div>
+                </div>
             </div>
 
             <div class="controls">
@@ -1163,6 +1272,9 @@
                 <button style="background: var(--red); color: var(--white);" onclick="sendSound('Sai V4.mp3')">Sai V4</button>
             </div>
             <div class="controls" style="margin-top: 10px;">
+                <button style="background: var(--purple); color: var(--white);" onclick="setV4Graphic(true)">Hiện graphic câu hỏi</button>
+                <button style="background: var(--black); color: var(--white);" onclick="setV4Graphic(false)">Ẩn graphic câu hỏi</button>
+                <button id="v4TimerToggleBtn" style="background: var(--black); color: var(--white);" onclick="toggleV4Timer()">Ẩn đồng hồ</button>
                 <button style="background: var(--lime); color: var(--black);" onclick="v4OpenBell()">Mở chuông</button>
                 <button style="background: var(--red); color: var(--white);" onclick="v4LockBell()">Khóa chuông</button>
                 <button style="background: var(--aqua); color: var(--black);" onclick="v4ResetBell()">Reset chuông</button>
@@ -1592,9 +1704,18 @@
             }
         }
 
+        let v2ShowTimer = true;
+        let v4ShowTimer = true;
+
         function setV1Graphic(visible) {
             viewGraphics.v1 = visible;
             socket.emit('toggleGraphic', { view: 'v1', visible: visible });
+            syncFullStateToServer();
+        }
+
+        function setV2Graphic(visible) {
+            viewGraphics.v2 = visible;
+            socket.emit('toggleGraphic', { view: 'v2', visible: visible });
             syncFullStateToServer();
         }
 
@@ -1602,6 +1723,72 @@
             viewGraphics.v3 = visible;
             socket.emit('toggleGraphic', { view: 'v3', visible: visible });
             syncFullStateToServer();
+        }
+
+        function setV4Graphic(visible) {
+            viewGraphics.v4 = visible;
+            socket.emit('toggleGraphic', { view: 'v4', visible: visible });
+            syncFullStateToServer();
+        }
+
+        function toggleV2Timer(forceState) {
+            if (typeof forceState === 'boolean') {
+                v2ShowTimer = forceState;
+            } else {
+                v2ShowTimer = !v2ShowTimer;
+            }
+            updateV2TimerDisplay();
+            socket.emit('toggleTimer', { view: 'v2', visible: v2ShowTimer });
+            syncFullStateToServer();
+        }
+
+        function updateV2TimerDisplay() {
+            const el = document.getElementById('v2TimeBox');
+            if (el) {
+                if (v2ShowTimer) el.classList.remove('timer-hidden');
+                else el.classList.add('timer-hidden');
+            }
+            const btn = document.getElementById('v2TimerToggleBtn');
+            if (btn) {
+                btn.textContent = v2ShowTimer ? "Ẩn đồng hồ" : "Hiện đồng hồ";
+                if (v2ShowTimer) {
+                    btn.style.background = "var(--black)";
+                    btn.style.color = "var(--white)";
+                } else {
+                    btn.style.background = "var(--lime)";
+                    btn.style.color = "var(--black)";
+                }
+            }
+        }
+
+        function toggleV4Timer(forceState) {
+            if (typeof forceState === 'boolean') {
+                v4ShowTimer = forceState;
+            } else {
+                v4ShowTimer = !v4ShowTimer;
+            }
+            updateV4TimerDisplay();
+            socket.emit('toggleTimer', { view: 'v4', visible: v4ShowTimer });
+            syncFullStateToServer();
+        }
+
+        function updateV4TimerDisplay() {
+            const el = document.getElementById('v4TimeBox');
+            if (el) {
+                if (v4ShowTimer) el.classList.remove('timer-hidden');
+                else el.classList.add('timer-hidden');
+            }
+            const btn = document.getElementById('v4TimerToggleBtn');
+            if (btn) {
+                btn.textContent = v4ShowTimer ? "Ẩn đồng hồ" : "Hiện đồng hồ";
+                if (v4ShowTimer) {
+                    btn.style.background = "var(--black)";
+                    btn.style.color = "var(--white)";
+                } else {
+                    btn.style.background = "var(--lime)";
+                    btn.style.color = "var(--black)";
+                }
+            }
         }
 
         function switchView(view) {
@@ -1646,6 +1833,7 @@
             // Sync to server -> Viewer
             socket.emit('changeView', view);
             syncFullStateToServer();
+            requestAnimationFrame(fitAllQuestionAndHintBoxes);
         }
 
         function getPrettyViewName(v) {
@@ -1678,6 +1866,10 @@
                 currentView,
                 graphicsVisible,
                 viewGraphics,
+                viewTimers: {
+                    v2: v2ShowTimer,
+                    v4: v4ShowTimer
+                },
                 matchName,
                 playerNames,
                 playerScores,
@@ -1708,7 +1900,8 @@
                     time: v2Timer,
                     startTime: v2StartTime,
                     duration: v2Duration,
-                    isRunning: v2IsRunning
+                    isRunning: v2IsRunning,
+                    showTimer: v2ShowTimer
                 },
                 v3State: {
                     current: v3Current,
@@ -1718,6 +1911,11 @@
                         document.getElementById('v3Hint2')?.textContent || "",
                         document.getElementById('v3Hint3')?.textContent || ""
                     ],
+                    allHints: v3Data[v3Current] ? [
+                        v3Data[v3Current].g1 || "",
+                        v3Data[v3Current].g2 || "",
+                        v3Data[v3Current].g3 || ""
+                    ] : [],
                     answers: v3Answers,
                     time: v3Timer,
                     startTime: v3StartTime,
@@ -1734,7 +1932,8 @@
                     bracketState: v4BracketState,
                     counters: v4Counters,
                     isRunning: !!v4Interval && !v4Paused,
-                    isPaused: v4Paused
+                    isPaused: v4Paused,
+                    showTimer: v4ShowTimer
                 },
                 vqphuState: {
                     index: vqphuIndex,
@@ -1757,7 +1956,66 @@
                     answers: vqphuAnswers
                 }
             });
+            fitAllQuestionAndHintBoxes();
         }
+
+        // Auto font-size scaling helper (fits without expanding box and constraints max lines)
+        function autoFitText(targetEl, containerEl = null, maxFontSize = 20, minFontSize = 7, maxLines = null) {
+            if (!targetEl) return;
+            const container = containerEl || targetEl;
+            targetEl.style.fontSize = maxFontSize + 'px';
+            if (!targetEl.textContent || !targetEl.textContent.trim()) {
+                return;
+            }
+            if (container.clientHeight === 0 || container.offsetHeight === 0) {
+                return;
+            }
+            let size = maxFontSize;
+
+            const checkExceeds = () => {
+                // 1. Container bounds check
+                if (container.scrollHeight > container.clientHeight + 1 || container.scrollWidth > container.clientWidth + 1) {
+                    return true;
+                }
+                if (targetEl !== container && (targetEl.scrollHeight > targetEl.clientHeight + 1 || targetEl.scrollWidth > targetEl.clientWidth + 1)) {
+                    return true;
+                }
+                // 2. Max lines check
+                if (maxLines !== null && maxLines > 0) {
+                    const style = window.getComputedStyle(targetEl);
+                    let lh = parseFloat(style.lineHeight);
+                    if (!lh || isNaN(lh)) {
+                        lh = size * 1.35;
+                    }
+                    const paddingTop = parseFloat(style.paddingTop) || 0;
+                    const paddingBottom = parseFloat(style.paddingBottom) || 0;
+                    const textHeight = Math.max(0, targetEl.scrollHeight - paddingTop - paddingBottom);
+                    const lines = Math.round((textHeight - 2) / lh);
+                    if (lines > maxLines) {
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            while (size > minFontSize && checkExceeds()) {
+                size -= 0.5;
+                targetEl.style.fontSize = size + 'px';
+            }
+        }
+
+        function fitAllQuestionAndHintBoxes() {
+            autoFitText(document.getElementById('qText'), document.getElementById('questionBox'), 20, 8, 5);
+            autoFitText(document.getElementById('qHint'), document.getElementById('hintBox'), 20, 8);
+            autoFitText(document.getElementById('v2qText'), document.querySelector('#v2QuestionBox .v2-main-shape') || document.getElementById('v2QuestionBox'), 18, 8, 5);
+            autoFitText(document.getElementById('v3QuestionBox'), null, 15, 7);
+            autoFitText(document.getElementById('v3Hint1'), null, 15, 7);
+            autoFitText(document.getElementById('v3Hint2'), null, 15, 7);
+            autoFitText(document.getElementById('v3Hint3'), null, 15, 7);
+            autoFitText(document.getElementById('v4qText'), document.querySelector('#v4QuestionBox .v4-main-shape') || document.getElementById('v4QuestionBox'), 18, 8, 5);
+        }
+
+        window.addEventListener('resize', fitAllQuestionAndHintBoxes);
 
         function showPopup(msg) {
             const modal = document.createElement('div');
@@ -2107,14 +2365,12 @@
         }
 
         function updateV1HintBoxes() {
-            for (let i = 0; i < 4; i++) {
-                const hb = document.getElementById(`v1HintBox${i}`);
-                if (!hb) continue;
-                if (hintUsedForCurrent && currentPlayer === i) {
-                    hb.classList.add('active');
-                } else {
-                    hb.classList.remove('active');
-                }
+            const hb = document.getElementById('v1HintBox');
+            if (!hb) return;
+            if (hintUsedForCurrent) {
+                hb.classList.add('active');
+            } else {
+                hb.classList.remove('active');
             }
         }
 
@@ -2387,6 +2643,7 @@
             const q = v2Questions[idx];
             if (q) {
                 document.getElementById('v2qText').textContent = q.question || `Câu ${idx + 1}`;
+                fitAllQuestionAndHintBoxes();
                 syncFullStateToServer();
             }
         }
@@ -2445,15 +2702,25 @@
             socket.emit('setPlayerInteraction', {
                 answer: { open: true, round: 'v3', startTime: v3StartTime, duration: 30 }
             });
+            let hint2Shown = false;
+            let hint3Shown = false;
             v3Interval = setInterval(() => {
                 const elapsed = (getServerTime() - v3StartTime) / 1000;
                 const rem = Math.max(0, v3Duration - elapsed);
                 const nextSec = Math.ceil(rem);
+
+                if (elapsed >= 10.0 && !hint2Shown) {
+                    hint2Shown = true;
+                    v3RevealHint(2);
+                }
+                if (elapsed >= 20.0 && !hint3Shown) {
+                    hint3Shown = true;
+                    v3RevealHint(3);
+                }
+
                 if (nextSec !== v3Timer) {
                     v3Timer = nextSec;
                     document.getElementById('v3Timer').textContent = v3Timer;
-                    if (v3Timer === 20) v3RevealHint(2);
-                    if (v3Timer === 10) v3RevealHint(3);
                     syncFullStateToServer();
                 }
                 if (rem <= 0) {
@@ -2466,7 +2733,7 @@
                     document.getElementById('v3Timer').textContent = 0;
                     syncFullStateToServer();
                 }
-            }, 100);
+            }, 25);
             syncFullStateToServer();
         }
 
@@ -2774,6 +3041,7 @@
             const q = v4Questions[v4Index];
             if (q) {
                 document.getElementById('v4qText').textContent = q.question;
+                fitAllQuestionAndHintBoxes();
                 syncFullStateToServer();
             }
         }
