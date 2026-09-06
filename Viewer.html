@@ -296,9 +296,9 @@
             padding: 8px 18px;
             margin: 0 auto;
             width: 100%;
-            height: 205px;
-            min-height: 205px;
-            max-height: 205px;
+            height: 235px;
+            min-height: 235px;
+            max-height: 235px;
             font-size: 20px;
             display: flex;
             align-items: center;
@@ -314,9 +314,9 @@
         }
 
         #hintBox {
-            height: 150px;
-            min-height: 150px;
-            max-height: 150px;
+            height: 120px;
+            min-height: 120px;
+            max-height: 120px;
             padding: 6px 16px;
         }
 
@@ -1311,6 +1311,11 @@
             applyStateToViewer(state);
         });
 
+        socket.on('matchNameUpdated', (name) => {
+            const el = document.getElementById('matchNameDisplay');
+            if (el) el.textContent = name || "";
+        });
+
         socket.on('graphicToggled', (viewGraphics) => {
             applyGraphicVisibility(viewGraphics);
         });
@@ -1434,7 +1439,7 @@
         }
 
         function fitAllQuestionAndHintBoxes() {
-            autoFitText(document.getElementById('qText'), document.getElementById('questionBox'), 20, 8, 5);
+            autoFitText(document.getElementById('qText'), document.getElementById('questionBox'), 20, 8, 6);
             autoFitText(document.getElementById('qHint'), document.getElementById('hintBox'), 20, 8);
             autoFitText(document.getElementById('v2qText'), document.querySelector('#v2QuestionBox .v2-main-shape') || document.getElementById('v2QuestionBox'), 22, 8, 5);
             autoFitText(document.getElementById('v3QuestionBox'), null, 16, 7);

@@ -38,6 +38,10 @@ function getDefaultGameState() {
       vqphu_answers: true,
       scoreboard: true
     },
+    viewTimers: {
+      v2: true,
+      v4: true
+    },
     matchName: "THỬ THÁCH 2026 - LƯỢT X(BẢNG Y)",
     playerNames: ["Người 1", "Người 2", "Người 3", "Người 4"],
     playerScores: [30, 30, 30, 30],
@@ -420,6 +424,30 @@ io.on('connection', (socket) => {
       room.gameState.viewGraphics[data.view] = data.visible;
     }
     emitToRoom(roomId, 'graphicToggled', room.gameState.viewGraphics);
+    emitToRoom(roomId, 'stateUpdated', room.gameState);
+  });
+
+  // Toggle timer visibility
+  socket.on('toggleTimer', (data) => {
+    const roomId = socket.roomId;
+    if (!roomId || !rooms[roomId]) return;
+    const room = rooms[roomId];
+    if (data && data.view) {
+      if (!room.gameState.viewTimers) room.gameState.viewTimers = { v2: true, v4: true };
+      room.gameState.viewTimers[data.view] = data.visible;
+      if (data.view === 'v2' && room.gameState.v2State) room.gameState.v2State.showTimer = data.visible;
+      if (data.view === 'v4' && room.gameState.v4State) room.gameState.v4State.showTimer = data.visible;
+    }
+    emitToRoom(roomId, 'stateUpdated', room.gameState);
+  });
+
+  // Set Match Name
+  socket.on('setMatchName', (name) => {
+    const roomId = socket.roomId;
+    if (!roomId || !rooms[roomId]) return;
+    const room = rooms[roomId];
+    room.gameState.matchName = name;
+    emitToRoom(roomId, 'matchNameUpdated', name);
     emitToRoom(roomId, 'stateUpdated', room.gameState);
   });
 

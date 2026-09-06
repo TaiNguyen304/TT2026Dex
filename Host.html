@@ -586,7 +586,12 @@
 
         const socket = io();
         socket.on('connect', () => {
-            socket.emit('joinRoom', { roomId, role: 'host' });
+            socket.emit('joinRoom', { roomId, role: 'host' }, (res) => {
+                if (res && res.success && res.gameState) {
+                    latestState = res.gameState;
+                    renderHostViews(res.gameState);
+                }
+            });
         });
 
         let currentHostTab = 'v2_host';
@@ -619,6 +624,12 @@
         socket.on('stateUpdated', (state) => {
             latestState = state;
             renderHostViews(state);
+        });
+
+        socket.on('matchNameUpdated', (name) => {
+            if (latestState) latestState.matchName = name;
+            const el = document.getElementById('matchNameDisplay');
+            if (el) el.textContent = name || "Trận đấu";
         });
 
         socket.on('playerAnswerReceived', () => {
