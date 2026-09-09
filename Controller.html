@@ -1080,7 +1080,105 @@
 
         <!-- VIEW 6: V2 WORD GRID BOARD SEPARATE (VIEWER DISPLAY PREVIEW) -->
         <div id="view-v2_board" class="view-panel hidden">
-            <h3 style="text-align:center;">VÒNG VƯỢT LÊN - BẢNG Ô CHỮ 30 Ô (VIEWER SEPARATE VIEW)</h3>
+            <h3 style="text-align:center; margin-bottom:12px;">VÒNG VƯỢT LÊN - BẢNG Ô CHỮ 30 Ô (VIEWER SEPARATE VIEW)</h3>
+            <div class="v2-top" id="v2BoardTopCtrl">
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2BoardBoxCtrl0">
+                        <div class="score-name" id="v2BoardNameCtrl0">Người 1</div>
+                        <div class="score-value" id="v2BoardScoreCtrl0">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(0,'blue')"></button>
+                        <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(0,'aqua')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="setPlayerState(0,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="setPlayerState(0,'black')"></button>
+                    </div>
+                    <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(0, 15)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+15</button>
+                            <button class="btn-v2-score" onclick="changeScore(0, 10)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+10</button>
+                            <button class="btn-v2-score" onclick="changeScore(0, 80)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+80</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(0, 50)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+50</button>
+                            <button class="btn-v2-score" onclick="changeScore(0, 30)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+30</button>
+                            <button class="btn-v2-score" onclick="changeScore(0, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2BoardBoxCtrl1">
+                        <div class="score-name" id="v2BoardNameCtrl1">Người 2</div>
+                        <div class="score-value" id="v2BoardScoreCtrl1">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(1,'blue')"></button>
+                        <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(1,'aqua')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="setPlayerState(1,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="setPlayerState(1,'black')"></button>
+                    </div>
+                    <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(1, 15)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+15</button>
+                            <button class="btn-v2-score" onclick="changeScore(1, 10)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+10</button>
+                            <button class="btn-v2-score" onclick="changeScore(1, 80)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+80</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(1, 50)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+50</button>
+                            <button class="btn-v2-score" onclick="changeScore(1, 30)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+30</button>
+                            <button class="btn-v2-score" onclick="changeScore(1, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2BoardBoxCtrl2">
+                        <div class="score-name" id="v2BoardNameCtrl2">Người 3</div>
+                        <div class="score-value" id="v2BoardScoreCtrl2">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(2,'blue')"></button>
+                        <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(2,'aqua')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="setPlayerState(2,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="setPlayerState(2,'black')"></button>
+                    </div>
+                    <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(2, 15)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+15</button>
+                            <button class="btn-v2-score" onclick="changeScore(2, 10)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+10</button>
+                            <button class="btn-v2-score" onclick="changeScore(2, 80)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+80</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(2, 50)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+50</button>
+                            <button class="btn-v2-score" onclick="changeScore(2, 30)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+30</button>
+                            <button class="btn-v2-score" onclick="changeScore(2, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2BoardBoxCtrl3">
+                        <div class="score-name" id="v2BoardNameCtrl3">Người 4</div>
+                        <div class="score-value" id="v2BoardScoreCtrl3">30</div>
+                    </div>
+                    <div class="v2-state-buttons">
+                        <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(3,'blue')"></button>
+                        <button class="v2-color-btn" style="background:aqua" onclick="setPlayerState(3,'aqua')"></button>
+                        <button class="v2-color-btn" style="background:#ff69b4" onclick="setPlayerState(3,'pink')"></button>
+                        <button class="v2-color-btn" style="background:black" onclick="setPlayerState(3,'black')"></button>
+                    </div>
+                    <div class="v2-score-add-group" style="display:flex; flex-direction:column; gap:4px; margin-top:6px; width:100%;">
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(3, 15)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+15</button>
+                            <button class="btn-v2-score" onclick="changeScore(3, 10)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+10</button>
+                            <button class="btn-v2-score" onclick="changeScore(3, 80)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+80</button>
+                        </div>
+                        <div style="display:flex; gap:4px; justify-content:space-between;">
+                            <button class="btn-v2-score" onclick="changeScore(3, 50)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+50</button>
+                            <button class="btn-v2-score" onclick="changeScore(3, 30)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+30</button>
+                            <button class="btn-v2-score" onclick="changeScore(3, 20)" style="flex:1; background:var(--green); color:white; border:none; border-radius:4px; padding:4px 2px; font-size:0.8rem; cursor:pointer;">+20</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="v2BoardPreviewArea" style="margin:20px auto; text-align:center;">
                 <div class="v2-questions-top" id="v2QTop"></div>
                 <div class="v2-questions-middle">
@@ -2085,6 +2183,7 @@
                 playerNames[i] = document.getElementById(`inpName${i}`).value || `Người ${i + 1}`;
                 if (document.getElementById(`name${i}`)) document.getElementById(`name${i}`).textContent = playerNames[i];
                 if (document.getElementById(`v2name${i}`)) document.getElementById(`v2name${i}`).textContent = playerNames[i];
+                if (document.getElementById(`v2BoardNameCtrl${i}`)) document.getElementById(`v2BoardNameCtrl${i}`).textContent = playerNames[i];
                 if (document.getElementById(`v4name${i}`)) document.getElementById(`v4name${i}`).textContent = playerNames[i];
             }
             document.getElementById('modalPlayers').style.display = 'none';
@@ -2134,6 +2233,7 @@
                 const s = playerScores[i];
                 if (document.getElementById(`score${i}`)) document.getElementById(`score${i}`).textContent = s;
                 if (document.getElementById(`v2score${i}`)) document.getElementById(`v2score${i}`).textContent = s;
+                if (document.getElementById(`v2BoardScoreCtrl${i}`)) document.getElementById(`v2BoardScoreCtrl${i}`).textContent = s;
                 if (document.getElementById(`v4score${i}`)) document.getElementById(`v4score${i}`).textContent = s;
             }
         }
@@ -2397,6 +2497,8 @@
             v2PlayerColors[pIndex] = state;
             const el = document.getElementById(`v2box${pIndex}`);
             applyPlayerBoxColor(el, state);
+            const elBoard = document.getElementById(`v2BoardBoxCtrl${pIndex}`);
+            applyPlayerBoxColor(elBoard, state);
             if (state === 'pink' || state === 'black') {
                 sendSound('Bell V2.mp3');
             }
@@ -2474,6 +2576,8 @@
             for (let i = 0; i < 4; i++) {
                 const el = document.getElementById(`v2box${i}`);
                 applyPlayerBoxColor(el, 'blue');
+                const elBoard = document.getElementById(`v2BoardBoxCtrl${i}`);
+                applyPlayerBoxColor(elBoard, 'blue');
             }
             renderV2AnswersPreview();
             socket.emit('setPlayerInteraction', {
@@ -2586,6 +2690,15 @@
         }
 
         function renderV2QuestionsAndBoard() {
+            for (let i = 0; i < 4; i++) {
+                const nameEl = document.getElementById(`v2BoardNameCtrl${i}`);
+                if (nameEl) nameEl.textContent = playerNames[i];
+                const scoreEl = document.getElementById(`v2BoardScoreCtrl${i}`);
+                if (scoreEl) scoreEl.textContent = playerScores[i];
+                const boxEl = document.getElementById(`v2BoardBoxCtrl${i}`);
+                if (boxEl) applyPlayerBoxColor(boxEl, v2PlayerColors[i]);
+            }
+
             const top = document.getElementById("v2QTop");
             const left = document.getElementById("v2QLeft");
             const right = document.getElementById("v2QRight");

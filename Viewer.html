@@ -974,6 +974,32 @@
 
         <!-- VIEW 6: V2 BOARD SEPARATE VIEW -->
         <div id="view-v2_board" class="view-panel hidden">
+            <div class="v2-top" id="v2BoardTopViewer" style="margin-bottom: 24px;">
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2BoardBox0">
+                        <div class="score-name" id="v2BoardName0">Người 1</div>
+                        <div class="score-value" id="v2BoardScore0">30</div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2BoardBox1">
+                        <div class="score-name" id="v2BoardName1">Người 2</div>
+                        <div class="score-value" id="v2BoardScore1">30</div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2BoardBox2">
+                        <div class="score-name" id="v2BoardName2">Người 3</div>
+                        <div class="score-value" id="v2BoardScore2">30</div>
+                    </div>
+                </div>
+                <div class="v2-score-slot">
+                    <div class="v2-player-box" id="v2BoardBox3">
+                        <div class="score-name" id="v2BoardName3">Người 4</div>
+                        <div class="score-value" id="v2BoardScore3">30</div>
+                    </div>
+                </div>
+            </div>
             <div class="v2-board-container">
                 <div class="v2-questions-top" id="v2QTopViewer"></div>
                 <div class="v2-questions-middle">
@@ -1620,6 +1646,8 @@
                 // V2
                 if (document.getElementById(`v2name${i}`)) document.getElementById(`v2name${i}`).textContent = names[i];
                 if (document.getElementById(`v2score${i}`)) document.getElementById(`v2score${i}`).textContent = scores[i];
+                if (document.getElementById(`v2BoardName${i}`)) document.getElementById(`v2BoardName${i}`).textContent = names[i];
+                if (document.getElementById(`v2BoardScore${i}`)) document.getElementById(`v2BoardScore${i}`).textContent = scores[i];
 
                 // V4
                 if (document.getElementById(`v4name${i}`)) document.getElementById(`v4name${i}`).textContent = names[i];
@@ -1690,6 +1718,8 @@
                     for (let i = 0; i < 4; i++) {
                         const box = document.getElementById(`v2box${i}`);
                         applyPlayerBoxColor(box, state.v2State.playerColors[i]);
+                        const boardBox = document.getElementById(`v2BoardBox${i}`);
+                        applyPlayerBoxColor(boardBox, state.v2State.playerColors[i]);
                     }
                 }
 
@@ -1823,6 +1853,13 @@
         }
 
         function renderV2BoardViewer(v2State) {
+            if (v2State && v2State.playerColors) {
+                for (let i = 0; i < 4; i++) {
+                    const boardBox = document.getElementById(`v2BoardBox${i}`);
+                    applyPlayerBoxColor(boardBox, v2State.playerColors[i]);
+                }
+            }
+
             const top = document.getElementById("v2QTopViewer");
             const left = document.getElementById("v2QLeftViewer");
             const right = document.getElementById("v2QRightViewer");
