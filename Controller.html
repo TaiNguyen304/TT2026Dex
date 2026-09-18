@@ -47,9 +47,11 @@
         }
 
         body {
-            margin: 16px;
+            margin: 0;
+            padding: 6px 12px 16px 12px;
             background-color: #0A3D62;
             color: #111;
+            zoom: 0.67;
         }
 
         button {
@@ -767,8 +769,8 @@
 
 <body>
     <!-- Room Management & Authentication Section -->
-    <div style="background: #111; color: var(--white); border: 2px solid var(--aqua); border-radius: 10px; padding: 12px; margin-bottom: 12px; text-align: center;">
-        <div style="font-size: 1.1rem; color: var(--yellow); margin-bottom: 8px; font-weight: bold;">CẤU HÌNH PHÒNG & MẬT KHẨU ĐĂNG NHẬP THÍ SINH</div>
+    <div style="background: #111; color: var(--white); border: 2px solid var(--aqua); border-radius: 10px; padding: 14px; margin-bottom: 14px; text-align: center;">
+        <div style="font-size: 1.15rem; color: var(--yellow); margin-bottom: 10px; font-weight: bold; text-transform: uppercase;">CẤU HÌNH PHÒNG, MẬT KHẨU & ĐÍNH KÈM LINK THAM GIA</div>
         <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
             <div>Mã phòng (6 số): <input type="text" id="controllerRoomId" style="width: 100px; padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid var(--aqua); background: #000; color: var(--lime);" maxlength="6" value="123456"></div>
             <div>Mật khẩu TS1: <input type="text" id="controllerPass1" style="width: 70px; padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid var(--aqua); background: #000; color: var(--white);" maxlength="4" value="1111"></div>
@@ -778,6 +780,61 @@
             <button id="btnCreateRoom" style="background: var(--blue); color: var(--white); border: 2px solid var(--white); border-radius: 6px; padding: 8px 14px; font-weight: bold; cursor: pointer;">TẠO MÃ PHÒNG VÀ MẬT KHẨU MỚI</button>
         </div>
         <div id="roomInfoText" style="margin-top: 8px; font-size: 0.95rem; color: var(--lime); font-weight: bold;"></div>
+
+        <!-- Attached Direct Links with Copy Buttons for Host, Viewer, and 4 Players (3 rows x 2 columns) -->
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+            <div style="font-size: 0.95rem; color: var(--aqua); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 0 4px;">
+                <span>🔗 ĐÍNH KÈM LINK TRUY CẬP (HOST, VIEWER & 4 THÍ SINH):</span>
+                <button id="btnCopyAllLinks" onclick="copyAllLinks()" style="background: var(--purple); color: var(--white); border: 1px solid var(--white); border-radius: 4px; padding: 4px 10px; font-size: 0.8rem; font-weight: bold; cursor: pointer;">📋 Sao chép tất cả link</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; text-align: left;">
+                <!-- DÒNG 1: Host & Viewer -->
+                <div class="room-link-card" style="background: #151c2d; border: 1px solid var(--pink); border-radius: 6px; padding: 5px 8px; display: flex; align-items: center; gap: 6px;">
+                    <span style="color: var(--pink); font-size: 0.85rem; white-space: nowrap; min-width: 95px;">👑 Host/MC:</span>
+                    <input type="text" id="linkHostVal" readonly style="flex: 1; min-width: 50px; padding: 4px 6px; font-size: 0.78rem; font-family: monospace; background: #0a0e17; color: #ffffff; border: 1px solid #334; border-radius: 4px;" onclick="this.select()">
+                    <a id="linkOpenHost" href="#" target="_blank" style="color: var(--aqua); font-size: 0.8rem; text-decoration: underline; white-space: nowrap;">Mở ↗</a>
+                    <button class="btn-copy-link" onclick="copyLinkField('linkHostVal', this)" style="background: var(--blue); color: var(--white); border: 1px solid #fff; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; white-space: nowrap; cursor: pointer;">Chép</button>
+                </div>
+
+                <div class="room-link-card" style="background: #151c2d; border: 1px solid var(--aqua); border-radius: 6px; padding: 5px 8px; display: flex; align-items: center; gap: 6px;">
+                    <span style="color: var(--aqua); font-size: 0.85rem; white-space: nowrap; min-width: 95px;">📺 Viewer:</span>
+                    <input type="text" id="linkViewerVal" readonly style="flex: 1; min-width: 50px; padding: 4px 6px; font-size: 0.78rem; font-family: monospace; background: #0a0e17; color: #ffffff; border: 1px solid #334; border-radius: 4px;" onclick="this.select()">
+                    <a id="linkOpenViewer" href="#" target="_blank" style="color: var(--aqua); font-size: 0.8rem; text-decoration: underline; white-space: nowrap;">Mở ↗</a>
+                    <button class="btn-copy-link" onclick="copyLinkField('linkViewerVal', this)" style="background: var(--blue); color: var(--white); border: 1px solid #fff; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; white-space: nowrap; cursor: pointer;">Chép</button>
+                </div>
+
+                <!-- DÒNG 2: Thí sinh 1 & Thí sinh 2 -->
+                <div class="room-link-card" style="background: #151c2d; border: 1px solid var(--lime); border-radius: 6px; padding: 5px 8px; display: flex; align-items: center; gap: 6px;">
+                    <span style="color: var(--lime); font-size: 0.85rem; white-space: nowrap; min-width: 95px;">👤 Thí sinh 1:</span>
+                    <input type="text" id="linkP1Val" readonly style="flex: 1; min-width: 50px; padding: 4px 6px; font-size: 0.78rem; font-family: monospace; background: #0a0e17; color: #ffffff; border: 1px solid #334; border-radius: 4px;" onclick="this.select()">
+                    <a id="linkOpenP1" href="#" target="_blank" style="color: var(--aqua); font-size: 0.8rem; text-decoration: underline; white-space: nowrap;">Mở ↗</a>
+                    <button class="btn-copy-link" onclick="copyLinkField('linkP1Val', this)" style="background: var(--blue); color: var(--white); border: 1px solid #fff; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; white-space: nowrap; cursor: pointer;">Chép</button>
+                </div>
+
+                <div class="room-link-card" style="background: #151c2d; border: 1px solid var(--lime); border-radius: 6px; padding: 5px 8px; display: flex; align-items: center; gap: 6px;">
+                    <span style="color: var(--lime); font-size: 0.85rem; white-space: nowrap; min-width: 95px;">👤 Thí sinh 2:</span>
+                    <input type="text" id="linkP2Val" readonly style="flex: 1; min-width: 50px; padding: 4px 6px; font-size: 0.78rem; font-family: monospace; background: #0a0e17; color: #ffffff; border: 1px solid #334; border-radius: 4px;" onclick="this.select()">
+                    <a id="linkOpenP2" href="#" target="_blank" style="color: var(--aqua); font-size: 0.8rem; text-decoration: underline; white-space: nowrap;">Mở ↗</a>
+                    <button class="btn-copy-link" onclick="copyLinkField('linkP2Val', this)" style="background: var(--blue); color: var(--white); border: 1px solid #fff; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; white-space: nowrap; cursor: pointer;">Chép</button>
+                </div>
+
+                <!-- DÒNG 3: Thí sinh 3 & Thí sinh 4 -->
+                <div class="room-link-card" style="background: #151c2d; border: 1px solid var(--lime); border-radius: 6px; padding: 5px 8px; display: flex; align-items: center; gap: 6px;">
+                    <span style="color: var(--lime); font-size: 0.85rem; white-space: nowrap; min-width: 95px;">👤 Thí sinh 3:</span>
+                    <input type="text" id="linkP3Val" readonly style="flex: 1; min-width: 50px; padding: 4px 6px; font-size: 0.78rem; font-family: monospace; background: #0a0e17; color: #ffffff; border: 1px solid #334; border-radius: 4px;" onclick="this.select()">
+                    <a id="linkOpenP3" href="#" target="_blank" style="color: var(--aqua); font-size: 0.8rem; text-decoration: underline; white-space: nowrap;">Mở ↗</a>
+                    <button class="btn-copy-link" onclick="copyLinkField('linkP3Val', this)" style="background: var(--blue); color: var(--white); border: 1px solid #fff; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; white-space: nowrap; cursor: pointer;">Chép</button>
+                </div>
+
+                <div class="room-link-card" style="background: #151c2d; border: 1px solid var(--lime); border-radius: 6px; padding: 5px 8px; display: flex; align-items: center; gap: 6px;">
+                    <span style="color: var(--lime); font-size: 0.85rem; white-space: nowrap; min-width: 95px;">👤 Thí sinh 4:</span>
+                    <input type="text" id="linkP4Val" readonly style="flex: 1; min-width: 50px; padding: 4px 6px; font-size: 0.78rem; font-family: monospace; background: #0a0e17; color: #ffffff; border: 1px solid #334; border-radius: 4px;" onclick="this.select()">
+                    <a id="linkOpenP4" href="#" target="_blank" style="color: var(--aqua); font-size: 0.8rem; text-decoration: underline; white-space: nowrap;">Mở ↗</a>
+                    <button class="btn-copy-link" onclick="copyLinkField('linkP4Val', this)" style="background: var(--blue); color: var(--white); border: 1px solid #fff; border-radius: 4px; padding: 4px 8px; font-size: 0.8rem; white-space: nowrap; cursor: pointer;">Chép</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Top Action Row -->
@@ -3556,6 +3613,119 @@
 
         if (roomIdInp) roomIdInp.value = currentRoomId;
 
+        function updateRoomLinksDisplay(rId, p1, p2, p3, p4) {
+            const origin = window.location.origin;
+            const hostUrl = `${origin}/Host.html?roomid=${encodeURIComponent(rId)}`;
+            const viewerUrl = `${origin}/Viewer.html?roomid=${encodeURIComponent(rId)}`;
+            const p1Url = `${origin}/Player1.html?roomid=${encodeURIComponent(rId)}&auth=${encodeURIComponent(p1)}`;
+            const p2Url = `${origin}/Player2.html?roomid=${encodeURIComponent(rId)}&auth=${encodeURIComponent(p2)}`;
+            const p3Url = `${origin}/Player3.html?roomid=${encodeURIComponent(rId)}&auth=${encodeURIComponent(p3)}`;
+            const p4Url = `${origin}/Player4.html?roomid=${encodeURIComponent(rId)}&auth=${encodeURIComponent(p4)}`;
+
+            const hostInp = document.getElementById('linkHostVal');
+            const viewerInp = document.getElementById('linkViewerVal');
+            const p1Inp = document.getElementById('linkP1Val');
+            const p2Inp = document.getElementById('linkP2Val');
+            const p3Inp = document.getElementById('linkP3Val');
+            const p4Inp = document.getElementById('linkP4Val');
+
+            if (hostInp) hostInp.value = hostUrl;
+            if (viewerInp) viewerInp.value = viewerUrl;
+            if (p1Inp) p1Inp.value = p1Url;
+            if (p2Inp) p2Inp.value = p2Url;
+            if (p3Inp) p3Inp.value = p3Url;
+            if (p4Inp) p4Inp.value = p4Url;
+
+            const hostLink = document.getElementById('linkOpenHost');
+            const viewerLinkEl = document.getElementById('linkOpenViewer');
+            const p1Link = document.getElementById('linkOpenP1');
+            const p2Link = document.getElementById('linkOpenP2');
+            const p3Link = document.getElementById('linkOpenP3');
+            const p4Link = document.getElementById('linkOpenP4');
+
+            if (hostLink) hostLink.href = hostUrl;
+            if (viewerLinkEl) viewerLinkEl.href = viewerUrl;
+            if (p1Link) p1Link.href = p1Url;
+            if (p2Link) p2Link.href = p2Url;
+            if (p3Link) p3Link.href = p3Url;
+            if (p4Link) p4Link.href = p4Url;
+
+            const viewerLinkTop = document.getElementById('viewerLink');
+            if (viewerLinkTop) {
+                viewerLinkTop.href = viewerUrl;
+            }
+        }
+
+        window.copyTextWithFeedback = function(text, btnElement) {
+            function showSuccess() {
+                if (!btnElement) return;
+                const origText = btnElement.getAttribute('data-orig-text') || btnElement.textContent;
+                btnElement.setAttribute('data-orig-text', origText);
+                btnElement.textContent = 'Đã chép! ✓';
+                btnElement.style.backgroundColor = '#39ff14';
+                btnElement.style.color = '#000000';
+                setTimeout(() => {
+                    btnElement.textContent = origText;
+                    btnElement.style.backgroundColor = '';
+                    btnElement.style.color = '';
+                }, 1500);
+            }
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(showSuccess).catch(() => {
+                    fallbackCopy(text, showSuccess);
+                });
+            } else {
+                fallbackCopy(text, showSuccess);
+            }
+        };
+
+        function fallbackCopy(text, onSuccess) {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            temp.style.position = 'fixed';
+            temp.style.left = '-9999px';
+            document.body.appendChild(temp);
+            temp.focus();
+            temp.select();
+            try {
+                document.execCommand('copy');
+                if (typeof onSuccess === 'function') onSuccess();
+            } catch (e) {
+                alert('Không thể sao chép: ' + text);
+            }
+            document.body.removeChild(temp);
+        }
+
+        window.copyLinkField = function(inputId, btnElement) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const textToCopy = input.value;
+            if (!textToCopy) return;
+            window.copyTextWithFeedback(textToCopy, btnElement);
+        };
+
+        window.copyAllLinks = function() {
+            const hostInp = document.getElementById('linkHostVal');
+            const viewerInp = document.getElementById('linkViewerVal');
+            const p1Inp = document.getElementById('linkP1Val');
+            const p2Inp = document.getElementById('linkP2Val');
+            const p3Inp = document.getElementById('linkP3Val');
+            const p4Inp = document.getElementById('linkP4Val');
+
+            const allText = [
+                `👑 LINK HOST / MC: ${hostInp ? hostInp.value : ''}`,
+                `📺 LINK VIEWER: ${viewerInp ? viewerInp.value : ''}`,
+                `👤 LINK THÍ SINH 1: ${p1Inp ? p1Inp.value : ''}`,
+                `👤 LINK THÍ SINH 2: ${p2Inp ? p2Inp.value : ''}`,
+                `👤 LINK THÍ SINH 3: ${p3Inp ? p3Inp.value : ''}`,
+                `👤 LINK THÍ SINH 4: ${p4Inp ? p4Inp.value : ''}`
+            ].join('\n');
+
+            const btn = document.getElementById('btnCopyAllLinks');
+            window.copyTextWithFeedback(allText, btn);
+        };
+
         function handleCreateRoom(isAuto = false) {
             let rId = roomIdInp ? roomIdInp.value.trim() : '';
             if (!rId || rId.length !== 6 || isNaN(rId)) {
@@ -3587,10 +3757,7 @@
             currentRoomId = rId;
             window.history.replaceState(null, '', `?roomid=${currentRoomId}`);
 
-            const viewerLink = document.getElementById('viewerLink');
-            if (viewerLink) {
-                viewerLink.href = `/Viewer.html?roomid=${currentRoomId}`;
-            }
+            updateRoomLinksDisplay(currentRoomId, p1, p2, p3, p4);
 
             const passwords = [p1, p2, p3, p4];
             socket.emit('createRoom', { roomId: currentRoomId, passwords }, (res) => {
@@ -3601,6 +3768,37 @@
                 }
             });
         }
+
+        function refreshRoomLinksFromInputs() {
+            const rId = roomIdInp ? roomIdInp.value.trim() : (currentRoomId || '123456');
+            const p1 = pass1Inp ? pass1Inp.value.trim() : '1111';
+            const p2 = pass2Inp ? pass2Inp.value.trim() : '2222';
+            const p3 = pass3Inp ? pass3Inp.value.trim() : '3333';
+            const p4 = pass4Inp ? pass4Inp.value.trim() : '4444';
+            updateRoomLinksDisplay(rId, p1, p2, p3, p4);
+        }
+
+        [roomIdInp, pass1Inp, pass2Inp, pass3Inp, pass4Inp].forEach(inp => {
+            if (inp) {
+                inp.addEventListener('input', refreshRoomLinksFromInputs);
+                inp.addEventListener('change', () => {
+                    refreshRoomLinksFromInputs();
+                    // Also sync with server when changed manually
+                    const rId = roomIdInp ? roomIdInp.value.trim() : currentRoomId;
+                    const passwords = [
+                        pass1Inp ? pass1Inp.value.trim() : '1111',
+                        pass2Inp ? pass2Inp.value.trim() : '2222',
+                        pass3Inp ? pass3Inp.value.trim() : '3333',
+                        pass4Inp ? pass4Inp.value.trim() : '4444'
+                    ];
+                    if (rId && rId.length === 6) {
+                        currentRoomId = rId;
+                        window.history.replaceState(null, '', `?roomid=${currentRoomId}`);
+                        socket.emit('createRoom', { roomId: currentRoomId, passwords });
+                    }
+                });
+            }
+        });
 
         if (btnCreateRoom) {
             btnCreateRoom.addEventListener('click', () => handleCreateRoom(false));
