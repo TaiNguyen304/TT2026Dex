@@ -18,6 +18,18 @@ const io = new Server(server, {
 
 const PORT = process.env.PORT || 3000;
 
+// Safe plain-text string sanitizer to protect against injection and prototype attacks
+function toSafeString(val, maxLength = 3000) {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'string') return val.slice(0, maxLength);
+  if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+  try {
+    return JSON.stringify(val).slice(0, maxLength);
+  } catch {
+    return '';
+  }
+}
+
 // Default Application State Generator
 function getDefaultGameState() {
   return {
@@ -319,32 +331,38 @@ io.on('connection', (socket) => {
   // Create room from Controller
   socket.on('createRoom', (data, callback) => {
     const { roomId, passwords } = data || {};
-    if (!roomId) {
+    const safeRoomId = toSafeString(roomId, 100).trim();
+    if (!safeRoomId) {
       if (typeof callback === 'function') callback({ success: false, message: 'Thiếu mã phòng' });
       return;
     }
-    const room = getOrCreateRoom(roomId, passwords);
-    socket.roomId = roomId;
+    const safePasswords = Array.isArray(passwords) 
+      ? passwords.map(p => toSafeString(p, 50)) 
+      : passwords;
+    const room = getOrCreateRoom(safeRoomId, safePasswords);
+    socket.roomId = safeRoomId;
     socket.role = 'controller';
-    socket.join(roomId);
-    console.log(`[Room Created] Room: ${roomId}, Passwords:`, room.passwords);
+    socket.join(safeRoomId);
+    console.log(`[Room Created] Room: ${safeRoomId}, Passwords:`, room.passwords);
     if (typeof callback === 'function') {
-      callback({ success: true, roomId, passwords: room.passwords, gameState: room.gameState });
+      callback({ success: true, roomId: safeRoomId, passwords: room.passwords, gameState: room.gameState });
     }
-    emitToRoom(roomId, 'initState', room.gameState);
+    emitToRoom(safeRoomId, 'initState', room.gameState);
   });
 
   // Verify login credentials from index.html
   socket.on('verifyLogin', (data, callback) => {
     const { roomId, auth, playerPos } = data || {};
-    const room = rooms[roomId];
+    const safeRoomId = toSafeString(roomId, 100).trim();
+    const safeAuth = toSafeString(auth, 100);
+    const room = rooms[safeRoomId];
     if (!room) {
       if (typeof callback === 'function') callback({ success: false, message: 'Mã phòng không tồn tại! Hãy chắc chắn mã phòng đã được tạo ở Controller.' });
       return;
     }
     const idx = (playerPos || 1) - 1;
     const expectedPass = room.passwords ? room.passwords[idx] : null;
-    if (expectedPass && auth === expectedPass) {
+    if (expectedPass && safeAuth === expectedPass) {
       if (typeof callback === 'function') callback({ success: true });
     } else {
       if (typeof callback === 'function') callback({ success: false, message: 'Mật khẩu không chính xác cho vị trí này!' });
@@ -354,29 +372,32 @@ io.on('connection', (socket) => {
   // Join room (supports asymmetric public key exchange)
   socket.on('joinRoom', (data, callback) => {
     const { roomId, auth, role, playerIndex, publicKey } = data || {};
-    if (!roomId) {
+    const safeRoomId = toSafeString(roomId, 100).trim();
+    const safeAuth = toSafeString(auth, 100);
+    const safeRole = toSafeString(role, 30);
+    if (!safeRoomId) {
       if (typeof callback === 'function') callback({ success: false, message: 'Thiếu mã phòng trên URL' });
       return;
     }
-    const room = getOrCreateRoom(roomId);
-    if (role === 'player') {
+    const room = getOrCreateRoom(safeRoomId);
+    if (safeRole === 'player') {
       const pIdx = typeof playerIndex === 'number' ? playerIndex : 0;
       const expectedPass = room.passwords[pIdx];
-      if (expectedPass && auth !== expectedPass) {
+      if (expectedPass && safeAuth !== expectedPass) {
         if (typeof callback === 'function') callback({ success: false, message: 'Mật khẩu truy cập không đúng' });
         socket.emit('authError', { message: 'Mật khẩu truy cập không đúng' });
         return;
       }
     }
 
-    socket.roomId = roomId;
-    socket.role = role || 'guest';
+    socket.roomId = safeRoomId;
+    socket.role = safeRole || 'guest';
     socket.playerIndex = typeof playerIndex === 'number' ? playerIndex : 0;
     if (publicKey) {
-      socket.publicKey = publicKey;
+      socket.publicKey = toSafeString(publicKey, 10000);
     }
-    socket.join(roomId);
-    console.log(`[Socket Joined] ${socket.id} -> Room: ${roomId} (Role: ${socket.role}, AsymKey: ${!!socket.publicKey})`);
+    socket.join(safeRoomId);
+    console.log(`[Socket Joined] ${socket.id} -> Room: ${safeRoomId} (Role: ${socket.role}, AsymKey: ${!!socket.publicKey})`);
 
     if (typeof callback === 'function') {
       let cbState = room.gameState;
@@ -446,8 +467,9 @@ io.on('connection', (socket) => {
     const roomId = socket.roomId;
     if (!roomId || !rooms[roomId]) return;
     const room = rooms[roomId];
-    room.gameState.matchName = name;
-    emitToRoom(roomId, 'matchNameUpdated', name);
+    const safeName = toSafeString(name, 200);
+    room.gameState.matchName = safeName;
+    emitToRoom(roomId, 'matchNameUpdated', safeName);
     emitToRoom(roomId, 'stateUpdated', room.gameState);
   });
 
@@ -466,21 +488,34 @@ io.on('connection', (socket) => {
     if (!roomId || !rooms[roomId]) return;
     const room = rooms[roomId];
     const gs = room.gameState;
-    console.log(`[Player Answer][Room ${roomId}] P${data.playerIndex + 1} (${data.round}): ${data.text} [${data.time}s]`);
-    const pName = gs.playerNames[data.playerIndex] || `Thí sinh ${data.playerIndex + 1}`;
-    if (data.round === 'v2') {
+    const safeText = toSafeString(data ? data.text : '', 500);
+    const safeRound = toSafeString(data ? data.round : '', 50);
+    const safeTime = toSafeString(data ? data.time : '', 20);
+    const pIdx = typeof (data && data.playerIndex) === 'number' ? data.playerIndex : 0;
+    
+    console.log(`[Player Answer][Room ${roomId}] P${pIdx + 1} (${safeRound}): ${safeText} [${safeTime}s]`);
+    const pName = (gs.playerNames && gs.playerNames[pIdx]) ? gs.playerNames[pIdx] : `Thí sinh ${pIdx + 1}`;
+    
+    const cleanData = {
+      playerIndex: pIdx,
+      round: safeRound,
+      text: safeText,
+      time: safeTime
+    };
+
+    if (safeRound === 'v2') {
       if (!gs.v2State.answers || !Array.isArray(gs.v2State.answers)) {
         gs.v2State.answers = [];
       }
-      gs.v2State.answers[data.playerIndex] = { name: pName, ans: data.text, time: data.time };
-    } else if (data.round === 'v3') {
+      gs.v2State.answers[pIdx] = { name: pName, ans: safeText, time: safeTime };
+    } else if (safeRound === 'v3') {
       if (!gs.v3State.answers) gs.v3State.answers = [];
-      gs.v3State.answers[data.playerIndex] = { name: pName, ans: data.text, time: data.time };
-    } else if (data.round === 'vqphu' || data.round === 'vqphu_answers') {
+      gs.v3State.answers[pIdx] = { name: pName, ans: safeText, time: safeTime };
+    } else if (safeRound === 'vqphu' || safeRound === 'vqphu_answers') {
       if (!gs.vqphuState.answers) gs.vqphuState.answers = [];
-      gs.vqphuState.answers[data.playerIndex] = { name: pName, ans: data.text, time: data.time, playerIndex: data.playerIndex };
+      gs.vqphuState.answers[pIdx] = { name: pName, ans: safeText, time: safeTime, playerIndex: pIdx };
     }
-    emitToRoom(roomId, 'playerAnswerReceived', data);
+    emitToRoom(roomId, 'playerAnswerReceived', cleanData);
     emitToRoom(roomId, 'stateUpdated', gs);
   });
 

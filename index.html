@@ -150,14 +150,14 @@
         <button id="btnLogin" class="btn-submit">Xác nhận</button>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         function disableDevTools() {
             document.addEventListener('contextmenu', function (e) {
                 e.preventDefault();
+                e.stopPropagation();
                 return false;
-            }, false);
+            }, true);
 
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'F12' || e.keyCode === 123) {
@@ -165,27 +165,13 @@
                     e.stopPropagation();
                     return false;
                 }
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+                const key = e.key ? e.key.toLowerCase() : '';
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || key === 'k' || key === 'e' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 75 || e.keyCode === 69)) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-                if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-                if ((e.ctrlKey || e.metaKey) && (e.key === 'S' || e.key === 's' || e.keyCode === 83)) {
+                if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
@@ -195,12 +181,6 @@
             document.addEventListener('dragstart', function (e) {
                 e.preventDefault();
             });
-
-            if (window.DisableDevtool) {
-                try {
-                    window.DisableDevtool();
-                } catch (err) {}
-            }
         }
         disableDevTools();
 

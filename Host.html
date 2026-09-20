@@ -3,17 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <script>
-        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
-            const key = e.key ? e.key.toLowerCase() : '';
-            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
-                e.preventDefault(); return false;
-            }
-            if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
-                e.preventDefault(); return false;
-            }
-        });
+        (function() {
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                const key = e.key ? e.key.toLowerCase() : '';
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || key === 'k' || key === 'e' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 75 || e.keyCode === 69)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, true);
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+            });
+        })();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thử Thách 2026 - Host</title>
@@ -518,7 +535,6 @@
     </div>
 
     <!-- Socket.IO -->
-    <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         function disableDevTools() {
@@ -563,12 +579,6 @@
             document.addEventListener('dragstart', function (e) {
                 e.preventDefault();
             });
-
-            if (window.DisableDevtool) {
-                try {
-                    window.DisableDevtool();
-                } catch (err) {}
-            }
         }
         disableDevTools();
 
@@ -644,6 +654,16 @@
             // Updated via stateUpdated
         });
 
+        function escapeHtml(val) {
+            if (val === null || val === undefined) return '';
+            return String(val)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function renderHostViews(state) {
             if (!state) return;
 
@@ -676,11 +696,11 @@
                     <td>
                         <div class="player-name-cell">
                             <span class="player-pos-tag">TS ${i + 1}</span>
-                            <span>${pName}</span>
+                            <span>${escapeHtml(pName)}</span>
                         </div>
                     </td>
-                    <td style="font-weight: 600; color: ${ansStr !== '--' ? 'var(--lime)' : 'var(--text-dim)'};">${ansStr}</td>
-                    <td><span class="time-badge">${timeStr}</span></td>
+                    <td style="font-weight: 600; color: ${ansStr !== '--' ? 'var(--lime)' : 'var(--text-dim)'};">${escapeHtml(ansStr)}</td>
+                    <td><span class="time-badge">${escapeHtml(timeStr)}</span></td>
                 `;
                 v2AnsBody.appendChild(tr);
             }
@@ -701,10 +721,10 @@
                         <td>
                             <div class="player-name-cell">
                                 <span class="player-pos-tag">TS ${item.playerIndex + 1}</span>
-                                <span>${pName}</span>
+                                <span>${escapeHtml(pName)}</span>
                             </div>
                         </td>
-                        <td><span class="bell-time-badge">${timeStr}</span></td>
+                        <td><span class="bell-time-badge">${escapeHtml(timeStr)}</span></td>
                     `;
                     v2BellBody.appendChild(tr);
                 });
@@ -725,11 +745,11 @@
                     <td>
                         <div class="player-name-cell">
                             <span class="player-pos-tag">TS ${i + 1}</span>
-                            <span>${pName}</span>
+                            <span>${escapeHtml(pName)}</span>
                         </div>
                     </td>
-                    <td style="font-weight: 600; color: ${ansStr !== '--' ? 'var(--lime)' : 'var(--text-dim)'};">${ansStr}</td>
-                    <td><span class="time-badge">${timeStr}</span></td>
+                    <td style="font-weight: 600; color: ${ansStr !== '--' ? 'var(--lime)' : 'var(--text-dim)'};">${escapeHtml(ansStr)}</td>
+                    <td><span class="time-badge">${escapeHtml(timeStr)}</span></td>
                 `;
                 v3AnsBody.appendChild(tr);
             }
@@ -750,10 +770,10 @@
                         <td>
                             <div class="player-name-cell">
                                 <span class="player-pos-tag">TS ${item.playerIndex + 1}</span>
-                                <span>${pName}</span>
+                                <span>${escapeHtml(pName)}</span>
                             </div>
                         </td>
-                        <td><span class="bell-time-badge">${timeStr}</span></td>
+                        <td><span class="bell-time-badge">${escapeHtml(timeStr)}</span></td>
                     `;
                     v4BellBody.appendChild(tr);
                 });
@@ -774,7 +794,7 @@
                     <td>
                         <div class="player-name-cell">
                             <span class="player-pos-tag">TS ${i + 1}</span>
-                            <span>${pName}</span>
+                            <span>${escapeHtml(pName)}</span>
                         </div>
                     </td>
                     <td>
@@ -801,11 +821,11 @@
                     <td>
                         <div class="player-name-cell">
                             <span class="player-pos-tag">TS ${i + 1}</span>
-                            <span>${pName}</span>
+                            <span>${escapeHtml(pName)}</span>
                         </div>
                     </td>
-                    <td style="font-weight: 600; color: ${ansStr !== '--' ? 'var(--lime)' : 'var(--text-dim)'};">${ansStr}</td>
-                    <td><span class="time-badge">${timeStr}</span></td>
+                    <td style="font-weight: 600; color: ${ansStr !== '--' ? 'var(--lime)' : 'var(--text-dim)'};">${escapeHtml(ansStr)}</td>
+                    <td><span class="time-badge">${escapeHtml(timeStr)}</span></td>
                 `;
                 vqphuAnsBody.appendChild(tr);
             }

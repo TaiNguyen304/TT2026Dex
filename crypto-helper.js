@@ -201,12 +201,37 @@
         return socket;
     }
 
+    /**
+     * Plain Text Normalizer & Injection Protection
+     * Guarantees all input characters (quotes, semicolons, dashes, brackets, SQL queries)
+     * are safely accepted and treated strictly as literal plain text strings.
+     */
+    function safeText(val, maxLength = 3000) {
+        if (val === null || val === undefined) return '';
+        return String(val).slice(0, maxLength);
+    }
+
+    function escapeHtml(val) {
+        if (val === null || val === undefined) return '';
+        return String(val)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    window.safeText = safeText;
+    window.escapeHtml = escapeHtml;
+
     // Export API to window
     window.AsymCrypto = {
         init: initClientCrypto,
         getPublicKey: getClientPublicKey,
         decrypt: decryptMessage,
-        setupSecureSocket: setupSecureSocket
+        setupSecureSocket: setupSecureSocket,
+        safeText: safeText,
+        escapeHtml: escapeHtml
     };
 
     // Automatically trigger key generation as early as possible

@@ -78,39 +78,43 @@
             width: 20%;
             height: 100vh;
             background: #0d1322;
-            border-left: 3px solid var(--blue);
+            border-left: 3px solid var(--aqua);
             display: flex;
             flex-direction: column;
             padding: 14px;
             gap: 12px;
             overflow-y: auto;
             box-shadow: -4px 0 15px rgba(0, 0, 0, 0.6);
+            transition: border-color 0.3s ease;
         }
 
         .player-header {
-            background: linear-gradient(135deg, var(--blue), var(--purple));
+            background: linear-gradient(135deg, #022c22, #065f46, #059669);
             color: var(--white);
             padding: 10px;
             border-radius: 8px;
             text-align: center;
             border: 2px solid var(--aqua);
+            transition: border-color 0.3s ease;
         }
 
         .player-title {
             font-size: 1.15rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--yellow);
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
         }
 
         .player-status-badge {
             font-size: 0.85rem;
             margin-top: 4px;
-            color: var(--white);
-            background: rgba(0, 0, 0, 0.4);
-            padding: 3px 6px;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 3px 8px;
             border-radius: 4px;
             display: inline-block;
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .section-box {
@@ -261,7 +265,7 @@
 
     <!-- Right 20% Player Controls -->
     <div class="player-panel">
-        <div class="player-header">
+        <div class="player-header" id="playerHeader">
             <div class="player-title" id="playerTitle">THÍ SINH 3</div>
             <div class="player-status-badge" id="roundBadge">Đang chờ...</div>
         </div>
@@ -270,7 +274,7 @@
         <div class="section-box">
             <div class="section-title">
                 <span>CÂU TRẢ LỜI</span>
-                <span id="ansTimerBadge" class="timer-badge">ĐÃ KHÓA</span>
+                <span id="ansTimerBadge" class="status-pill status-locked">ĐÃ KHÓA</span>
             </div>
             <textarea id="ansInput" class="ans-textarea" placeholder="Ô trả lời đang bị khóa..." disabled rows="3"></textarea>
             <button id="btnSend" class="btn-action btn-send" disabled>
@@ -284,7 +288,7 @@
         <!-- 2. Section: Nút bấm chuông -->
         <div class="section-box">
             <div class="section-title">
-                <span>CHUÔNG GIÀNH QUYỀN</span>
+                <span>CHUÔNG</span>
                 <span id="bellStatusBadge" class="status-pill status-locked">ĐANG KHÓA</span>
             </div>
             <button id="btnBell" class="btn-action btn-bell" disabled>
@@ -311,15 +315,15 @@
     </div>
 
     <!-- Socket.IO Client -->
-    <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/crypto-helper.js"></script>
     <script>
         function disableDevTools() {
             document.addEventListener('contextmenu', function (e) {
                 e.preventDefault();
+                e.stopPropagation();
                 return false;
-            }, false);
+            }, true);
 
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'F12' || e.keyCode === 123) {
@@ -327,27 +331,13 @@
                     e.stopPropagation();
                     return false;
                 }
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+                const key = e.key ? e.key.toLowerCase() : '';
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || key === 'k' || key === 'e' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 75 || e.keyCode === 69)) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
                 }
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c' || e.keyCode === 67)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-                if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    return false;
-                }
-                if ((e.ctrlKey || e.metaKey) && (e.key === 'S' || e.key === 's' || e.keyCode === 83)) {
+                if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
                     e.preventDefault();
                     e.stopPropagation();
                     return false;
@@ -357,12 +347,6 @@
             document.addEventListener('dragstart', function (e) {
                 e.preventDefault();
             });
-
-            if (window.DisableDevtool) {
-                try {
-                    window.DisableDevtool();
-                } catch (err) {}
-            }
         }
         disableDevTools();
 
@@ -495,19 +479,47 @@
         }
 
         function updateRoundBadge(view) {
+            const pH = document.getElementById("playerHeader");
+            const pPanel = document.querySelector(".player-panel");
+            let roundColor = "var(--aqua)"; // Màn hình chờ: Xanh da trời
+
             switch (view) {
-                case 'v1': roundBadge.textContent = "Vòng 1: Nhập cuộc"; break;
+                case 'v1':
+                    roundBadge.textContent = "Vòng 1: Nhập cuộc";
+                    roundColor = "var(--lime)"; // Vòng 1: Xanh lá
+                    break;
                 case 'v2':
                 case 'v2_answers':
-                case 'v2_board': roundBadge.textContent = "Vòng 2: Vượt lên"; break;
+                case 'v2_board':
+                    roundBadge.textContent = "Vòng 2: Vượt lên";
+                    roundColor = "var(--yellow)"; // Vòng 2: Vàng
+                    break;
                 case 'v3':
-                case 'v3_answers': roundBadge.textContent = "Vòng 3: Đối đầu"; break;
-                case 'v4': roundBadge.textContent = "Vòng 4: Vinh quang"; break;
+                case 'v3_answers':
+                    roundBadge.textContent = "Vòng 3: Đối đầu";
+                    roundColor = "#c084fc"; // Vòng 3: Tím
+                    break;
+                case 'v4':
+                    roundBadge.textContent = "Vòng 4: Vinh quang";
+                    roundColor = "var(--red)"; // Vòng 4: Đỏ
+                    break;
                 case 'vqphu':
-                case 'vqphu_answers': roundBadge.textContent = "Câu hỏi phụ"; break;
-                case 'scoreboard': roundBadge.textContent = "Tổng kết điểm"; break;
-                default: roundBadge.textContent = "Màn hình chờ"; break;
+                case 'vqphu_answers':
+                    roundBadge.textContent = "Câu hỏi phụ";
+                    roundColor = "var(--orange)"; // Câu hỏi phụ: Viền màu cam
+                    break;
+                case 'scoreboard':
+                    roundBadge.textContent = "Tổng kết điểm";
+                    roundColor = "#0000ff"; // Tổng kết điểm: Viền màu #0000ff
+                    break;
+                default:
+                    roundBadge.textContent = "Màn hình chờ";
+                    roundColor = "var(--aqua)";
+                    break;
             }
+
+            if (pH) pH.style.borderColor = roundColor;
+            if (pPanel) pPanel.style.borderLeftColor = roundColor;
         }
 
         function applyInteractionState(pi) {
@@ -526,9 +538,8 @@
                     btnSend.disabled = false;
                     ansInput.value = "";
                     ansInput.placeholder = "Nhập đáp án của bạn...";
+                    ansTimerBadge.className = "status-pill status-open";
                     ansTimerBadge.textContent = `${ansDuration}.0s`;
-                    ansTimerBadge.style.color = "var(--yellow)";
-                    ansStatusText.textContent = "Sẵn sàng gửi câu trả lời";
                     setTimeout(() => ansInput.focus(), 50);
                     ansInput.focus();
 
@@ -539,8 +550,8 @@
                     ansInput.disabled = true;
                     btnSend.disabled = true;
                     ansInput.placeholder = "Ô trả lời đang bị khóa...";
+                    ansTimerBadge.className = "status-pill status-locked";
                     ansTimerBadge.textContent = "ĐÃ KHÓA";
-                    ansTimerBadge.style.color = "var(--red)";
                     if (ansInterval) clearInterval(ansInterval);
                 }
             }
@@ -614,8 +625,8 @@
                 const now = getServerTime();
                 const elapsed = (now - ansStartTime) / 1000;
                 const remaining = Math.max(0, ansDuration - elapsed);
+                ansTimerBadge.className = "status-pill status-open";
                 ansTimerBadge.textContent = `${remaining.toFixed(1)}s`;
-                ansTimerBadge.style.color = "var(--yellow)";
                 if (ansOpen && !ansInput.disabled && document.activeElement !== ansInput) {
                     ansInput.focus();
                 }
@@ -623,8 +634,8 @@
                     ansOpen = false;
                     ansInput.disabled = true;
                     btnSend.disabled = true;
+                    ansTimerBadge.className = "status-pill status-locked";
                     ansTimerBadge.textContent = "HẾT GIỜ";
-                    ansTimerBadge.style.color = "var(--red)";
                     clearInterval(ansInterval);
                 }
             }, 100);
@@ -732,6 +743,8 @@
         socket.on('questionClosed', () => {
             lastAnsVal.textContent = "(chưa có)";
             ansInput.value = "";
+            ansTimerBadge.className = "status-pill status-locked";
+            ansTimerBadge.textContent = "ĐÃ KHÓA";
         });
         socket.on('bellReset', () => {
             hasRung = false;

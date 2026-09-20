@@ -4,17 +4,34 @@
 <head>
     <meta charset="utf-8" />
     <script>
-        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
-            const key = e.key ? e.key.toLowerCase() : '';
-            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
-                e.preventDefault(); return false;
-            }
-            if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
-                e.preventDefault(); return false;
-            }
-        });
+        (function() {
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F12' || e.keyCode === 123) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                const key = e.key ? e.key.toLowerCase() : '';
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'j' || key === 'c' || key === 'k' || key === 'e' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67 || e.keyCode === 75 || e.keyCode === 69)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if ((e.ctrlKey || e.metaKey) && (key === 'u' || key === 's' || e.keyCode === 85 || e.keyCode === 83)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }, true);
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+            });
+        })();
     </script>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Thử Thách 2026 - Viewer</title>
@@ -1111,7 +1128,6 @@
     </div>
 
     <!-- SOCKET.IO CLIENT & AUDIO PLAYER LOGIC -->
-    <script src="https://cdn.jsdelivr.net/npm/disable-devtool"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/crypto-helper.js"></script>
 
@@ -1158,12 +1174,6 @@
             document.addEventListener('dragstart', function (e) {
                 e.preventDefault();
             });
-
-            if (window.DisableDevtool) {
-                try {
-                    window.DisableDevtool();
-                } catch (err) {}
-            }
         }
         disableDevTools();
 
@@ -1837,16 +1847,23 @@
                 container.innerHTML = '';
                 for (let i = 0; i < 4; i++) {
                     const isBlack = colors[i] === 'black';
-                    const nameStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
-                    const textStyle = isBlack ? 'background:#000000; color:#ffffff;' : '';
                     const val = ansArr[i];
                     const ansText = (typeof val === 'object') ? (val.ans || '') : (val || '');
                     const item = document.createElement('div');
                     item.className = 'v2-answer-item';
-                    item.innerHTML = `
-                        <div class="v2-answer-name" style="${nameStyle}">${names[i]}</div>
-                        <div class="v2-answer-text" style="${textStyle}">${ansText}</div>
-                    `;
+                    
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'v2-answer-name';
+                    if (isBlack) { nameDiv.style.background = '#000000'; nameDiv.style.color = '#ffffff'; }
+                    nameDiv.textContent = names[i];
+
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'v2-answer-text';
+                    if (isBlack) { textDiv.style.background = '#000000'; textDiv.style.color = '#ffffff'; }
+                    textDiv.textContent = ansText;
+
+                    item.appendChild(nameDiv);
+                    item.appendChild(textDiv);
                     container.appendChild(item);
                 }
             }
@@ -1931,7 +1948,7 @@
                     const timeEl = div.querySelector('.v3-answer-time');
                     if (nameEl) nameEl.textContent = names[i];
                     if (textEl) textEl.textContent = item.ans || '';
-                    if (timeEl) timeEl.textContent = item.time ? item.time + 's' : '--';
+                    if (timeEl) timeEl.textContent = item.time ? item.time : '--';
                 });
             } else {
                 container.innerHTML = '';
@@ -1939,13 +1956,27 @@
                     const item = list[i] || {};
                     const div = document.createElement('div');
                     div.className = 'v3-answer-item';
-                    div.innerHTML = `
-                        <div class="v3-answer-name">${names[i]}</div>
-                        <div class="v3-answer-bottom">
-                            <div class="v3-answer-text">${item.ans || ''}</div>
-                            <div class="v3-answer-time">${item.time ? item.time + 's' : '--'}</div>
-                        </div>
-                    `;
+                    
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'v3-answer-name';
+                    nameDiv.textContent = names[i];
+
+                    const bottomDiv = document.createElement('div');
+                    bottomDiv.className = 'v3-answer-bottom';
+
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'v3-answer-text';
+                    textDiv.textContent = item.ans || '';
+
+                    const timeDiv = document.createElement('div');
+                    timeDiv.className = 'v3-answer-time';
+                    timeDiv.textContent = item.time ? item.time : '--';
+
+                    bottomDiv.appendChild(textDiv);
+                    bottomDiv.appendChild(timeDiv);
+
+                    div.appendChild(nameDiv);
+                    div.appendChild(bottomDiv);
                     container.appendChild(div);
                 }
             }
@@ -1985,7 +2016,7 @@
                         const ansEl = div.querySelector('.vqphu-ans-row');
                         if (nameEl) nameEl.textContent = nameStr;
                         if (timeEl) timeEl.textContent = item.time ? item.time + 's' : '--';
-                        if (ansEl) ansEl.innerHTML = item.ans || '&nbsp;';
+                        if (ansEl) ansEl.textContent = item.ans || '';
                     });
                 } else {
                     ansContainer.innerHTML = '';
@@ -1994,13 +2025,27 @@
                         const nameStr = item.name || playerNamesList[i] || `Thí sinh ${i + 1}`;
                         const div = document.createElement('div');
                         div.className = 'vqphu-item-viewer';
-                        div.innerHTML = `
-                            <div class="vqphu-top-row">
-                                <div class="vqphu-name-col">${nameStr}</div>
-                                <div class="vqphu-time-col">${item.time ? item.time + 's' : '--'}</div>
-                            </div>
-                            <div class="vqphu-ans-row">${item.ans || '&nbsp;'}</div>
-                        `;
+                        
+                        const topRow = document.createElement('div');
+                        topRow.className = 'vqphu-top-row';
+
+                        const nameCol = document.createElement('div');
+                        nameCol.className = 'vqphu-name-col';
+                        nameCol.textContent = nameStr;
+
+                        const timeCol = document.createElement('div');
+                        timeCol.className = 'vqphu-time-col';
+                        timeCol.textContent = item.time ? item.time + 's' : '--';
+
+                        topRow.appendChild(nameCol);
+                        topRow.appendChild(timeCol);
+
+                        const ansRow = document.createElement('div');
+                        ansRow.className = 'vqphu-ans-row';
+                        ansRow.textContent = item.ans || '';
+
+                        div.appendChild(topRow);
+                        div.appendChild(ansRow);
                         ansContainer.appendChild(div);
                     }
                 }
