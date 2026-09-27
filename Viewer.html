@@ -317,6 +317,7 @@
             min-height: 235px;
             max-height: 235px;
             font-size: 20px;
+            line-height: 1.5;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -335,6 +336,7 @@
             min-height: 120px;
             max-height: 120px;
             padding: 6px 16px;
+            line-height: 1.5;
         }
 
         .graphics-off .question-box,
@@ -352,7 +354,7 @@
             text-align: center;
             width: 100%;
             font-size: 20px;
-            line-height: 1.35;
+            line-height: 1.5;
             word-break: break-word;
             overflow-wrap: break-word;
             white-space: normal;
@@ -365,7 +367,7 @@
             width: 100%;
             max-height: 195px;
             font-size: 22px;
-            line-height: 1.35;
+            line-height: 1.5;
             color: #ffffff;
             word-break: break-word;
             overflow-wrap: break-word;
@@ -444,7 +446,7 @@
         .v4-main-shape {
             width: 100%;
             min-height: 215px;
-            background: #0070c0;
+            background: #00509d;
             color: #ffffff;
             border: 6px solid #000000;
             border-radius: 14px;
@@ -477,6 +479,16 @@
             transform: translate(-50%, -50%);
             z-index: 100;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        #v4TimeBox {
+            background: #005200;
+            color: #ffffff;
+        }
+
+        #vqphuTimeBox {
+            background: #0000ff;
+            color: #ffffff;
         }
 
         /* Keyframe animations for V2 & V3 Answers views */
@@ -571,6 +583,8 @@
             border-top-right-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         /* VIEW: V2 BOARD SEPARATE */
@@ -646,7 +660,7 @@
             background: var(--purple);
             color: var(--white);
             font-size: 16px;
-            line-height: 1.25;
+            line-height: 1.5;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -662,8 +676,9 @@
             transform-origin: center;
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
         }
-        .v3-box.question { background: var(--red); }
-        .v3-box.revealed { background: var(--blue); }
+        .v3-box.question { background: var(--red); line-height: 1.5; }
+        .v3-box.revealed { background: var(--blue); line-height: 1.5; }
+        .v3-box * { line-height: 1.5; }
 
         .graphics-off .v3-box,
         .v3-box.v3-graphic-hidden {
@@ -748,6 +763,8 @@
             justify-content: center;
             text-align: center;
             height: 100%;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .v3-answer-time {
@@ -1398,7 +1415,12 @@
                 if (target) target.classList.remove('hidden');
 
                 applyGraphicVisibility(currentViewGraphics);
-                requestAnimationFrame(fitAllQuestionAndHintBoxes);
+                requestAnimationFrame(() => {
+                    fitAllQuestionAndHintBoxes();
+                    if (view === 'v2_answers' || view === 'v3_answers') {
+                        fitAllAnswersOneLine();
+                    }
+                });
             }
         }
 
@@ -1455,7 +1477,7 @@
                     const style = window.getComputedStyle(targetEl);
                     let lh = parseFloat(style.lineHeight);
                     if (!lh || isNaN(lh)) {
-                        lh = size * 1.35;
+                        lh = size * 1.5;
                     }
                     const paddingTop = parseFloat(style.paddingTop) || 0;
                     const paddingBottom = parseFloat(style.paddingBottom) || 0;
@@ -1474,6 +1496,49 @@
             }
         }
 
+        function fitAnswerTextOneLine(targetEl, maxFontSize = 21, minFontSize = 8) {
+            if (!targetEl) return;
+            targetEl.style.whiteSpace = 'nowrap';
+            targetEl.style.overflow = 'hidden';
+            targetEl.style.textOverflow = 'clip';
+            
+            const text = targetEl.textContent ? targetEl.textContent.trim() : '';
+            if (!text) {
+                targetEl.style.fontSize = maxFontSize + 'px';
+                return;
+            }
+
+            targetEl.style.fontSize = maxFontSize + 'px';
+
+            if (targetEl.clientWidth > 0) {
+                let size = maxFontSize;
+                while (size > minFontSize && targetEl.scrollWidth > targetEl.clientWidth + 1) {
+                    size -= 0.5;
+                    targetEl.style.fontSize = size + 'px';
+                }
+            } else {
+                const isV3 = targetEl.classList.contains('v3-answer-text');
+                const containerWidth = Math.min(780, window.innerWidth - 40);
+                const availWidth = isV3 ? Math.max(60, containerWidth - 120 - 28) : Math.max(60, containerWidth - 28);
+                
+                let size = maxFontSize;
+                const canvas = fitAnswerTextOneLine.canvas || (fitAnswerTextOneLine.canvas = document.createElement('canvas'));
+                const ctx = canvas.getContext('2d');
+                const fontFam = window.getComputedStyle(targetEl).fontFamily || "'Segoe UI', sans-serif";
+                ctx.font = `bold ${size}px ${fontFam}`;
+                while (size > minFontSize && ctx.measureText(text).width > availWidth) {
+                    size -= 0.5;
+                    ctx.font = `bold ${size}px ${fontFam}`;
+                }
+                targetEl.style.fontSize = size + 'px';
+            }
+        }
+
+        function fitAllAnswersOneLine() {
+            document.querySelectorAll('.v2-answer-text').forEach(el => fitAnswerTextOneLine(el, 21, 8));
+            document.querySelectorAll('.v3-answer-text').forEach(el => fitAnswerTextOneLine(el, 21, 8));
+        }
+
         function fitAllQuestionAndHintBoxes() {
             autoFitText(document.getElementById('qText'), document.getElementById('questionBox'), 20, 8, 6);
             autoFitText(document.getElementById('qHint'), document.getElementById('hintBox'), 20, 8);
@@ -1485,7 +1550,10 @@
             autoFitText(document.getElementById('v4qText'), document.querySelector('#v4QuestionBox .v4-main-shape') || document.getElementById('v4QuestionBox'), 22, 8, 5);
         }
 
-        window.addEventListener('resize', fitAllQuestionAndHintBoxes);
+        window.addEventListener('resize', () => {
+            fitAllQuestionAndHintBoxes();
+            fitAllAnswersOneLine();
+        });
 
         let serverTimeOffset = 0;
 
@@ -1594,14 +1662,18 @@
             const t = getCalculatedTime(v4State, 15);
             v4TimeBox.textContent = t;
             const pct = Math.min(100, Math.max(0, ((15 - t) / 15) * 100));
-            v4TimeBox.style.background = `linear-gradient(to bottom, #ffff00 ${pct}%, #39ff14 ${pct}%)`;
-            v4TimeBox.style.color = '#000000';
+            v4TimeBox.style.background = `linear-gradient(to bottom, #6a006a ${pct}%, #005200 ${pct}%)`;
+            v4TimeBox.style.color = '#ffffff';
         }
 
         function renderVQPhuTime(vqState) {
             const el = document.getElementById('vqphuTimeBox');
             if (!el || !vqState) return;
-            el.textContent = getCalculatedTime(vqState, 20);
+            const t = getCalculatedTime(vqState, 20);
+            el.textContent = t;
+            const deg = Math.min(360, Math.max(0, ((20 - t) / 20) * 360));
+            el.style.background = `conic-gradient(#ff0000 0deg ${deg}deg, #0000ff ${deg}deg 360deg)`;
+            el.style.color = '#ffffff';
         }
 
         // Millisecond-accurate local tick loop
@@ -1841,6 +1913,7 @@
                         textEl.textContent = ansText;
                         textEl.style.background = isBlack ? '#000000' : 'var(--aqua)';
                         textEl.style.color = isBlack ? '#ffffff' : 'var(--black)';
+                        fitAnswerTextOneLine(textEl, 21, 8);
                     }
                 });
             } else {
@@ -1861,6 +1934,7 @@
                     textDiv.className = 'v2-answer-text';
                     if (isBlack) { textDiv.style.background = '#000000'; textDiv.style.color = '#ffffff'; }
                     textDiv.textContent = ansText;
+                    fitAnswerTextOneLine(textDiv, 21, 8);
 
                     item.appendChild(nameDiv);
                     item.appendChild(textDiv);
@@ -1947,7 +2021,10 @@
                     const textEl = div.querySelector('.v3-answer-text');
                     const timeEl = div.querySelector('.v3-answer-time');
                     if (nameEl) nameEl.textContent = names[i];
-                    if (textEl) textEl.textContent = item.ans || '';
+                    if (textEl) {
+                        textEl.textContent = item.ans || '';
+                        fitAnswerTextOneLine(textEl, 21, 8);
+                    }
                     if (timeEl) timeEl.textContent = item.time ? item.time : '--';
                 });
             } else {
@@ -1967,6 +2044,7 @@
                     const textDiv = document.createElement('div');
                     textDiv.className = 'v3-answer-text';
                     textDiv.textContent = item.ans || '';
+                    fitAnswerTextOneLine(textDiv, 21, 8);
 
                     const timeDiv = document.createElement('div');
                     timeDiv.className = 'v3-answer-time';

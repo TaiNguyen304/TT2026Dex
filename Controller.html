@@ -293,6 +293,7 @@
             min-height: 235px;
             max-height: 235px;
             font-size: 20px;
+            line-height: 1.5;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -309,6 +310,7 @@
             min-height: 120px;
             max-height: 120px;
             padding: 6px 16px;
+            line-height: 1.5;
         }
 
         #qText, #qHint {
@@ -316,7 +318,7 @@
             text-align: center;
             width: 100%;
             font-size: 20px;
-            line-height: 1.35;
+            line-height: 1.5;
             word-break: break-word;
             overflow-wrap: break-word;
             white-space: normal;
@@ -329,7 +331,7 @@
             width: 100%;
             max-height: 175px;
             font-size: 18px;
-            line-height: 1.35;
+            line-height: 1.5;
             color: #ffffff;
             word-break: break-word;
             overflow-wrap: break-word;
@@ -488,7 +490,7 @@
         .v4-main-shape {
             width: 100%;
             min-height: 180px;
-            background: #0070c0;
+            background: #00509d;
             color: #ffffff;
             border: 5px solid #000000;
             border-radius: 12px;
@@ -524,6 +526,16 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
+        #v4TimeBox {
+            background: #005200;
+            color: #ffffff;
+        }
+
+        #vqphuTimeBox {
+            background: #0000ff;
+            color: #ffffff;
+        }
+
         .timer-hidden,
         .v2-time-box.timer-hidden {
             display: none !important;
@@ -539,7 +551,7 @@
             background: var(--purple);
             color: var(--white);
             font-size: 15px;
-            line-height: 1.25;
+            line-height: 1.5;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -555,8 +567,9 @@
             white-space: normal;
             box-sizing: border-box;
         }
-        .v3-box.question { background: var(--red); }
-        .v3-box.revealed { background: var(--blue); }
+        .v3-box.question { background: var(--red); line-height: 1.5; }
+        .v3-box.revealed { background: var(--blue); line-height: 1.5; }
+        .v3-box * { line-height: 1.5; }
 
         .v3-timer {
             background: var(--blue);
@@ -642,6 +655,8 @@
             border-top-right-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             box-sizing: border-box;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .v3-answer-bottom {
@@ -669,6 +684,8 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .v3-answer-time {
@@ -2150,7 +2167,7 @@
                     const style = window.getComputedStyle(targetEl);
                     let lh = parseFloat(style.lineHeight);
                     if (!lh || isNaN(lh)) {
-                        lh = size * 1.35;
+                        lh = size * 1.5;
                     }
                     const paddingTop = parseFloat(style.paddingTop) || 0;
                     const paddingBottom = parseFloat(style.paddingBottom) || 0;
@@ -2599,6 +2616,40 @@
             switchView('v2_answers');
         }
 
+        function fitAnswerTextOneLine(targetEl, maxFontSize = 19, minFontSize = 8) {
+            if (!targetEl) return;
+            targetEl.style.whiteSpace = 'nowrap';
+            targetEl.style.overflow = 'hidden';
+            targetEl.style.textOverflow = 'clip';
+            const text = targetEl.textContent ? targetEl.textContent.trim() : '';
+            if (!text) {
+                targetEl.style.fontSize = maxFontSize + 'px';
+                return;
+            }
+            targetEl.style.fontSize = maxFontSize + 'px';
+            if (targetEl.clientWidth > 0) {
+                let size = maxFontSize;
+                while (size > minFontSize && targetEl.scrollWidth > targetEl.clientWidth + 1) {
+                    size -= 0.5;
+                    targetEl.style.fontSize = size + 'px';
+                }
+            } else {
+                const isV3 = targetEl.classList.contains('v3-answer-text');
+                const containerWidth = Math.min(780, window.innerWidth - 40);
+                const availWidth = isV3 ? Math.max(60, containerWidth - 120 - 28) : Math.max(60, containerWidth - 28);
+                let size = maxFontSize;
+                const canvas = fitAnswerTextOneLine.canvas || (fitAnswerTextOneLine.canvas = document.createElement('canvas'));
+                const ctx = canvas.getContext('2d');
+                const fontFam = window.getComputedStyle(targetEl).fontFamily || "'Segoe UI', sans-serif";
+                ctx.font = `bold ${size}px ${fontFam}`;
+                while (size > minFontSize && ctx.measureText(text).width > availWidth) {
+                    size -= 0.5;
+                    ctx.font = `bold ${size}px ${fontFam}`;
+                }
+                targetEl.style.fontSize = size + 'px';
+            }
+        }
+
         function renderV2AnswersPreview() {
             const area = document.getElementById('v2AnswersPreviewArea');
             if (!area) return;
@@ -2616,6 +2667,8 @@
                     <div class="v2-answer-text" style="${ansStyle}">${ansText}</div>
                 `;
                 area.appendChild(wrapper);
+                const txt = wrapper.querySelector('.v2-answer-text');
+                if (txt) fitAnswerTextOneLine(txt, 19, 8);
             }
         }
 
@@ -2997,6 +3050,8 @@
                     </div>
                 `;
                 area.appendChild(item);
+                const txt = item.querySelector('.v3-answer-text');
+                if (txt) fitAnswerTextOneLine(txt, 19, 8);
             }
         }
 
@@ -3135,8 +3190,8 @@
             const tBox = document.getElementById('v4TimeBox');
             if (tBox) {
                 tBox.textContent = v4Time;
-                tBox.style.background = '#39ff14';
-                tBox.style.color = '#000000';
+                tBox.style.background = '#005200';
+                tBox.style.color = '#ffffff';
             }
             socket.emit('setPlayerInteraction', {
                 bell: { open: true, round: 'v4', startTime: v4StartTime, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
@@ -3150,8 +3205,8 @@
                     const pct = Math.min(100, Math.max(0, ((15 - v4ExactRemaining) / 15) * 100));
                     const box = document.getElementById('v4TimeBox');
                     if (box) {
-                        box.style.background = `linear-gradient(to bottom, #ffff00 ${pct}%, #39ff14 ${pct}%)`;
-                        box.style.color = '#000000';
+                        box.style.background = `linear-gradient(to bottom, #6a006a ${pct}%, #005200 ${pct}%)`;
+                        box.style.color = '#ffffff';
                     }
                     if (nextSec !== v4Time) {
                         v4Time = nextSec;
@@ -3170,8 +3225,8 @@
                         });
                         if (box) {
                             box.textContent = 0;
-                            box.style.background = '#ffff00';
-                            box.style.color = '#000000';
+                            box.style.background = '#6a006a';
+                            box.style.color = '#ffffff';
                         }
                         syncFullStateToServer();
                     }
@@ -3197,8 +3252,8 @@
             const tBox = document.getElementById('v4TimeBox');
             if (tBox) {
                 tBox.textContent = v4Time;
-                tBox.style.background = '#39ff14';
-                tBox.style.color = '#000000';
+                tBox.style.background = '#005200';
+                tBox.style.color = '#ffffff';
             }
             v4BellLocked = true;
             v4BellLog = [];
@@ -3295,7 +3350,12 @@
             vqphuDuration = 20;
             vqphuStartTime = getServerTime();
             vqphuIsRunning = true;
-            document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
+            const tBox = document.getElementById('vqphuTimeBox');
+            if (tBox) {
+                tBox.textContent = vqphuTimer;
+                tBox.style.background = '#0000ff';
+                tBox.style.color = '#ffffff';
+            }
             vqphuAnswers = []; // Reset đáp án câu hỏi mới
             socket.emit('setPlayerInteraction', {
                 answer: { open: true, round: 'vqphu', startTime: vqphuStartTime, duration: 20 }
@@ -3304,16 +3364,26 @@
                 const elapsed = (getServerTime() - vqphuStartTime) / 1000;
                 const rem = Math.max(0, vqphuDuration - elapsed);
                 const nextSec = Math.ceil(rem);
+                const deg = Math.min(360, Math.max(0, ((20 - nextSec) / 20) * 360));
+                const box = document.getElementById('vqphuTimeBox');
+                if (box) {
+                    box.style.background = `conic-gradient(#ff0000 0deg ${deg}deg, #0000ff ${deg}deg 360deg)`;
+                    box.style.color = '#ffffff';
+                }
                 if (nextSec !== vqphuTimer) {
                     vqphuTimer = nextSec;
-                    document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
+                    if (box) box.textContent = vqphuTimer;
                     syncFullStateToServer();
                 }
                 if (rem <= 0) {
                     vqphuTimer = 0;
                     vqphuIsRunning = false;
                     clearInterval(vqphuTimerInterval);
-                    document.getElementById('vqphuTimeBox').textContent = 0;
+                    if (box) {
+                        box.textContent = 0;
+                        box.style.background = '#ff0000';
+                        box.style.color = '#ffffff';
+                    }
                     socket.emit('setPlayerInteraction', {
                         answer: { open: false, round: 'vqphu' }
                     });
@@ -3337,7 +3407,12 @@
             vqphuDuration = 20;
             vqphuStartTime = 0;
             vqphuIsRunning = false;
-            document.getElementById('vqphuTimeBox').textContent = vqphuTimer;
+            const tBox = document.getElementById('vqphuTimeBox');
+            if (tBox) {
+                tBox.textContent = vqphuTimer;
+                tBox.style.background = '#0000ff';
+                tBox.style.color = '#ffffff';
+            }
             vqphuAnswers = [
                 { name: playerNames[0], ans: '', time: '', playerIndex: 0 },
                 { name: playerNames[1], ans: '', time: '', playerIndex: 1 },
