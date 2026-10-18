@@ -56,7 +56,7 @@ function getDefaultGameState() {
     },
     matchName: "THỬ THÁCH 2026 - LƯỢT X(BẢNG Y)",
     playerNames: ["Người 1", "Người 2", "Người 3", "Người 4"],
-    playerScores: [30, 30, 30, 30],
+    playerScores: [50, 50, 50, 50],
     scoreOption: "reset",
     v2BellLog: [],
     v4BellLog: [],
@@ -72,9 +72,9 @@ function getDefaultGameState() {
       questionIndex: [0, 0, 0, 0],
       qText: "",
       qHint: "",
-      time: 45,
+      time: 60,
       startTime: 0,
-      duration: 45,
+      duration: 60,
       isRunning: false,
       isEnded: false,
       isTimerRunning: false,
@@ -168,6 +168,9 @@ function getOrCreateRoom(roomId, passwords) {
   }
   return rooms[roomId];
 }
+
+// Pre-initialize default demo room 123456
+getOrCreateRoom('123456', ['1111', '2222', '3333', '4444']);
 
 // ==========================================
 // Asymmetric & Hybrid Encryption Utilities

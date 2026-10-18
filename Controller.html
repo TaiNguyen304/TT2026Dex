@@ -66,7 +66,7 @@
         body {
             margin: 0;
             padding: 6px 12px 16px 12px;
-            background-color: #0A3D62;
+            background: linear-gradient(120deg, #2e3192, #2ecc71, #f2c94c);
             color: #111;
             zoom: 0.67;
         }
@@ -952,7 +952,7 @@
                 <div class="score-slot">
                     <div class="player-box" id="box0">
                         <div class="score-name" id="name0">Người 1</div>
-                        <div class="score-value" id="score0">30</div>
+                        <div class="score-value" id="score0">50</div>
                     </div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(0)">Lượt</button>
@@ -962,7 +962,7 @@
                 <div class="score-slot">
                     <div class="player-box" id="box1">
                         <div class="score-name" id="name1">Người 2</div>
-                        <div class="score-value" id="score1">30</div>
+                        <div class="score-value" id="score1">50</div>
                     </div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(1)">Lượt</button>
@@ -972,7 +972,7 @@
                 <div class="score-slot">
                     <div class="player-box" id="box2">
                         <div class="score-name" id="name2">Người 3</div>
-                        <div class="score-value" id="score2">30</div>
+                        <div class="score-value" id="score2">50</div>
                     </div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(2)">Lượt</button>
@@ -982,7 +982,7 @@
                 <div class="score-slot">
                     <div class="player-box" id="box3">
                         <div class="score-name" id="name3">Người 4</div>
-                        <div class="score-value" id="score3">30</div>
+                        <div class="score-value" id="score3">50</div>
                     </div>
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(3)">Lượt</button>
@@ -992,7 +992,7 @@
             </div>
 
             <div class="v1-timer-row">
-                <div class="time-box" id="timeBox">45</div>
+                <div class="time-box" id="timeBox">60</div>
                 <div class="v1-hint-box" id="v1HintBox">Gợi ý</div>
             </div>
 
@@ -1023,7 +1023,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2box0">
                         <div class="score-name" id="v2name0">Người 1</div>
-                        <div class="score-value" id="v2score0">30</div>
+                        <div class="score-value" id="v2score0">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(0,'blue')"></button>
@@ -1047,7 +1047,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2box1">
                         <div class="score-name" id="v2name1">Người 2</div>
-                        <div class="score-value" id="v2score1">30</div>
+                        <div class="score-value" id="v2score1">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(1,'blue')"></button>
@@ -1071,7 +1071,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2box2">
                         <div class="score-name" id="v2name2">Người 3</div>
-                        <div class="score-value" id="v2score2">30</div>
+                        <div class="score-value" id="v2score2">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(2,'blue')"></button>
@@ -1095,7 +1095,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2box3">
                         <div class="score-name" id="v2name3">Người 4</div>
-                        <div class="score-value" id="v2score3">30</div>
+                        <div class="score-value" id="v2score3">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(3,'blue')"></button>
@@ -1138,6 +1138,11 @@
                 </div>
             </div>
 
+            <div style="display: flex; gap: 14px; justify-content: center; align-items: center; margin: 14px auto; flex-wrap: wrap;">
+                <div id="v2StatusAnswerView" style="padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; border: 2px solid #ff0000; background: #ff0000; color: #ffffff;">Trạng thái đáp án: Đang khóa</div>
+                <div id="v2StatusBellView" style="padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; border: 2px solid #ff0000; background: #ff0000; color: #ffffff;">Trạng thái chuông: Đang khóa</div>
+            </div>
+
             <div class="controls">
                 <button style="background:green;color:white;" onclick="openV2InputAnswers()">Nhập đáp án</button>
                 <button style="background:purple;color:white;" onclick="openV2ShowAnswers()">Hiện đáp án (Chuyển View Viewer)</button>
@@ -1151,6 +1156,8 @@
                 <button style="background: var(--purple); color: var(--white);" onclick="setV2Graphic(true)">Hiện graphic câu hỏi</button>
                 <button style="background: var(--black); color: var(--white);" onclick="setV2Graphic(false)">Ẩn graphic câu hỏi</button>
                 <button id="v2TimerToggleBtn" style="background: var(--black); color: var(--white);" onclick="toggleV2Timer()">Ẩn đồng hồ</button>
+                <button style="background: var(--lime); color: var(--black);" onclick="v2OpenAnswer()">Mở đáp án</button>
+                <button style="background: var(--red); color: var(--white);" onclick="v2LockAnswer()">Khóa đáp án</button>
                 <button style="background: var(--lime); color: var(--black);" onclick="v2OpenBell()">Mở chuông</button>
                 <button style="background: var(--red); color: var(--white);" onclick="v2LockBell()">Khóa chuông</button>
                 <button style="background: var(--aqua); color: var(--black);" onclick="v2ResetBell()">Reset chuông</button>
@@ -1172,11 +1179,15 @@
         <!-- VIEW 6: V2 WORD GRID BOARD SEPARATE (VIEWER DISPLAY PREVIEW) -->
         <div id="view-v2_board" class="view-panel hidden">
             <h3 style="text-align:center; margin-bottom:12px;">VÒNG VƯỢT LÊN - BẢNG Ô CHỮ 30 Ô (VIEWER SEPARATE VIEW)</h3>
+            <div style="display: flex; gap: 14px; justify-content: center; align-items: center; margin: 14px auto; flex-wrap: wrap;">
+                <div id="v2BoardStatusAnswerView" style="padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; border: 2px solid #ff0000; background: #ff0000; color: #ffffff;">Trạng thái đáp án: Đang khóa</div>
+                <div id="v2BoardStatusBellView" style="padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; border: 2px solid #ff0000; background: #ff0000; color: #ffffff;">Trạng thái chuông: Đang khóa</div>
+            </div>
             <div class="v2-top" id="v2BoardTopCtrl">
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2BoardBoxCtrl0">
                         <div class="score-name" id="v2BoardNameCtrl0">Người 1</div>
-                        <div class="score-value" id="v2BoardScoreCtrl0">30</div>
+                        <div class="score-value" id="v2BoardScoreCtrl0">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(0,'blue')"></button>
@@ -1200,7 +1211,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2BoardBoxCtrl1">
                         <div class="score-name" id="v2BoardNameCtrl1">Người 2</div>
-                        <div class="score-value" id="v2BoardScoreCtrl1">30</div>
+                        <div class="score-value" id="v2BoardScoreCtrl1">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(1,'blue')"></button>
@@ -1224,7 +1235,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2BoardBoxCtrl2">
                         <div class="score-name" id="v2BoardNameCtrl2">Người 3</div>
-                        <div class="score-value" id="v2BoardScoreCtrl2">30</div>
+                        <div class="score-value" id="v2BoardScoreCtrl2">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(2,'blue')"></button>
@@ -1248,7 +1259,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v2BoardBoxCtrl3">
                         <div class="score-name" id="v2BoardNameCtrl3">Người 4</div>
-                        <div class="score-value" id="v2BoardScoreCtrl3">30</div>
+                        <div class="score-value" id="v2BoardScoreCtrl3">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="setPlayerState(3,'blue')"></button>
@@ -1279,7 +1290,12 @@
                 </div>
                 <div class="v2-questions-bottom" id="v2QBottom"></div>
             </div>
-            <div style="display:flex; gap:10px; justify-content:center; margin-top:60px;">
+            <div class="controls" style="margin-top: 30px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button style="background: var(--lime); color: var(--black);" onclick="v2OpenBell()">Mở chuông</button>
+                <button style="background: var(--red); color: var(--white);" onclick="v2LockBell()">Khóa chuông</button>
+                <button style="background: var(--aqua); color: var(--black);" onclick="v2ResetBell()">Reset chuông</button>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:16px;">
                 <button style="background:yellow; color:black;" onclick="v2ResetBoard()">Reset bảng</button>
                 <button style="background:green; color:white;" onclick="v2RevealAll()">Hiện tất cả ô chữ</button>
                 <button style="background:blue; color:white;" onclick="switchView('v2')">Quay lại Vượt Lên Main</button>
@@ -1324,7 +1340,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v4box0">
                         <div class="score-name" id="v4name0">Người 1</div>
-                        <div class="score-value" id="v4score0">30</div>
+                        <div class="score-value" id="v4score0">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(0,'blue')"></button>
@@ -1351,7 +1367,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v4box1">
                         <div class="score-name" id="v4name1">Người 2</div>
-                        <div class="score-value" id="v4score1">30</div>
+                        <div class="score-value" id="v4score1">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(1,'blue')"></button>
@@ -1378,7 +1394,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v4box2">
                         <div class="score-name" id="v4name2">Người 3</div>
-                        <div class="score-value" id="v4score2">30</div>
+                        <div class="score-value" id="v4score2">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(2,'blue')"></button>
@@ -1405,7 +1421,7 @@
                 <div class="v2-score-slot">
                     <div class="v2-player-box" id="v4box3">
                         <div class="score-name" id="v4name3">Người 4</div>
-                        <div class="score-value" id="v4score3">30</div>
+                        <div class="score-value" id="v4score3">50</div>
                     </div>
                     <div class="v2-state-buttons">
                         <button class="v2-color-btn" style="background:blue" onclick="v4SetPlayerState(3,'blue')"></button>
@@ -1448,6 +1464,11 @@
                 <div class="v4-main-shape">
                     <div id="v4qText"></div>
                 </div>
+            </div>
+
+            <div style="display: flex; gap: 14px; justify-content: center; align-items: center; margin: 14px auto; flex-wrap: wrap;">
+                <div id="v4StatusBellView" style="padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; border: 2px solid #ff0000; background: #ff0000; color: #ffffff;">Trạng thái chuông: Đang khóa</div>
+                <div id="v4StatusStarView" style="padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; border: 2px solid #ff0000; background: #ff0000; color: #ffffff;">Trạng thái sao: Đang khóa</div>
             </div>
 
             <div class="controls">
@@ -1729,15 +1750,15 @@
 
         let matchName = "THỬ THÁCH 2026 - BÁN KẾT X";
         let playerNames = ["Người 1", "Người 2", "Người 3", "Người 4"];
-        let playerScores = [30, 30, 30, 30];
+        let playerScores = [50, 50, 50, 50];
 
         // V1 State
         let currentPlayer = null;
         let round1Data = [[], [], [], []];
         let questionIndex = [0, 0, 0, 0];
-        let timer = 45;
+        let timer = 60;
         let v1StartTime = 0;
-        let v1Duration = 45;
+        let v1Duration = 60;
         let v1IsRunning = false;
         let timerInterval = null;
         let hintUsedForCurrent = false;
@@ -2343,7 +2364,7 @@
 
         function checkAndTriggerV1End() {
             if (currentPlayer === null) return false;
-            const qCountReached = questionIndex[currentPlayer] >= 8;
+            const qCountReached = questionIndex[currentPlayer] >= 12;
 
             if (qCountReached) {
                 isV1Ended = true;
@@ -2363,7 +2384,7 @@
             const timeBox = document.getElementById('timeBox');
             if (!timeBox) return;
             timeBox.textContent = Math.max(0, Math.ceil(timer));
-            if (isV1Ended || timer <= 0 || (currentPlayer !== null && questionIndex[currentPlayer] >= 8)) {
+            if (isV1Ended || timer <= 0 || (currentPlayer !== null && questionIndex[currentPlayer] >= 12)) {
                 timeBox.style.background = '#000000';
                 timeBox.style.color = '#ffffff';
             } else {
@@ -2396,8 +2417,8 @@
         function v1Start() {
             if (currentPlayer === null) return showPopup("Chưa chọn người chơi có lượt!");
             isV1Ended = false;
-            timer = 45;
-            v1Duration = 45;
+            timer = 60;
+            v1Duration = 60;
             v1StartTime = getServerTime();
             v1IsRunning = true;
             hintUsedForCurrent = false;
@@ -2439,7 +2460,7 @@
         function showV1Question() {
             const q = round1Data[currentPlayer] ? round1Data[currentPlayer][questionIndex[currentPlayer]] : null;
             if (!q) return;
-            document.getElementById('qText').textContent = `Câu ${questionIndex[currentPlayer] + 1}/8: ${q.question}`;
+            document.getElementById('qText').textContent = `Câu ${questionIndex[currentPlayer] + 1}/12: ${q.question}`;
             document.getElementById('qHint').textContent = "";
             syncFullStateToServer();
         }
@@ -2448,7 +2469,7 @@
             if (currentPlayer === null) return showPopup("Chưa chọn người chơi!");
             hintUsedForCurrent = true;
             updateV1HintBoxes();
-            const idx = Math.min(questionIndex[currentPlayer] || 0, 7);
+            const idx = Math.min(questionIndex[currentPlayer] || 0, 11);
             const q = round1Data[currentPlayer] ? round1Data[currentPlayer][idx] : null;
             const hintText = q && q.hint ? q.hint : "";
             document.getElementById('qHint').textContent = "Gợi ý: " + hintText;
@@ -2515,7 +2536,7 @@
             hintUsedForCurrent = false;
             updateV1HintBoxes();
             document.getElementById('qHint').textContent = "";
-            if (questionIndex[currentPlayer] >= 8) {
+            if (questionIndex[currentPlayer] >= 12) {
                 checkAndTriggerV1End();
             } else {
                 showV1Question();
@@ -2561,7 +2582,7 @@
 
         function v1Reset() {
             clearInterval(timerInterval);
-            timer = 45;
+            timer = 60;
             currentPlayer = null;
             hintUsedForCurrent = false;
             updateV1HintBoxes();
@@ -2672,8 +2693,105 @@
             }
         }
 
+        let v2AnswerOpen = false;
+        let v2BellOpen = false;
+        let v4BellOpen = false;
+        let v4StarOpen = false;
+
+        function updateV2AnswerStatusUI(isOpen) {
+            v2AnswerOpen = !!isOpen;
+            const targets = ['v2StatusAnswerView', 'v2BoardStatusAnswerView'];
+            targets.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (v2AnswerOpen) {
+                        el.textContent = "Trạng thái đáp án: Đang mở";
+                        el.style.background = "#008000";
+                        el.style.borderColor = "#008000";
+                        el.style.color = "#ffffff";
+                    } else {
+                        el.textContent = "Trạng thái đáp án: Đang khóa";
+                        el.style.background = "#ff0000";
+                        el.style.borderColor = "#ff0000";
+                        el.style.color = "#ffffff";
+                    }
+                }
+            });
+        }
+
+        function updateV2BellStatusUI(isOpen) {
+            v2BellOpen = !!isOpen;
+            const targets = ['v2StatusBellView', 'v2BoardStatusBellView'];
+            targets.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (v2BellOpen) {
+                        el.textContent = "Trạng thái chuông: Đang mở";
+                        el.style.background = "#008000";
+                        el.style.borderColor = "#008000";
+                        el.style.color = "#ffffff";
+                    } else {
+                        el.textContent = "Trạng thái chuông: Đang khóa";
+                        el.style.background = "#ff0000";
+                        el.style.borderColor = "#ff0000";
+                        el.style.color = "#ffffff";
+                    }
+                }
+            });
+        }
+
+        function updateV4BellStatusUI(isOpen) {
+            v4BellOpen = !!isOpen;
+            const el = document.getElementById('v4StatusBellView');
+            if (el) {
+                if (v4BellOpen) {
+                    el.textContent = "Trạng thái chuông: Đang mở";
+                    el.style.background = "#008000";
+                    el.style.borderColor = "#008000";
+                    el.style.color = "#ffffff";
+                } else {
+                    el.textContent = "Trạng thái chuông: Đang khóa";
+                    el.style.background = "#ff0000";
+                    el.style.borderColor = "#ff0000";
+                    el.style.color = "#ffffff";
+                }
+            }
+        }
+
+        function updateV4StarStatusUI(isOpen) {
+            v4StarOpen = !!isOpen;
+            const el = document.getElementById('v4StatusStarView');
+            if (el) {
+                if (v4StarOpen) {
+                    el.textContent = "Trạng thái sao: Đang mở";
+                    el.style.background = "#008000";
+                    el.style.borderColor = "#008000";
+                    el.style.color = "#ffffff";
+                } else {
+                    el.textContent = "Trạng thái sao: Đang khóa";
+                    el.style.background = "#ff0000";
+                    el.style.borderColor = "#ff0000";
+                    el.style.color = "#ffffff";
+                }
+            }
+        }
+
         function openV2BoardPopup() {
             switchView('v2_board');
+        }
+
+        function v2OpenAnswer() {
+            socket.emit('setPlayerInteraction', {
+                answer: { open: true, round: 'v2', startTime: getServerTime(), duration: 999999 }
+            });
+            updateV2AnswerStatusUI(true);
+        }
+
+        function v2LockAnswer() {
+            socket.emit('setPlayerInteraction', {
+                answer: { open: false, round: 'v2', startTime: 0, duration: 15 }
+            });
+            updateV2AnswerStatusUI(false);
         }
 
         function v2OpenBell() {
@@ -2681,12 +2799,14 @@
             socket.emit('setPlayerInteraction', {
                 bell: { open: true, round: 'v2', startTime: v2BellStartTime, duration: 999999, v2Rung: v2BellRungList }
             });
+            updateV2BellStatusUI(true);
         }
 
         function v2LockBell() {
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
             });
+            updateV2BellStatusUI(false);
         }
 
         function v2ResetBell() {
@@ -2704,6 +2824,7 @@
                 bell: { open: false, round: 'v2', startTime: 0, duration: 15, v2Rung: v2BellRungList }
             });
             socket.emit('resetBell', { round: 'v2' });
+            updateV2BellStatusUI(false);
             syncFullStateToServer();
             showPopup("Đã reset chuông Vòng 2 cho cả 4 người chơi!");
         }
@@ -2724,6 +2845,7 @@
             socket.emit('setPlayerInteraction', {
                 answer: { open: true, round: 'v2', startTime: v2StartTime, duration: 15 }
             });
+            updateV2AnswerStatusUI(true);
             v2TimerInterval = setInterval(() => {
                 const elapsed = (getServerTime() - v2StartTime) / 1000;
                 const rem = Math.max(0, v2Duration - elapsed);
@@ -2746,6 +2868,7 @@
                     socket.emit('setPlayerInteraction', {
                         answer: { open: false, round: 'v2', startTime: 0, duration: 15 }
                     });
+                    updateV2AnswerStatusUI(false);
                     if (box) {
                         box.textContent = 0;
                         box.style.background = '#ffff00';
@@ -2774,6 +2897,7 @@
             socket.emit('setPlayerInteraction', {
                 answer: { open: false, round: 'v2', startTime: 0, duration: 15 }
             });
+            updateV2AnswerStatusUI(false);
             if (v2SelectedQuestionIndex !== null && v2SelectedQuestionIndex !== undefined) {
                 if (v2Questions[v2SelectedQuestionIndex]) {
                     v2Questions[v2SelectedQuestionIndex].used = true;
@@ -3100,6 +3224,7 @@
                     v4Locked: false
                 }
             });
+            updateV4BellStatusUI(true);
         }
 
         function v4LockBell() {
@@ -3111,6 +3236,7 @@
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
             });
+            updateV4BellStatusUI(false);
         }
 
         function v4ResetBell() {
@@ -3129,6 +3255,7 @@
                 bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
             socket.emit('resetBell', { round: 'v4' });
+            updateV4BellStatusUI(false);
             syncFullStateToServer();
             showPopup("Đã reset chuông Vòng 4 cho cả 4 người chơi!");
         }
@@ -3138,12 +3265,14 @@
             socket.emit('setPlayerInteraction', {
                 star: { open: true, chosen: starChosenList, soundPlayed: false }
             });
+            updateV4StarStatusUI(true);
         }
 
         function v4LockStar() {
             socket.emit('setPlayerInteraction', {
                 star: { open: false, chosen: starChosenList, soundPlayed: starSoundPlayedThisTurn }
             });
+            updateV4StarStatusUI(false);
         }
 
         function v4ResetStar() {
@@ -3160,6 +3289,7 @@
                 star: { open: false, chosen: starChosenList, soundPlayed: false }
             });
             socket.emit('resetStar');
+            updateV4StarStatusUI(false);
             syncFullStateToServer();
             showPopup("Đã reset Chọn Sao cho cả 4 người chơi!");
         }
@@ -3196,6 +3326,7 @@
             socket.emit('setPlayerInteraction', {
                 bell: { open: true, round: 'v4', startTime: v4StartTime, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
+            updateV4BellStatusUI(true);
 
             v4Interval = setInterval(() => {
                 if (!v4Paused) {
@@ -3223,6 +3354,7 @@
                         socket.emit('setPlayerInteraction', {
                             bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
                         });
+                        updateV4BellStatusUI(false);
                         if (box) {
                             box.textContent = 0;
                             box.style.background = '#6a006a';
@@ -3262,6 +3394,8 @@
             socket.emit('setPlayerInteraction', {
                 bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
             });
+            updateV4BellStatusUI(false);
+            updateV4StarStatusUI(false);
             socket.emit('closeQuestion', { round: 'v4' });
             syncFullStateToServer();
         }
@@ -3673,7 +3807,7 @@
         };
         document.getElementById("saveOptionBtn").onclick = () => {
             const selected = document.querySelector('input[name="scoreOption"]:checked').value;
-            if (selected === "reset") playerScores = [30, 30, 30, 30];
+            if (selected === "reset") playerScores = [50, 50, 50, 50];
             updateDisplayedScores();
             document.getElementById("optionModal").style.display = "none";
             syncFullStateToServer();
@@ -3894,6 +4028,10 @@
             console.log('[Controller] Connected to server.');
             syncTimeWithServer();
             handleCreateRoom(true);
+            updateV2AnswerStatusUI(false);
+            updateV2BellStatusUI(false);
+            updateV4BellStatusUI(false);
+            updateV4StarStatusUI(false);
             syncFullStateToServer();
         });
 
@@ -3979,6 +4117,7 @@
                 socket.emit('setPlayerInteraction', {
                     bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: parseFloat(data.time) || 0, v4Rung: v4BellRungList, v4Winner: data.playerIndex, v4Locked: true }
                 });
+                updateV4BellStatusUI(false);
             }
             syncFullStateToServer();
         });

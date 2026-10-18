@@ -583,15 +583,34 @@
         disableDevTools();
 
         const urlParams = new URLSearchParams(window.location.search);
-        const roomId = urlParams.get('roomid');
+        let roomId = urlParams.get('roomid');
 
         if (!roomId) {
             document.body.innerHTML = `
-                <div style="background-color: var(--black, #000); color: var(--red, red); width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; text-align: center; padding: 20px;">
-                    Vui lòng nhập tham số ?roomid=Mãphòng trên URL
+                <div style="background-color: var(--black, #000); color: var(--white, #fff); width: 100vw; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; font-size: 18px; font-weight: bold; text-align: center; padding: 20px;">
+                    <div style="color: var(--yellow, yellow); font-size: 26px; letter-spacing: 1px;">🎤 MÀN HÌNH DẪN CHƯƠNG TRÌNH (HOST / MC)</div>
+                    <div style="color: var(--aqua, aqua); font-size: 16px;">Vui lòng nhập mã phòng (6 chữ số) để kết nối:</div>
+                    <div style="display: flex; gap: 10px; max-width: 420px; width: 100%;">
+                        <input type="text" id="promptHostRoomId" placeholder="Nhập mã phòng (vd: 123456)" maxlength="6" value="123456" style="flex: 1; padding: 12px 16px; font-size: 18px; border: 2px solid var(--aqua, aqua); border-radius: 8px; background: #000; color: #fff; text-align: center; outline: none;">
+                        <button id="btnJoinHost" style="padding: 12px 20px; font-size: 16px; background: var(--pink, #ff00cc); color: #fff; border: 2px solid #fff; border-radius: 8px; cursor: pointer;">Vào phòng</button>
+                    </div>
+                    <div style="font-size: 14px; color: #aaa; margin-top: 10px;">
+                        Hoặc <a href="/Controller.html" style="color: var(--lime, #39ff14); text-decoration: underline;">mở Bảng Điều Khiển (Controller)</a> để tạo và quản lý phòng.
+                    </div>
                 </div>
             `;
-            throw new Error("Missing roomid parameter");
+            document.getElementById('btnJoinHost').onclick = function() {
+                const val = document.getElementById('promptHostRoomId').value.trim();
+                if (val && val.length === 6) {
+                    window.location.search = `?roomid=${encodeURIComponent(val)}`;
+                } else {
+                    alert('Vui lòng nhập đúng 6 chữ số mã phòng!');
+                }
+            };
+            document.getElementById('promptHostRoomId').onkeydown = function(e) {
+                if (e.key === 'Enter') document.getElementById('btnJoinHost').click();
+            };
+            throw new Error("Waiting for roomid parameter");
         }
 
         const socket = io();
@@ -831,7 +850,7 @@
             }
 
             // 7. Render Total Scores View (4 bars)
-            const scores = (state.playerScores || [0, 0, 0, 0]).map(s => Math.max(0, s));
+            const scores = (state.playerScores || [50, 50, 50, 50]).map(s => Math.max(0, s));
             for (let i = 0; i < 4; i++) {
                 const nameEl = document.getElementById(`totalScoreName${i}`);
                 const valEl = document.getElementById(`totalScoreVal${i}`);
