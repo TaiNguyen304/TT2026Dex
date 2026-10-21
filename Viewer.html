@@ -799,9 +799,26 @@
         /* VIEW: SCOREBOARD FULL SCREEN LEADERBOARD */
         .scoreboard-view-title {
             text-align: center;
-            font-size: 3rem;
             margin-bottom: 30px;
             color: #000;
+        }
+
+        .scoreboard-title-line1 {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #000000;
+            line-height: 1.2;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .scoreboard-title-line2 {
+            font-size: 2.3rem;
+            font-weight: bold;
+            color: #000000;
+            margin-top: 8px;
+            line-height: 1.2;
+            text-transform: uppercase;
         }
 
         .scoreboard-grid {
@@ -1139,7 +1156,10 @@
 
         <!-- VIEW 12: SCOREBOARD SEPARATE VIEW -->
         <div id="view-scoreboard" class="view-panel hidden">
-            <h1 class="scoreboard-view-title">BẢNG ĐIỂM</h1>
+            <div class="scoreboard-view-title">
+                <div class="scoreboard-title-line1">THỬ THÁCH 2026 DEX VERSION</div>
+                <div class="scoreboard-title-line2" id="scoreboardMatchName"></div>
+            </div>
             <div class="scoreboard-grid" id="scoreboardGridFull"></div>
         </div>
     </div>
@@ -1386,6 +1406,7 @@
         socket.on('matchNameUpdated', (name) => {
             const el = document.getElementById('matchNameDisplay');
             if (el) el.textContent = name || "";
+            updateScoreboardTitle(name);
         });
 
         socket.on('graphicToggled', (viewGraphics) => {
@@ -1730,8 +1751,11 @@
             }
 
             // Match Name
-            if (state.matchName && document.getElementById('matchNameDisplay')) {
-                document.getElementById('matchNameDisplay').textContent = state.matchName;
+            if (state.matchName !== undefined) {
+                if (document.getElementById('matchNameDisplay')) {
+                    document.getElementById('matchNameDisplay').textContent = state.matchName || "";
+                }
+                updateScoreboardTitle(state.matchName);
             }
 
             // Player Names & Scores
@@ -2149,7 +2173,27 @@
             }
         }
 
+        function extractMatchNameSuffix(fullName) {
+            if (!fullName || typeof fullName !== 'string') return '';
+            let name = fullName.trim();
+            // Lược bỏ cụm THỬ THÁCH 2026 - (kèm khoảng trắng và các biến thể gạch nối)
+            name = name.replace(/^THỬ\s+THÁCH\s+2026\s*[-–—:]*\s*/i, '').trim();
+            return name;
+        }
+
+        function updateScoreboardTitle(name) {
+            const el = document.getElementById('scoreboardMatchName');
+            if (!el) return;
+            const rawName = (name !== undefined && name !== null) 
+                ? name 
+                : ((latestViewerState && latestViewerState.matchName) || "");
+            const cleanName = extractMatchNameSuffix(rawName);
+            el.textContent = cleanName;
+            el.style.display = cleanName ? 'block' : 'none';
+        }
+
         function renderFullScoreboardViewer(names, scores) {
+            updateScoreboardTitle();
             const grid = document.getElementById('scoreboardGridFull');
             if (!grid) return;
             grid.innerHTML = '';
