@@ -88,6 +88,13 @@
             transition: border-color 0.3s ease;
         }
 
+        .player-bottom-group {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .player-header {
             background: linear-gradient(135deg, #0f172a, #1e3a8a, #2563eb);
             color: var(--white);
@@ -285,31 +292,34 @@
             </div>
         </div>
 
-        <!-- 2. Section: Nút bấm chuông -->
-        <div class="section-box">
-            <div class="section-title">
-                <span>CHUÔNG</span>
-                <span id="bellStatusBadge" class="status-pill status-locked">ĐANG KHÓA</span>
+        <!-- Bottom Group: Chuông và Sao đẩy sát đáy -->
+        <div class="player-bottom-group">
+            <!-- 2. Section: Nút bấm chuông -->
+            <div class="section-box">
+                <div class="section-title">
+                    <span>CHUÔNG</span>
+                    <span id="bellStatusBadge" class="status-pill status-locked">ĐANG KHÓA</span>
+                </div>
+                <button id="btnBell" class="btn-action btn-bell" disabled>
+                    🔔 BẤM CHUÔNG
+                </button>
+                <div class="info-subtext" id="bellHistory">
+                    Trạng thái chuông: <span id="bellStatusText">Đang khóa</span>
+                </div>
             </div>
-            <button id="btnBell" class="btn-action btn-bell" disabled>
-                🔔 BẤM CHUÔNG
-            </button>
-            <div class="info-subtext" id="bellHistory">
-                Trạng thái chuông: <span id="bellStatusText">Đang khóa</span>
-            </div>
-        </div>
 
-        <!-- 3. Section: Nút Chọn Sao -->
-        <div class="section-box">
-            <div class="section-title">
-                <span>NGÔI SAO HY VỌNG</span>
-                <span id="starStatusBadge" class="status-pill status-locked">ĐANG KHÓA</span>
-            </div>
-            <button id="btnStar" class="btn-action btn-star" disabled>
-                ⭐ CHỌN SAO
-            </button>
-            <div class="info-subtext" id="starHistory">
-                Trạng thái sao: <span id="starStatusText">Đang khóa</span>
+            <!-- 3. Section: Nút Chọn Sao -->
+            <div class="section-box">
+                <div class="section-title">
+                    <span>NGÔI SAO HY VỌNG</span>
+                    <span id="starStatusBadge" class="status-pill status-locked">ĐANG KHÓA</span>
+                </div>
+                <button id="btnStar" class="btn-action btn-star" disabled>
+                    ⭐ CHỌN SAO
+                </button>
+                <div class="info-subtext" id="starHistory">
+                    Trạng thái sao: <span id="starStatusText">Đang khóa</span>
+                </div>
             </div>
         </div>
     </div>
