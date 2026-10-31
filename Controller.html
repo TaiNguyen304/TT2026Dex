@@ -1757,7 +1757,9 @@
         let timer = 60;
         let v1StartTime = 0;
         let v1Duration = 60;
+        let v1ExactRemaining = 60;
         let v1IsRunning = false;
+        let v1Paused = false;
         let timerInterval = null;
         let hintUsedForCurrent = false;
 
@@ -2087,6 +2089,7 @@
                     startTime: v1StartTime,
                     duration: v1Duration,
                     isRunning: v1IsRunning,
+                    isPaused: v1Paused,
                     isEnded: isV1Ended
                 },
                 v2State: {
@@ -2367,10 +2370,13 @@
             if (qCountReached) {
                 isV1Ended = true;
                 v1IsRunning = false;
+                v1Paused = false;
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
                 }
+                const pauseBtn = document.getElementById('pauseBtn');
+                if (pauseBtn) pauseBtn.textContent = 'Tạm dừng';
                 stopSound('45Giay.mp3');
                 updateV1ClockDisplay();
                 return true;
@@ -2394,6 +2400,9 @@
         function setTurn(i) {
             currentPlayer = i;
             isV1Ended = false;
+            v1Paused = false;
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (pauseBtn) pauseBtn.textContent = 'Tạm dừng';
             for (let j = 0; j < 4; j++) {
                 document.getElementById(`box${j}`).classList.remove('active');
             }
@@ -2415,13 +2424,17 @@
         function v1Start() {
             if (currentPlayer === null) return showPopup("Chưa chọn người chơi có lượt!");
             isV1Ended = false;
+            v1Paused = false;
             timer = 60;
             v1Duration = 60;
+            v1ExactRemaining = 60;
             v1StartTime = getServerTime();
             v1IsRunning = true;
             hintUsedForCurrent = false;
             updateV1HintBoxes();
             updateV1ClockDisplay();
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (pauseBtn) pauseBtn.textContent = 'Tạm dừng';
             questionIndex[currentPlayer] = 0;
             showV1Question();
             startV1Timer();
@@ -2431,22 +2444,27 @@
         function startV1Timer() {
             clearInterval(timerInterval);
             v1IsRunning = true;
+            v1Paused = false;
             timerInterval = setInterval(() => {
                 const elapsed = (getServerTime() - v1StartTime) / 1000;
-                const rem = Math.max(0, v1Duration - elapsed);
-                const nextSec = Math.ceil(rem);
+                v1ExactRemaining = Math.max(0, v1Duration - elapsed);
+                const nextSec = Math.ceil(v1ExactRemaining);
                 if (nextSec !== timer) {
                     timer = nextSec;
                     updateV1ClockDisplay();
                     syncFullStateToServer();
                 }
-                if (rem <= 0) {
+                if (v1ExactRemaining <= 0) {
                     timer = 0;
+                    v1ExactRemaining = 0;
                     v1IsRunning = false;
+                    v1Paused = false;
                     if (timerInterval) {
                         clearInterval(timerInterval);
                         timerInterval = null;
                     }
+                    const pauseBtn = document.getElementById('pauseBtn');
+                    if (pauseBtn) pauseBtn.textContent = 'Tạm dừng';
                     stopSound('45Giay.mp3');
                     updateV1ClockDisplay();
                     syncFullStateToServer();
@@ -2501,10 +2519,13 @@
                 playerScores[currentPlayer] = 0;
                 isV1Ended = true;
                 v1IsRunning = false;
+                v1Paused = false;
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
                 }
+                const pauseBtn = document.getElementById('pauseBtn');
+                if (pauseBtn) pauseBtn.textContent = 'Tạm dừng';
                 stopSound('45Giay.mp3');
                 updateV1ClockDisplay();
                 updateDisplayedScores();
@@ -2543,19 +2564,39 @@
         }
 
         function v1Pause() {
+            if (currentPlayer === null || isV1Ended) return;
+
             if (v1IsRunning) {
+                // Tạm dừng
                 v1IsRunning = false;
+                v1Paused = true;
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
                 }
-                stopSound('45Giay.mp3');
+                if (v1StartTime > 0) {
+                    const elapsed = (getServerTime() - v1StartTime) / 1000;
+                    v1ExactRemaining = Math.max(0, v1Duration - elapsed);
+                    timer = Math.ceil(v1ExactRemaining);
+                }
+                updateV1ClockDisplay();
+                const pauseBtn = document.getElementById('pauseBtn');
+                if (pauseBtn) pauseBtn.textContent = 'Tiếp tục';
+                sendPauseSound('45Giay.mp3');
                 syncFullStateToServer();
             } else {
-                v1Duration = timer;
+                // Tiếp tục
+                if (v1ExactRemaining <= 0 && timer <= 0) return;
+                v1IsRunning = true;
+                v1Paused = false;
+                v1Duration = v1ExactRemaining > 0 ? v1ExactRemaining : timer;
                 v1StartTime = getServerTime();
+                const seekTime = Math.max(0, 60 - v1Duration);
+                const pauseBtn = document.getElementById('pauseBtn');
+                if (pauseBtn) pauseBtn.textContent = 'Tạm dừng';
                 startV1Timer();
-                sendSound('45Giay.mp3');
+                sendSound({ name: '45Giay.mp3', volume: 0.5, seekTime: seekTime, restart: false });
+                syncFullStateToServer();
             }
         }
 
@@ -2580,13 +2621,20 @@
 
         function v1Reset() {
             clearInterval(timerInterval);
+            timerInterval = null;
             timer = 60;
+            v1Duration = 60;
+            v1ExactRemaining = 60;
+            v1IsRunning = false;
+            v1Paused = false;
             currentPlayer = null;
             hintUsedForCurrent = false;
             updateV1HintBoxes();
             for (let j = 0; j < 4; j++) {
                 document.getElementById(`box${j}`)?.classList.remove('active');
             }
+            const pauseBtn = document.getElementById('pauseBtn');
+            if (pauseBtn) pauseBtn.textContent = 'Tạm dừng';
             document.getElementById('timeBox').textContent = timer;
             document.getElementById('qText').textContent = "";
             document.getElementById('qHint').textContent = "";

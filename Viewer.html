@@ -1314,20 +1314,19 @@
                 if (seekTime !== undefined && typeof seekTime === 'number') {
                     const setTimeAndPlay = () => {
                         try {
-                            audio.currentTime = seekTime;
+                            if (Math.abs(audio.currentTime - seekTime) > 0.3) {
+                                audio.currentTime = seekTime;
+                            }
                         } catch (e) {}
                         audio.play().catch(e => console.log(`[Audio Play Error] ${name}:`, e));
                     };
 
                     if (audio.readyState >= 1) {
-                        try {
-                            audio.currentTime = seekTime;
-                        } catch (e) {}
-                        audio.play().catch(e => console.log(`[Audio Play Error] ${name}:`, e));
+                        setTimeAndPlay();
                     } else {
                         audio.addEventListener('loadedmetadata', setTimeAndPlay, { once: true });
                         audio.addEventListener('canplay', setTimeAndPlay, { once: true });
-                        audio.play().catch(e => console.log(`[Audio Play Error] ${name}:`, e));
+                        audio.load();
                     }
                 } else {
                     if (typeof soundData === 'string' || (soundData && soundData.restart !== false)) {
@@ -1345,8 +1344,10 @@
         function pauseSound(soundName) {
             try {
                 let name = typeof soundName === 'object' && soundName !== null ? soundName.name : soundName;
-                if (name && audioCache[name]) {
-                    audioCache[name].pause();
+                if (!name) return;
+                const audio = audioCache[name] || audioCache[encodeURI(name)];
+                if (audio) {
+                    audio.pause();
                 }
             } catch (err) {}
         }
@@ -1354,10 +1355,12 @@
         function stopSound(soundName) {
             try {
                 let name = typeof soundName === 'object' && soundName !== null ? soundName.name : soundName;
-                if (name && audioCache[name]) {
-                    audioCache[name].pause();
+                if (!name) return;
+                const audio = audioCache[name] || audioCache[encodeURI(name)];
+                if (audio) {
+                    audio.pause();
                     try {
-                        audioCache[name].currentTime = 0;
+                        audio.currentTime = 0;
                     } catch (e) {}
                 }
             } catch (err) {}
@@ -1719,7 +1722,7 @@
         // Millisecond-accurate local tick loop
         setInterval(() => {
             if (!latestViewerState) return;
-            if (latestViewerState.v1State && latestViewerState.v1State.isRunning) {
+            if (latestViewerState.v1State && latestViewerState.v1State.isRunning && !latestViewerState.v1State.isPaused) {
                 renderV1Time(latestViewerState.v1State);
             }
             if (latestViewerState.v2State && latestViewerState.v2State.isRunning) {

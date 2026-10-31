@@ -76,6 +76,7 @@ function getDefaultGameState() {
       startTime: 0,
       duration: 60,
       isRunning: false,
+      isPaused: false,
       isEnded: false,
       isTimerRunning: false,
       timeColor: "blue"
