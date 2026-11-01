@@ -581,7 +581,7 @@
                     btnBell.disabled = false;
                     bellStatusBadge.className = "status-pill status-open";
                     bellStatusBadge.textContent = "ĐÃ MỞ";
-                    bellStatusText.textContent = "Chuông đang mở! Bấm ngay!";
+                    bellStatusText.textContent = "Đang mở";
                 } else {
                     bellOpen = false;
                     btnBell.disabled = true;
@@ -589,9 +589,9 @@
                     bellStatusBadge.textContent = "ĐANG KHÓA";
 
                     if (hasRung) {
-                        bellStatusText.textContent = "Bạn đã bấm chuông!";
+                        bellStatusText.textContent = "Bạn đã bấm";
                     } else if (b.v4Winner !== null && b.v4Winner !== undefined && b.v4Winner !== PLAYER_INDEX) {
-                        bellStatusText.textContent = `Thí sinh ${b.v4Winner + 1} đã bấm trước!`;
+                        bellStatusText.textContent = `Thí sinh ${b.v4Winner + 1}`;
                     } else {
                         bellStatusText.textContent = "Đang khóa";
                     }
@@ -609,7 +609,7 @@
                     btnStar.disabled = false;
                     starStatusBadge.className = "status-pill status-open";
                     starStatusBadge.textContent = "ĐÃ MỞ";
-                    starStatusText.textContent = "Bạn có thể chọn ngôi sao!";
+                    starStatusText.textContent = "Đang mở";
                 } else {
                     starOpen = false;
                     btnStar.disabled = true;
@@ -617,7 +617,7 @@
                     starStatusBadge.textContent = "ĐANG KHÓA";
 
                     if (hasChosenStar) {
-                        starStatusText.textContent = "Đã chọn Ngôi sao!";
+                        starStatusText.textContent = "Đã chọn sao";
                     } else {
                         starStatusText.textContent = "Đang khóa";
                     }
