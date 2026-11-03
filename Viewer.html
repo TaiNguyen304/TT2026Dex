@@ -91,7 +91,16 @@
             background: #fff;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            transition: opacity 0.3s ease;
+            transition: none !important;
+            animation: none !important;
+        }
+
+        #main:has(#view-scoreboard:not(.hidden)),
+        #main.scoreboard-active {
+            transform: scale(1.2);
+            transform-origin: center center;
+            transition: none !important;
+            animation: none !important;
         }
 
         /* Graphic Off State - ONLY hides specified elements:
@@ -166,6 +175,9 @@
 
         .opening-title { font-size: 2.8rem; margin-bottom: 20px; }
         .opening-subtitle { font-size: 2.5rem; color: #000; }
+        .opening-line1 { font-size: 2.8rem; margin-bottom: 14px; color: #000; }
+        .opening-line2 { font-size: 3.8rem; color: #000000; margin-bottom: 18px; letter-spacing: 2px; }
+        .opening-line3 { font-size: 2.5rem; color: #000; }
 
         /* VIEW: PLAYERS LIST */
         .match-name-header {
@@ -797,6 +809,10 @@
         }
 
         /* VIEW: SCOREBOARD FULL SCREEN LEADERBOARD */
+        #view-scoreboard {
+            margin: 10px auto;
+        }
+
         .scoreboard-view-title {
             text-align: center;
             margin-bottom: 30px;
@@ -906,14 +922,15 @@
         <!-- VIEW 1: OPENING -->
         <div id="view-opening" class="view-panel">
             <div class="opening-screen">
-                <div class="opening-title">CHÀO MỪNG ĐẾN VỚI VÒNG BÁN KẾT</div>
-                <div class="opening-subtitle">THỬ THÁCH 2026 - DEX VERSION</div>
+                <div class="opening-line1">CHÀO MỪNG ĐẾN VỚI</div>
+                <div class="opening-line2">TRẬN CHUNG KẾT</div>
+                <div class="opening-line3">THỬ THÁCH 2026 - DEX VERSION</div>
             </div>
         </div>
 
         <!-- VIEW 2: PLAYERS LIST -->
         <div id="view-players" class="view-panel hidden">
-            <h2 id="matchNameDisplay" class="match-name-header">THỬ THÁCH 2026</h2>
+            <h2 id="matchNameDisplay" class="match-name-header">THỬ THÁCH 2026 - CHUNG KẾT NĂM</h2>
             <div class="players-list" id="playersListArea">
                 <div class="player-card card-p0" id="playerCard0"></div>
                 <div class="player-card card-p1" id="playerCard1"></div>
@@ -1456,6 +1473,15 @@
                 document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
                 const target = document.getElementById(`view-${view}`);
                 if (target) target.classList.remove('hidden');
+
+                const mainBox = document.getElementById('main');
+                if (mainBox) {
+                    if (view === 'scoreboard') {
+                        mainBox.classList.add('scoreboard-active');
+                    } else {
+                        mainBox.classList.remove('scoreboard-active');
+                    }
+                }
 
                 applyGraphicVisibility(currentViewGraphics);
                 requestAnimationFrame(() => {

@@ -241,6 +241,19 @@
             border-left: 3px solid var(--aqua);
         }
 
+        .status-2lines {
+            min-height: calc(2 * 1.3 * 0.8rem + 12px);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .status-blank-line {
+            line-height: 1.3;
+            user-select: none;
+        }
+
         .last-ans-text {
             color: var(--lime);
             word-break: break-word;
@@ -303,8 +316,9 @@
                 <button id="btnBell" class="btn-action btn-bell" disabled>
                     🔔 BẤM CHUÔNG
                 </button>
-                <div class="info-subtext" id="bellHistory">
-                    Trạng thái chuông: <span id="bellStatusText">Đang khóa</span>
+                <div class="info-subtext status-2lines" id="bellHistory">
+                    <div id="bellTextWrap">Trạng thái chuông: <span id="bellStatusText">Đang khóa</span></div>
+                    <div id="bellBlankLine" class="status-blank-line">&nbsp;</div>
                 </div>
             </div>
 
@@ -317,8 +331,9 @@
                 <button id="btnStar" class="btn-action btn-star" disabled>
                     ⭐ CHỌN SAO
                 </button>
-                <div class="info-subtext" id="starHistory">
-                    Trạng thái sao: <span id="starStatusText">Đang khóa</span>
+                <div class="info-subtext status-2lines" id="starHistory">
+                    <div id="starTextWrap">Trạng thái sao: <span id="starStatusText">Đang khóa</span></div>
+                    <div id="starBlankLine" class="status-blank-line">&nbsp;</div>
                 </div>
             </div>
         </div>
@@ -767,7 +782,35 @@
             } else if (data.round && String(data.round).startsWith('v4')) {
                 bellStatusText.textContent = `Thí sinh ${data.playerIndex + 1} đã bấm trước! (${data.time}s)`;
             }
+            updateStatusLines();
         });
+
+        function updateStatusLines() {
+            ['bell', 'star'].forEach(prefix => {
+                const wrap = document.getElementById(prefix + 'TextWrap');
+                const blank = document.getElementById(prefix + 'BlankLine');
+                if (!wrap || !blank) return;
+                blank.style.display = 'none';
+                const height = wrap.offsetHeight;
+                if (height === 0) {
+                    const textEl = document.getElementById(prefix + 'StatusText');
+                    const isShort = !textEl || textEl.textContent.length < 24;
+                    blank.style.display = isShort ? 'block' : 'none';
+                } else if (height <= 24) {
+                    blank.style.display = 'block';
+                } else {
+                    blank.style.display = 'none';
+                }
+            });
+        }
+
+        const statusObserver = new MutationObserver(() => {
+            updateStatusLines();
+        });
+        if (bellStatusText) statusObserver.observe(bellStatusText, { childList: true, characterData: true, subtree: true });
+        if (starStatusText) statusObserver.observe(starStatusText, { childList: true, characterData: true, subtree: true });
+        window.addEventListener('resize', updateStatusLines);
+        setTimeout(updateStatusLines, 50);
     </script>
 </body>
 </html>

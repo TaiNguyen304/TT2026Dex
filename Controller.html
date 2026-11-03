@@ -152,6 +152,8 @@
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            transition: none !important;
+            animation: none !important;
         }
 
         .opening-screen {
@@ -165,6 +167,9 @@
 
         .opening-title { font-size: 2rem; margin-bottom: 16px; }
         .opening-subtitle { font-size: 2rem; }
+        .opening-line1 { font-size: 2rem; margin-bottom: 12px; color: #000; }
+        .opening-line2 { font-size: 2.6rem; color: #000000; margin-bottom: 14px; letter-spacing: 2px; }
+        .opening-line3 { font-size: 2rem; color: #000; }
 
         .match-name-header {
             text-align: center;
@@ -901,7 +906,7 @@
         <span>Giao diện Graphic trên Viewer:</span>
         <button id="graphicToggleBtn" class="btn-graphic" onclick="toggleGraphicCurrentView()">Graphic: HIỆN</button>
         <span id="currentViewStatus" class="status-badge">View hiện tại: Mở đầu</span>
-        <a href="https://tt2026dex.onrender.com/Viewer.html" id="viewerLink" target="_blank" style="color:yellow; text-decoration:underline; font-size:0.9rem;">Mở Cửa Sổ Viewer (OnRender) ↗</a>
+        <a href="/Viewer.html" id="viewerLink" target="_blank" style="color:yellow; text-decoration:underline; font-size:0.9rem;">Mở Cửa Sổ Viewer ↗</a>
     </div>
 
     <div class="modal-backdrop" id="optionModal">
@@ -928,14 +933,15 @@
         <!-- VIEW 1: OPENING -->
         <div id="view-opening" class="view-panel">
             <div class="opening-screen">
-                <div class="opening-title">CHÀO MỪNG ĐẾN VỚI VÒNG BÁN KẾT</div>
-                <div class="opening-subtitle">THỬ THÁCH 2026 - DEX VERSION</div>
+                <div class="opening-line1">CHÀO MỪNG ĐẾN VỚI</div>
+                <div class="opening-line2">TRẬN CHUNG KẾT</div>
+                <div class="opening-line3">THỬ THÁCH 2026 - DEX VERSION</div>
             </div>
         </div>
 
         <!-- VIEW 2: PLAYERS LIST -->
         <div id="view-players" class="view-panel hidden">
-            <h2 id="matchNameDisplay" class="match-name-header">THỬ THÁCH 2026 - BÁN KẾT X</h2>
+            <h2 id="matchNameDisplay" class="match-name-header">THỬ THÁCH 2026 - CHUNG KẾT NĂM</h2>
             <div class="players-list" id="playersListArea"></div>
             <div class="controls" style="margin-top:20px; justify-content:center; gap:12px; flex-wrap:wrap;">
                 <button id="btnToggleP0" style="background:var(--blue); color:white;" onclick="togglePlayerVisibility(0)">Hiện Player 1</button>
@@ -1746,7 +1752,7 @@
             vqphu_answers: true, scoreboard: true
         };
 
-        let matchName = "THỬ THÁCH 2026 - BÁN KẾT X";
+        let matchName = "THỬ THÁCH 2026 - CHUNG KẾT NĂM";
         let playerNames = ["Người 1", "Người 2", "Người 3", "Người 4"];
         let playerScores = [50, 50, 50, 50];
 

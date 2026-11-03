@@ -54,7 +54,7 @@ function getDefaultGameState() {
       v2: true,
       v4: true
     },
-    matchName: "THỬ THÁCH 2026 - LƯỢT X(BẢNG Y)",
+    matchName: "THỬ THÁCH 2026 - CHUNG KẾT NĂM",
     playerNames: ["Người 1", "Người 2", "Người 3", "Người 4"],
     playerScores: [50, 50, 50, 50],
     scoreOption: "reset",
@@ -170,8 +170,7 @@ function getOrCreateRoom(roomId, passwords) {
   return rooms[roomId];
 }
 
-// Pre-initialize default demo room 123456
-getOrCreateRoom('123456', ['1111', '2222', '3333', '4444']);
+// Rooms are created dynamically when initiated by Controller
 
 // ==========================================
 // Asymmetric & Hybrid Encryption Utilities
