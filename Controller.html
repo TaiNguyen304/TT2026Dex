@@ -213,7 +213,7 @@
         .players-list .player-card:nth-child(4) { background-image: url('Player4.png'); }
 
         .v1-top { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; }
-        .score-slot { width: 150px; display: flex; flex-direction: column; align-items: center; }
+        .score-slot { width: 175px; display: flex; flex-direction: column; align-items: center; }
         .player-box {
             background: var(--blue);
             color: var(--white);
@@ -259,9 +259,12 @@
             border-color: #000000;
         }
 
-        .turn-controls { display: flex; gap: 8px; justify-content: center; margin-top: 8px; width: 100%; }
+        .turn-controls { display: flex; gap: 4px; justify-content: center; margin-top: 8px; width: 100%; }
+        .turn-controls button { padding: 6px 4px; font-size: 13px; flex: 1; min-width: 0; }
         .btn-turn-on { background: var(--pink); color: #000000; }
         .btn-turn-off { background: var(--blue); color: var(--white); }
+        .btn-score-half { background: #ff0000; color: #ffffff; }
+        .btn-score-double { background: #ffff00; color: #000000; }
 
         .time-box {
             width: 90px;
@@ -532,8 +535,8 @@
         }
 
         #v4TimeBox {
-            background: #005200;
-            color: #ffffff;
+            background: #00ffff;
+            color: #000000;
         }
 
         #vqphuTimeBox {
@@ -963,6 +966,8 @@
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(0)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(0)">Không</button>
+                        <button class="btn-score-half" onclick="divideScore(0)">:2</button>
+                        <button class="btn-score-double" onclick="doubleScore(0)">x2</button>
                     </div>
                 </div>
                 <div class="score-slot">
@@ -973,6 +978,8 @@
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(1)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(1)">Không</button>
+                        <button class="btn-score-half" onclick="divideScore(1)">:2</button>
+                        <button class="btn-score-double" onclick="doubleScore(1)">x2</button>
                     </div>
                 </div>
                 <div class="score-slot">
@@ -983,6 +990,8 @@
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(2)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(2)">Không</button>
+                        <button class="btn-score-half" onclick="divideScore(2)">:2</button>
+                        <button class="btn-score-double" onclick="doubleScore(2)">x2</button>
                     </div>
                 </div>
                 <div class="score-slot">
@@ -993,6 +1002,8 @@
                     <div class="turn-controls">
                         <button class="btn-turn-on" onclick="setTurn(3)">Lượt</button>
                         <button class="btn-turn-off" onclick="unsetTurn(3)">Không</button>
+                        <button class="btn-score-half" onclick="divideScore(3)">:2</button>
+                        <button class="btn-score-double" onclick="doubleScore(3)">x2</button>
                     </div>
                 </div>
             </div>
@@ -1463,7 +1474,7 @@
                         </defs>
                         <polygon points="8,8 992,8 916,122 84,122" fill="url(#ctrlV4TopGrad)" stroke="#000000" stroke-width="16" stroke-linejoin="round" />
                     </svg>
-                    <div class="v2-time-box" id="v4TimeBox" style="margin:0;">15</div>
+                    <div class="v2-time-box" id="v4TimeBox" style="margin:0;">20</div>
                 </div>
                 <div class="v4-main-shape">
                     <div id="v4qText"></div>
@@ -1477,7 +1488,7 @@
 
             <div class="controls">
                 <button style="background:yellow;color:black;" onclick="v4ShowQuestion()">Hiện câu hỏi</button>
-                <button style="background:green;color:white;" onclick="v4StartTimer()">15s Bắt đầu</button>
+                <button style="background:green;color:white;" onclick="v4StartTimer()">20s Bắt đầu</button>
                 <button style="background:#39ff14;color:black;" onclick="v4CloseQuestion()">Đóng câu hỏi</button>
                 <button style="background:purple;color:white;" onclick="v4NextQuestion()">Câu hỏi mới</button>
                 <button style="background:red;color:white;" onclick="openV4RemoveBetPopup()">Gỡ cược điểm</button>
@@ -1809,9 +1820,9 @@
         // V4 State
         let v4Questions = [];
         let v4Index = -1;
-        let v4Time = 15;
+        let v4Time = 20;
         let v4StartTime = 0;
-        let v4Duration = 15;
+        let v4Duration = 20;
         let v4Interval = null;
         let v4Paused = false;
         let v4PlayerColors = ['blue', 'blue', 'blue', 'blue'];
@@ -2138,6 +2149,8 @@
                     time: v4Time,
                     startTime: v4StartTime,
                     duration: v4Duration,
+                    totalDuration: 20,
+                    remaining: v4ExactRemaining,
                     playerColors: v4PlayerColors,
                     bracketState: v4BracketState,
                     counters: v4Counters,
@@ -2348,6 +2361,22 @@
                 if (document.getElementById(`v2BoardScoreCtrl${i}`)) document.getElementById(`v2BoardScoreCtrl${i}`).textContent = s;
                 if (document.getElementById(`v4score${i}`)) document.getElementById(`v4score${i}`).textContent = s;
             }
+        }
+
+        function divideScore(i) {
+            playerScores[i] = Math.round(playerScores[i] / 2);
+            if (playerScores[i] < 0) playerScores[i] = 0;
+            if (document.getElementById(`scoreModal${i}`)) document.getElementById(`scoreModal${i}`).textContent = playerScores[i];
+            updateDisplayedScores();
+            syncFullStateToServer();
+        }
+
+        function doubleScore(i) {
+            playerScores[i] = playerScores[i] * 2;
+            if (playerScores[i] < 0) playerScores[i] = 0;
+            if (document.getElementById(`scoreModal${i}`)) document.getElementById(`scoreModal${i}`).textContent = playerScores[i];
+            updateDisplayedScores();
+            syncFullStateToServer();
         }
 
         function renderFullScoreboard() {
@@ -3286,7 +3315,7 @@
                 accumulated = parseFloat(v4BellLog[v4BellLog.length - 1].time) || 0;
             }
             socket.emit('setPlayerInteraction', {
-                bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
+                bell: { open: false, round: 'v4', startTime: 0, duration: 20, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
             });
             updateV4BellStatusUI(false);
         }
@@ -3304,7 +3333,7 @@
                 }
             }
             socket.emit('setPlayerInteraction', {
-                bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+                bell: { open: false, round: 'v4', startTime: 0, duration: 20, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
             socket.emit('resetBell', { round: 'v4' });
             updateV4BellStatusUI(false);
@@ -3346,16 +3375,16 @@
             showPopup("Đã reset Chọn Sao cho cả 4 người chơi!");
         }
 
-        let v4ExactRemaining = 15;
+        let v4ExactRemaining = 20;
 
         function v4StartTimer() {
             if (v4Interval) {
                 clearInterval(v4Interval);
                 v4Interval = null;
             }
-            v4ExactRemaining = 15.0;
-            v4Duration = 15.0;
-            v4Time = 15;
+            v4ExactRemaining = 20.0;
+            v4Duration = 20.0;
+            v4Time = 20;
             v4StartTime = getServerTime();
             v4Paused = false;
             const pauseBtn = document.getElementById("v4PauseBtn");
@@ -3372,11 +3401,11 @@
             const tBox = document.getElementById('v4TimeBox');
             if (tBox) {
                 tBox.textContent = v4Time;
-                tBox.style.background = '#005200';
-                tBox.style.color = '#ffffff';
+                tBox.style.background = '#00ffff';
+                tBox.style.color = '#000000';
             }
             socket.emit('setPlayerInteraction', {
-                bell: { open: true, round: 'v4', startTime: v4StartTime, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
+                bell: { open: true, round: 'v4', startTime: v4StartTime, duration: 20, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
             });
             updateV4BellStatusUI(true);
 
@@ -3385,11 +3414,11 @@
                     const elapsed = (getServerTime() - v4StartTime) / 1000;
                     v4ExactRemaining = Math.max(0, v4Duration - elapsed);
                     const nextSec = Math.ceil(v4ExactRemaining);
-                    const pct = Math.min(100, Math.max(0, ((15 - v4ExactRemaining) / 15) * 100));
+                    const pct = Math.min(100, Math.max(0, ((20 - v4ExactRemaining) / 20) * 100));
                     const box = document.getElementById('v4TimeBox');
                     if (box) {
-                        box.style.background = `linear-gradient(to bottom, #6a006a ${pct}%, #005200 ${pct}%)`;
-                        box.style.color = '#ffffff';
+                        box.style.background = `linear-gradient(to bottom, #ff69b4 ${pct}%, #00ffff ${pct}%)`;
+                        box.style.color = '#000000';
                     }
                     if (nextSec !== v4Time) {
                         v4Time = nextSec;
@@ -3404,13 +3433,13 @@
                         // Tự động khóa chuông khi hết giờ
                         v4BellLocked = true;
                         socket.emit('setPlayerInteraction', {
-                            bell: { open: false, round: 'v4', startTime: 0, duration: 15, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
+                            bell: { open: false, round: 'v4', startTime: 0, duration: 20, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
                         });
                         updateV4BellStatusUI(false);
                         if (box) {
                             box.textContent = 0;
-                            box.style.background = '#6a006a';
-                            box.style.color = '#ffffff';
+                            box.style.background = '#ff69b4';
+                            box.style.color = '#000000';
                         }
                         syncFullStateToServer();
                     }
@@ -3426,9 +3455,9 @@
             }
             stopSound('15s Về Đích.mp3');
             document.getElementById('v4qText').textContent = "";
-            v4ExactRemaining = 15;
-            v4Time = 15;
-            v4Duration = 15;
+            v4ExactRemaining = 20;
+            v4Time = 20;
+            v4Duration = 20;
             v4StartTime = 0;
             v4Paused = false;
             const pauseBtn = document.getElementById("v4PauseBtn");
@@ -3436,15 +3465,15 @@
             const tBox = document.getElementById('v4TimeBox');
             if (tBox) {
                 tBox.textContent = v4Time;
-                tBox.style.background = '#005200';
-                tBox.style.color = '#ffffff';
+                tBox.style.background = '#00ffff';
+                tBox.style.color = '#000000';
             }
             v4BellLocked = true;
             v4BellLog = [];
             v4BellRungList = [false, false, false, false];
             v4BellWinner = null;
             socket.emit('setPlayerInteraction', {
-                bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
+                bell: { open: false, round: 'v4', startTime: 0, duration: 20, accumulatedTime: 0, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
             });
             updateV4BellStatusUI(false);
             updateV4StarStatusUI(false);
@@ -3484,19 +3513,23 @@
                     v4ExactRemaining = Math.max(0, v4Duration - elapsed);
                     v4Time = Math.ceil(v4ExactRemaining);
                 }
+                const tBox = document.getElementById('v4TimeBox');
+                if (tBox) {
+                    tBox.textContent = v4Time;
+                }
                 sendPauseSound('15s Về Đích.mp3');
                 let accumulated = 0;
                 if (v4BellLog && v4BellLog.length > 0) {
                     accumulated = parseFloat(v4BellLog[v4BellLog.length - 1].time) || 0;
                 }
                 socket.emit('setPlayerInteraction', {
-                    bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
+                    bell: { open: false, round: 'v4', startTime: 0, duration: 20, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: v4BellWinner, v4Locked: true }
                 });
             } else {
-                // Tiếp tục đồng hồ với thời gian còn lại chính xác
+                // Tiếp tục đồng hồ chính xác từ số giây còn lại
                 v4Duration = v4ExactRemaining;
                 v4StartTime = getServerTime();
-                const seekTime = Math.max(0, 15 - v4ExactRemaining);
+                const seekTime = Math.max(0, 20 - v4ExactRemaining);
                 sendSound({ name: '15s Về Đích.mp3', seekTime: seekTime });
                 v4BellWinner = null;
                 v4BellLocked = false;
@@ -3507,6 +3540,44 @@
                 socket.emit('setPlayerInteraction', {
                     bell: { open: true, round: 'v4', startTime: v4StartTime, duration: v4Duration, accumulatedTime: accumulated, v4Rung: v4BellRungList, v4Winner: null, v4Locked: false }
                 });
+
+                if (!v4Interval) {
+                    v4Interval = setInterval(() => {
+                        if (!v4Paused) {
+                            const elapsed = (getServerTime() - v4StartTime) / 1000;
+                            v4ExactRemaining = Math.max(0, v4Duration - elapsed);
+                            const nextSec = Math.ceil(v4ExactRemaining);
+                            const pct = Math.min(100, Math.max(0, ((20 - v4ExactRemaining) / 20) * 100));
+                            const box = document.getElementById('v4TimeBox');
+                            if (box) {
+                                box.style.background = `linear-gradient(to bottom, #ff69b4 ${pct}%, #00ffff ${pct}%)`;
+                                box.style.color = '#000000';
+                            }
+                            if (nextSec !== v4Time) {
+                                v4Time = nextSec;
+                                if (box) box.textContent = v4Time;
+                                syncFullStateToServer();
+                            }
+                            if (v4ExactRemaining <= 0) {
+                                v4Time = 0;
+                                v4ExactRemaining = 0;
+                                clearInterval(v4Interval);
+                                v4Interval = null;
+                                v4BellLocked = true;
+                                socket.emit('setPlayerInteraction', {
+                                    bell: { open: false, round: 'v4', startTime: 0, duration: 20, v4Rung: v4BellRungList, v4Winner: null, v4Locked: true }
+                                });
+                                updateV4BellStatusUI(false);
+                                if (box) {
+                                    box.textContent = 0;
+                                    box.style.background = '#ff69b4';
+                                    box.style.color = '#000000';
+                                }
+                                syncFullStateToServer();
+                            }
+                        }
+                    }, 100);
+                }
             }
             syncFullStateToServer();
         }
@@ -4157,6 +4228,10 @@
                     v4ExactRemaining = Math.max(0, v4Duration - elapsed);
                     v4Time = Math.ceil(v4ExactRemaining);
                 }
+                const tBox = document.getElementById('v4TimeBox');
+                if (tBox) {
+                    tBox.textContent = v4Time;
+                }
                 const pauseBtn = document.getElementById("v4PauseBtn");
                 if (pauseBtn) pauseBtn.textContent = "Tiếp tục";
                 sendPauseSound('15s Về Đích.mp3');
@@ -4167,7 +4242,7 @@
 
                 // Khóa chuông 3 người còn lại
                 socket.emit('setPlayerInteraction', {
-                    bell: { open: false, round: 'v4', startTime: 0, duration: 15, accumulatedTime: parseFloat(data.time) || 0, v4Rung: v4BellRungList, v4Winner: data.playerIndex, v4Locked: true }
+                    bell: { open: false, round: 'v4', startTime: 0, duration: 20, accumulatedTime: parseFloat(data.time) || 0, v4Rung: v4BellRungList, v4Winner: data.playerIndex, v4Locked: true }
                 });
                 updateV4BellStatusUI(false);
             }

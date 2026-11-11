@@ -63,7 +63,7 @@ function getDefaultGameState() {
 
     playerInteraction: {
       answer: { open: false, round: null, startTime: 0, duration: 15 },
-      bell: { open: false, round: null, startTime: 0, duration: 15, v2Rung: [false, false, false, false], v4Rung: [false, false, false, false], v4Winner: null, v4Locked: false },
+      bell: { open: false, round: null, startTime: 0, duration: 20, v2Rung: [false, false, false, false], v4Rung: [false, false, false, false], v4Winner: null, v4Locked: false },
       star: { open: false, chosen: [false, false, false, false], soundPlayed: false }
     },
 
@@ -125,9 +125,9 @@ function getDefaultGameState() {
       questions: [],
       qText: "",
       qHint: "",
-      time: 15,
+      time: 20,
       startTime: 0,
-      duration: 15,
+      duration: 20,
       isRunning: false,
       isPaused: false,
       isTimerRunning: false,

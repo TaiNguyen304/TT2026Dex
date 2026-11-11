@@ -592,7 +592,7 @@
                     bellOpen = true;
                     bellStartTime = b.startTime || getServerTime();
                     bellAccumulatedTime = b.accumulatedTime || 0;
-                    bellDuration = (b.round === 'v2') ? 999999 : (b.duration || 15);
+                    bellDuration = (b.round === 'v2') ? 999999 : (b.duration || 20);
                     btnBell.disabled = false;
                     bellStatusBadge.className = "status-pill status-open";
                     bellStatusBadge.textContent = "ĐÃ MỞ";
