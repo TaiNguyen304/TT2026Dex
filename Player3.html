@@ -242,11 +242,21 @@
         }
 
         .status-2lines {
+            height: calc(2 * 1.3 * 0.8rem + 12px);
             min-height: calc(2 * 1.3 * 0.8rem + 12px);
+            max-height: calc(2 * 1.3 * 0.8rem + 12px);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            overflow: hidden;
+        }
+
+        .status-text-wrap {
+            width: 100%;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .status-blank-line {
@@ -256,6 +266,7 @@
 
         .last-ans-text {
             color: var(--lime);
+            overflow-wrap: anywhere;
             word-break: break-word;
         }
 
@@ -300,8 +311,8 @@
             <button id="btnSend" class="btn-action btn-send" disabled>
                 GỬI ĐÁP ÁN (ENTER)
             </button>
-            <div class="info-subtext" id="ansHistory">
-                Đáp án gửi: <span class="last-ans-text" id="lastAnsVal">(chưa có)</span>
+            <div class="info-subtext status-2lines" id="ansHistory">
+                <div id="ansTextWrap" class="status-text-wrap">Đáp án gửi: <span class="last-ans-text" id="lastAnsVal">(chưa có)</span></div>
             </div>
         </div>
 
@@ -317,8 +328,8 @@
                     🔔 BẤM CHUÔNG
                 </button>
                 <div class="info-subtext status-2lines" id="bellHistory">
-                    <div id="bellTextWrap">Trạng thái chuông: <span id="bellStatusText">Đang khóa</span></div>
-                    <div id="bellBlankLine" class="status-blank-line">&nbsp;</div>
+                    <div id="bellTextWrap" class="status-text-wrap">Trạng thái chuông: <span id="bellStatusText">Đang khóa</span></div>
+                    <div id="bellBlankLine" class="status-blank-line" style="display:none;">&nbsp;</div>
                 </div>
             </div>
 
@@ -332,8 +343,8 @@
                     ⭐ CHỌN SAO
                 </button>
                 <div class="info-subtext status-2lines" id="starHistory">
-                    <div id="starTextWrap">Trạng thái sao: <span id="starStatusText">Đang khóa</span></div>
-                    <div id="starBlankLine" class="status-blank-line">&nbsp;</div>
+                    <div id="starTextWrap" class="status-text-wrap">Trạng thái sao: <span id="starStatusText">Đang khóa</span></div>
+                    <div id="starBlankLine" class="status-blank-line" style="display:none;">&nbsp;</div>
                 </div>
             </div>
         </div>
@@ -785,28 +796,54 @@
             updateStatusLines();
         });
 
+        let isUpdatingStatusLines = false;
         function updateStatusLines() {
-            ['bell', 'star'].forEach(prefix => {
-                const wrap = document.getElementById(prefix + 'TextWrap');
-                const blank = document.getElementById(prefix + 'BlankLine');
-                if (!wrap || !blank) return;
-                blank.style.display = 'none';
-                const height = wrap.offsetHeight;
-                if (height === 0) {
-                    const textEl = document.getElementById(prefix + 'StatusText');
-                    const isShort = !textEl || textEl.textContent.length < 24;
-                    blank.style.display = isShort ? 'block' : 'none';
-                } else if (height <= 24) {
-                    blank.style.display = 'block';
-                } else {
-                    blank.style.display = 'none';
-                }
-            });
+            if (isUpdatingStatusLines) return;
+            isUpdatingStatusLines = true;
+            try {
+                const baseSize = parseFloat(getComputedStyle(document.documentElement).fontSize) * 0.8 || 12.8;
+                ['ans', 'bell', 'star'].forEach(prefix => {
+                    const wrap = document.getElementById(prefix + 'TextWrap');
+                    const blank = document.getElementById(prefix + 'BlankLine');
+                    if (blank) blank.style.display = 'none';
+                    if (!wrap || wrap.clientWidth <= 0) return;
+
+                    wrap.style.display = 'block';
+                    wrap.style.webkitLineClamp = 'unset';
+                    wrap.style.webkitBoxOrient = 'unset';
+                    wrap.style.overflow = 'visible';
+
+                    let size = baseSize;
+                    const minSize = 6;
+                    wrap.style.fontSize = size + 'px';
+
+                    while (size > minSize) {
+                        const lineH = size * 1.3;
+                        const max2LinesH = lineH * 2 + 2;
+                        if (wrap.scrollHeight <= max2LinesH && wrap.scrollWidth <= wrap.clientWidth + 1) {
+                            break;
+                        }
+                        size -= 0.5;
+                        wrap.style.fontSize = size + 'px';
+                    }
+
+                    const finalMaxH = size * 1.3 * 2 + 2;
+                    if (wrap.scrollHeight > finalMaxH) {
+                        wrap.style.display = '-webkit-box';
+                        wrap.style.webkitLineClamp = '2';
+                        wrap.style.webkitBoxOrient = 'vertical';
+                        wrap.style.overflow = 'hidden';
+                    }
+                });
+            } finally {
+                isUpdatingStatusLines = false;
+            }
         }
 
         const statusObserver = new MutationObserver(() => {
             updateStatusLines();
         });
+        if (lastAnsVal) statusObserver.observe(lastAnsVal, { childList: true, characterData: true, subtree: true });
         if (bellStatusText) statusObserver.observe(bellStatusText, { childList: true, characterData: true, subtree: true });
         if (starStatusText) statusObserver.observe(starStatusText, { childList: true, characterData: true, subtree: true });
         window.addEventListener('resize', updateStatusLines);
