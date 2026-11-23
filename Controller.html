@@ -2364,7 +2364,12 @@
         }
 
         function divideScore(i) {
-            playerScores[i] = Math.round(playerScores[i] / 2);
+            const current = playerScores[i];
+            if (current % 10 === 5) {
+                playerScores[i] = (current + 5) / 2;
+            } else {
+                playerScores[i] = Math.round(current / 2);
+            }
             if (playerScores[i] < 0) playerScores[i] = 0;
             if (document.getElementById(`scoreModal${i}`)) document.getElementById(`scoreModal${i}`).textContent = playerScores[i];
             updateDisplayedScores();
